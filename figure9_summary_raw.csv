@@ -1,0 +1,10 @@
+regime_name,frequency,predictability_label,predictability_numeric,lives_saved_annually,lives_saved_per_1000,info_percent,info_per_1000
+Current Regime,0.99,factual,50,850.6,54.9,56.9,3.7
+Increase Frequency (+25%),1.25,factual,50,1066.2,54.4,59.7,3
+Decrease Frequency (-25%),0.74,factual,50,635.1,54.9,54.1,4.7
+Unpredictable,0.99,unpredictable,100,954.5,61.6,55.4,3.6
+Unpredictable; Increase Frequency (+25%),1.25,unpredictable,100,1190.9,60.8,57.6,2.9
+Unpredictable; Decrease Frequency (-25%),0.74,unpredictable,100,720.1,62.3,53.3,4.6
+Perfectly Predictable,0.98,perfectly,0,710.4,46.1,56.9,3.7
+Perfectly Predictable; Increase Frequency (+25%),1.24,perfectly,0,896.1,46.1,59.9,3.1
+Perfectly Predictable; Decrease Frequency (-25%),0.73,perfectly,0,530.5,46.1,54.1,4.7
