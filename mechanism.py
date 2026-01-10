@@ -39,20 +39,31 @@ df = pd.DataFrame({
     "Predictable timing": effort_predictable,
     "Random timing": effort_random})
 
-chart = alt.Chart(df).mark_line(strokeWidth=3).encode(
+chart = alt.Chart(df).transform_fold(
+    ["Predictable timing", "Random timing"],
+    as_=["variable", "value"]
+).mark_line(strokeWidth=3).encode(
     x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
-    y=alt.Y("value:Q", title="Effort (staffing level)", scale=alt.Scale(domain=[0.7, 1.3])),
+    y=alt.Y(
+        "value:Q",
+        title="Effort (staffing level)",
+        scale=alt.Scale(domain=[0.7, 1.3])
+    ),
     color=alt.Color(
         "variable:N",
         title="Inspection timing",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
-            range=["#d62728", "#228B22"]  
+            range=["#d62728", "#228B22"]  # red, green
+        )
+    ),
+    strokeDash=alt.StrokeDash(
+        "variable:N",
+        scale=alt.Scale(
+            domain=["Predictable timing", "Random timing"],
+            range=[[1, 0], [6, 4]]   # solid, dashed
         )
     )
-).transform_fold(
-    ["Predictable timing", "Random timing"],
-    as_=["variable", "value"]
 )
 
 st.altair_chart(chart, use_container_width=True)
