@@ -54,7 +54,7 @@ base = alt.Chart(df).transform_fold(
     ["Predictable timing", "Random timing"],
     as_=["variable", "value"]
 ).mark_line(strokeWidth=3).encode(
-    x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
+    x=alt.X("Weeks Since Last Inspection:Q", title="Weeks since last inspection"),
     y=alt.Y(
         "value:Q",
         title="Effort (staffing level)",
