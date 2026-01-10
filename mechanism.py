@@ -47,23 +47,17 @@ chart = alt.Chart(df).transform_fold(
     y=alt.Y(
         "value:Q",
         title="Effort (staffing level)",
-        scale=alt.Scale(domain=[0.7, 1.3])
-    ),
+        scale=alt.Scale(domain=[0.7, 1.3])),
     color=alt.Color(
         "variable:N",
         title="Inspection timing",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
-            range=["#d62728", "#228B22"]  # red, green
-        )
-    ),
+            range=["#d62728", "#228B22"])),
     strokeDash=alt.StrokeDash(
         "variable:N",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
-            range=[[1, 0], [6, 4]]   # solid, dashed
-        )
-    )
-)
+            range=[[1, 0], [6, 4]])))
 
 st.altair_chart(chart, use_container_width=True)
