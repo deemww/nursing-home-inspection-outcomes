@@ -34,12 +34,12 @@ effort_predictable = baseline + amp * (2 * shape - 1)
 effort_random = np.full_like(weeks, baseline, dtype=float)
 
 df = pd.DataFrame({
-    "Weeks Since Last Inspection": weeks,
+    "Weeks since last inspection": weeks,
     "Predictable timing": effort_predictable,
     "Random timing": effort_random})
 
 tooltip_df = df.melt(
-    id_vars=["Weeks Since Last Inspection"],
+    id_vars=["Weeks since last inspection"],
     value_vars=["Predictable timing", "Random timing"],
     var_name="Inspection timing",
     value_name="Effort")
@@ -54,7 +54,7 @@ base = alt.Chart(df).transform_fold(
     ["Predictable timing", "Random timing"],
     as_=["variable", "value"]
 ).mark_line(strokeWidth=3).encode(
-    x=alt.X("Weeks Since Last Inspection:Q", title="Weeks Since Last Inspection"),
+    x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
     y=alt.Y(
         "value:Q",
         title="Effort (staffing level)",
