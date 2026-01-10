@@ -87,7 +87,7 @@ points = alt.Chart(tooltip_df).mark_circle(size=80, opacity=0).encode(
     y="Effort:Q",
     tooltip=[
         alt.Tooltip("Weeks since last inspection:Q", title="Weeks since last inspection"),
-        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".2f"),
+        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".4f"),
         alt.Tooltip("Inspection timing:N", title="Inspection timing")
     ]
 ).add_params(hover)
