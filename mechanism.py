@@ -47,7 +47,7 @@ chart = alt.Chart(df).mark_line(strokeWidth=3).encode(
         title="Inspection timing",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
-            range=["#d62728", "#1f77b4"]   # red, blue
+            range=["#d62728", "#228B22"]  
         )
     )
 ).transform_fold(
