@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+import altair as alt
 
 st.markdown(
     "<h1 style='text-align: center;'>Why Predictability Matters: Nursing Home Effort Over Time</h1>",
@@ -38,6 +39,20 @@ df = pd.DataFrame({
     "Predictable timing": effort_predictable,
     "Random timing": effort_random})
 
-st.line_chart(
-    df.set_index("Weeks since last inspection"),
-    height=350)
+chart = alt.Chart(df).mark_line(strokeWidth=3).encode(
+    x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
+    y=alt.Y("value:Q", title="Effort (staffing level)", scale=alt.Scale(domain=[0.7, 1.3])),
+    color=alt.Color(
+        "variable:N",
+        title="Inspection timing",
+        scale=alt.Scale(
+            domain=["Predictable timing", "Random timing"],
+            range=["#d62728", "#1f77b4"]   # red, blue
+        )
+    )
+).transform_fold(
+    ["Predictable timing", "Random timing"],
+    as_=["variable", "value"]
+)
+
+st.altair_chart(chart, use_container_width=True)
