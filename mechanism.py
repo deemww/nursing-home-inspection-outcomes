@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -26,6 +27,7 @@ st.caption(
 weeks = np.arange(0, 61)
 
 strength = 1 - (predictability / 100)
+
 baseline = 1.0
 max_amp = 0.25
 amp = max_amp * strength
@@ -40,46 +42,57 @@ df = pd.DataFrame({
     "Random timing": effort_random
 })
 
-long_df = df.melt(
-    id_vars="Weeks since last inspection",
+tooltip_df = df.melt(
+    id_vars=["Weeks since last inspection"],
+    value_vars=["Predictable timing", "Random timing"],
     var_name="Inspection timing",
     value_name="Effort"
 )
 
-base = alt.Chart(long_df).mark_line(strokeWidth=3).encode(
+hover = alt.selection_point(
+    fields=["Weeks since last inspection"],
+    nearest=True,
+    on="mouseover",
+    empty=False
+)
+
+base = alt.Chart(df).transform_fold(
+    ["Predictable timing", "Random timing"],
+    as_=["variable", "value"]
+).mark_line(strokeWidth=3).encode(
     x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
-    y=alt.Y("Effort:Q", title="Effort (staffing level)", scale=alt.Scale(domain=[0.7, 1.3])),
+    y=alt.Y(
+        "value:Q",
+        title="Effort (staffing level)",
+        scale=alt.Scale(domain=[0.7, 1.3])
+    ),
     color=alt.Color(
-        "Inspection timing:N",
+        "variable:N",
+        title="Inspection timing",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
             range=["#d62728", "#228B22"]
         )
     ),
     strokeDash=alt.StrokeDash(
-        "Inspection timing:N",
+        "variable:N",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
             range=[[1, 0], [6, 4]]
         )
     )
-)
+).add_params(hover)
 
-labels = pd.DataFrame({
-    "Weeks since last inspection": [30, 55, 40],
-    "Effort": [0.88, 1.12, 1.00],
-    "Label": ["Low effort", "Ramping up", "Consistent effort"]
-})
-
-label_layer = alt.Chart(labels).mark_text(
-    color="#cccccc",
-    fontSize=13
-).encode(
+points = alt.Chart(tooltip_df).mark_circle(size=80, opacity=0).encode(
     x="Weeks since last inspection:Q",
     y="Effort:Q",
-    text="Label:N"
-)
+    tooltip=[
+        alt.Tooltip("Weeks since last inspection:Q", title="Weeks since last inspection"),
+        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".4f"),
+        alt.Tooltip("Inspection timing:N", title="Inspection timing")
+    ]
+).add_params(hover)
 
-final_chart = base + label_layer
+final_chart = base + points
 
 st.altair_chart(final_chart, use_container_width=True)
