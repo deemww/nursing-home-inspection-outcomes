@@ -41,6 +41,13 @@ df = pd.DataFrame({
     "Random timing": effort_random
 })
 
+tooltip_df = df.melt(
+    id_vars=["Weeks since last inspection"],
+    value_vars=["Predictable timing", "Random timing"],
+    var_name="Inspection timing",
+    value_name="Effort"
+)
+
 hover = alt.selection_point(
     fields=["Weeks since last inspection"],
     nearest=True,
@@ -75,18 +82,15 @@ base = alt.Chart(df).transform_fold(
     )
 ).add_params(hover)
 
-points = alt.Chart(df).transform_fold(
-    ["Predictable timing", "Random timing"],
-    as_=["variable", "value"]
-).mark_circle(size=80, opacity=0, tooltip=None).encode(
+points = alt.Chart(tooltip_df).mark_circle(size=80, opacity=0).encode(
     x="Weeks since last inspection:Q",
-    y="value:Q",
+    y="Effort:Q",
     tooltip=[
         alt.Tooltip("Weeks since last inspection:Q", title="Weeks since last inspection"),
-        alt.Tooltip("value:Q", title="Effort (staffing level)", format=".2f"),
-        alt.Tooltip("variable:N", title="Inspection timing")
+        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".2f"),
+        alt.Tooltip("Inspection timing:N", title="Inspection timing")
     ]
-).transform_filter(hover)
+).add_params(hover)
 
 explanations = alt.Chart(pd.DataFrame({
     "Weeks since last inspection": [30, 55, 40],
