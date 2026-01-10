@@ -3,13 +3,7 @@ import pandas as pd
 import streamlit as st
 
 st.markdown(
-    "<h1 style='text-align: center;'>Inspection Timing and Strategic Effort</h1>",
-    unsafe_allow_html=True)
-
-st.markdown(
-    "<p style='text-align: center; font-size: 1.1em; color: #555;'>"
-    "How predictability in inspection timing shapes how nursing homes allocate staffing over time."
-    "</p>",
+    "<h1 style='text-align: center;'>Why Predictability Matters: Nursing Home Effort Over Time</h1>",
     unsafe_allow_html=True)
 
 st.header("Policy control")
