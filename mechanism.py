@@ -78,7 +78,7 @@ base = alt.Chart(df).transform_fold(
 points = alt.Chart(df).transform_fold(
     ["Predictable timing", "Random timing"],
     as_=["variable", "value"]
-).mark_circle(size=80, opacity=0).encode(
+).mark_circle(size=80, opacity=0, tooltip=None).encode(
     x="Weeks since last inspection:Q",
     y="value:Q",
     tooltip=[
