@@ -39,7 +39,7 @@ df = pd.DataFrame({
     "Predictable timing": effort_predictable,
     "Random timing": effort_random})
 
-so what do i change chart = alt.Chart(df).mark_line(strokeWidth=3).encode(
+chart = alt.Chart(df).mark_line(strokeWidth=3).encode(
     x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
     y=alt.Y("value:Q", title="Effort (staffing level)", scale=alt.Scale(domain=[0.7, 1.3])),
     color=alt.Color(
