@@ -26,7 +26,6 @@ st.caption(
 weeks = np.arange(0, 61)
 
 strength = 1 - (predictability / 100)
-
 baseline = 1.0
 max_amp = 0.25
 amp = max_amp * strength
@@ -41,7 +40,7 @@ df = pd.DataFrame({
     "Random timing": effort_random
 })
 
-tooltip_df = df.melt(
+long_df = df.melt(
     id_vars=["Weeks since last inspection"],
     value_vars=["Predictable timing", "Random timing"],
     var_name="Inspection timing",
@@ -55,18 +54,15 @@ hover = alt.selection_point(
     empty=False
 )
 
-base = alt.Chart(df).transform_fold(
-    ["Predictable timing", "Random timing"],
-    as_=["variable", "value"]
-).mark_line(strokeWidth=3).encode(
+base = alt.Chart(long_df).mark_line(strokeWidth=3).encode(
     x=alt.X("Weeks since last inspection:Q", title="Weeks since last inspection"),
     y=alt.Y(
-        "value:Q",
+        "Effort:Q",
         title="Effort (staffing level)",
         scale=alt.Scale(domain=[0.7, 1.3])
     ),
     color=alt.Color(
-        "variable:N",
+        "Inspection timing:N",
         title="Inspection timing",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
@@ -74,7 +70,7 @@ base = alt.Chart(df).transform_fold(
         )
     ),
     strokeDash=alt.StrokeDash(
-        "variable:N",
+        "Inspection timing:N",
         scale=alt.Scale(
             domain=["Predictable timing", "Random timing"],
             range=[[1, 0], [6, 4]]
@@ -82,25 +78,47 @@ base = alt.Chart(df).transform_fold(
     )
 ).add_params(hover)
 
-points = alt.Chart(tooltip_df).mark_circle(size=80, opacity=0).encode(
+points = alt.Chart(long_df).mark_circle(size=80, opacity=0).encode(
     x="Weeks since last inspection:Q",
     y="Effort:Q",
     tooltip=[
         alt.Tooltip("Weeks since last inspection:Q", title="Weeks since last inspection"),
-        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".4f"),
+        alt.Tooltip("Effort:Q", title="Effort (staffing level)", format=".2f"),
         alt.Tooltip("Inspection timing:N", title="Inspection timing")
     ]
 ).add_params(hover)
 
-explanations = alt.Chart(pd.DataFrame({
+label_df = pd.DataFrame({
     "Weeks since last inspection": [30, 55, 40],
-    "value": [0.88, 1.12, 1.00],
+    "Effort": [0.88, 1.12, 1.00],
+    "label": [
+        "Low effort",
+        "Ramping up",
+        "Consistent effort"
+    ]
+})
+
+static_labels = alt.Chart(label_df).mark_text(
+    color="#cccccc",
+    fontSize=12,
+    opacity=0.8
+).encode(
+    x="Weeks since last inspection:Q",
+    y="Effort:Q",
+    text="label:N"
+)
+
+explain_df = pd.DataFrame({
+    "Weeks since last inspection": [30, 55, 40],
+    "Effort": [0.88, 1.12, 1.00],
     "label": [
         "Low effort when inspection unlikely",
         "Ramping up as inspection approaches",
         "Consistent effort (cannot game system)"
     ]
-})).mark_text(
+})
+
+explanations = alt.Chart(explain_df).mark_text(
     align="left",
     dx=10,
     dy=-10,
@@ -108,10 +126,10 @@ explanations = alt.Chart(pd.DataFrame({
     fontSize=13
 ).encode(
     x="Weeks since last inspection:Q",
-    y="value:Q",
+    y="Effort:Q",
     text="label:N"
 ).transform_filter(hover)
 
-final_chart = base + points + explanations
+final_chart = base + static_labels + points + explanations
 
 st.altair_chart(final_chart, use_container_width=True)
