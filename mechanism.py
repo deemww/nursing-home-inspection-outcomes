@@ -92,26 +92,6 @@ points = alt.Chart(tooltip_df).mark_circle(size=80, opacity=0).encode(
     ]
 ).add_params(hover)
 
-static_label_df = pd.DataFrame({
-    "Weeks since last inspection": [30, 55, 40],
-    "value": [0.88, 1.12, 1.00],
-    "label": [
-        "Low effort",
-        "Ramping up",
-        "Consistent effort"
-    ]
-})
-
-static_labels = alt.Chart(static_label_df).mark_text(
-    color="#cccccc",
-    fontSize=12,
-    opacity=0.8
-).encode(
-    x="Weeks since last inspection:Q",
-    y="value:Q",
-    text="label:N"
-)
-
-final_chart = base + static_labels + points
+final_chart = base + points
 
 st.altair_chart(final_chart, use_container_width=True)
