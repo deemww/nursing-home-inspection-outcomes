@@ -41,22 +41,12 @@ df = pd.DataFrame({
     "Random timing": effort_random
 })
 
-annotations = pd.DataFrame({
-    "x": [30, 55, 40],
-    "y": [0.88, 1.12, 1.00],
-    "text": [
-        "Low effort when inspection unlikely",
-        "Ramping up as inspection approaches",
-        "Consistent effort (cannot game system)"
-    ]
-})
-
-arrows = pd.DataFrame({
-    "x": [30, 55, 40],
-    "y": [0.88, 1.12, 1.00],
-    "x2": [24, 52, 40],
-    "y2": [0.94, 1.05, 1.02]
-})
+hover = alt.selection_point(
+    fields=["Weeks since last inspection"],
+    nearest=True,
+    on="mouseover",
+    empty=False
+)
 
 base = alt.Chart(df).transform_fold(
     ["Predictable timing", "Random timing"],
@@ -83,30 +73,41 @@ base = alt.Chart(df).transform_fold(
             range=[[1, 0], [6, 4]]
         )
     )
-)
+).add_params(hover)
 
-text_layer = alt.Chart(annotations).mark_text(
+points = alt.Chart(df).transform_fold(
+    ["Predictable timing", "Random timing"],
+    as_=["variable", "value"]
+).mark_circle(size=80, opacity=0).encode(
+    x="Weeks since last inspection:Q",
+    y="value:Q",
+    tooltip=[
+        alt.Tooltip("variable:N", title="Regime"),
+        alt.Tooltip("Weeks since last inspection:Q", title="Weeks"),
+        alt.Tooltip("value:Q", title="Effort", format=".2f")
+    ]
+).transform_filter(hover)
+
+explanations = alt.Chart(pd.DataFrame({
+    "Weeks since last inspection": [30, 55, 40],
+    "value": [0.88, 1.12, 1.00],
+    "label": [
+        "Low effort when inspection unlikely",
+        "Ramping up as inspection approaches",
+        "Consistent effort (cannot game system)"
+    ]
+})).mark_text(
     align="left",
-    dx=8,
-    dy=-8,
-    fontSize=13,
-    color="white"
+    dx=10,
+    dy=-10,
+    color="white",
+    fontSize=13
 ).encode(
-    x="x:Q",
-    y="y:Q",
-    text="text:N"
-)
+    x="Weeks since last inspection:Q",
+    y="value:Q",
+    text="label:N"
+).transform_filter(hover)
 
-arrow_layer = alt.Chart(arrows).mark_rule(
-    strokeWidth=1.5,
-    color="white"
-).encode(
-    x="x:Q",
-    y="y:Q",
-    x2="x2:Q",
-    y2="y2:Q"
-)
-
-final_chart = base + arrow_layer + text_layer
+final_chart = base + points + explanations
 
 st.altair_chart(final_chart, use_container_width=True)
