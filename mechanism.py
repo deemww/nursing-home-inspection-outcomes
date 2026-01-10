@@ -82,9 +82,9 @@ points = alt.Chart(df).transform_fold(
     x="Weeks since last inspection:Q",
     y="value:Q",
     tooltip=[
-        alt.Tooltip("variable:N", title="Regime"),
-        alt.Tooltip("Weeks since last inspection:Q", title="Weeks"),
-        alt.Tooltip("value:Q", title="Effort", format=".2f")
+        alt.Tooltip("Weeks since last inspection:Q", title="Weeks since last inspection"),
+        alt.Tooltip("value:Q", title="Effort (staffing level)", format=".2f"),
+        alt.Tooltip("variable:N", title="Inspection timing")
     ]
 ).transform_filter(hover)
 
