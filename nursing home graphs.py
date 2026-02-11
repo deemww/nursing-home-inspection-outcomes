@@ -46,7 +46,7 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
     d = pd.DataFrame({"metric": [x_label], "value": [float(value)]})
     chart = (
         alt.Chart(d)
-        .mark_bar(color="#800000")
+        .mark_bar(color="#800000", size=60)
         .encode(
             x=alt.X(
                 "metric:N",
