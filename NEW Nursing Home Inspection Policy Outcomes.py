@@ -85,8 +85,10 @@ st.caption(
     f"−25% ({low:.2f})   •   Current ({mid:.2f})   •   +25% ({high:.2f})"
 )
 
-scenario_title.subheader(scenario_label(predictability, frequency))
-
+scenario_title.markdown(
+    f"<h3 style='text-align: center;'>{scenario_label(predictability, frequency)}</h3>",
+    unsafe_allow_html=True
+)
 # Lookup the selected scenario row (no interpolation)
 row = df[
     (df["predictability_numeric"] == predictability) &
