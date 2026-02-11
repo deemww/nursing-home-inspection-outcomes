@@ -223,7 +223,7 @@ with p2:
             "Lives saved per 1,000",
             Y_LIMS["lives_saved_per_1000"],
             "Lives per 1,000 inspections",
-            "Lives saved per 1,000 inspections",  
+            "Efficiency: Lives saved per 1,000 inspections",  
         ),
         use_container_width=True,
     )
