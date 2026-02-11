@@ -27,9 +27,9 @@ predictability_ui = st.select_slider(
     options=[0, 50, 100],
     value=50,
     format_func=lambda p: (
-        "0% (random)" if p == 0 else
-        "50% (current)" if p == 50 else
-        "100% (predictable)"  # fully predictable at 100%
+        "0% — Unpredictable (random)" if p == 0 else
+        "50% — Current regime (factual)" if p == 50 else
+        "100% — Perfectly predictable (scheduled)"
     )
 )
 
