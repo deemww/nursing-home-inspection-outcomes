@@ -4,6 +4,31 @@ import streamlit as st
 
 df = pd.read_csv("figure9_summary_raw.csv")
 
+def scenario_label(predictability, frequency):
+    if predictability == 50:
+        if frequency == 0.99:
+            return "Current Regime"
+        elif frequency > 0.99:
+            return "Increase Frequency (↑ 25%)"
+        else:
+            return "Decrease Frequency (↓ 25%)"
+
+    if predictability == 100:
+        if frequency == 0.99:
+            return "Unpredictable"
+        elif frequency > 0.99:
+            return "Unpredictable; Increased Frequency (↑ 25%)"
+        else:
+            return "Unpredictable; Decreased Frequency (↓ 25%)"
+
+    if predictability == 0:
+        if frequency == 0.98:
+            return "Perfectly Predictable"
+        elif frequency > 0.98:
+            return "Perfectly Predictable; Increased Frequency (↑ 25%)"
+        else:
+            return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
+
 st.markdown(
     "<h1 style='text-align: center;'>Nursing Home Inspection Policy Outcomes</h1>",
     unsafe_allow_html=True
@@ -64,6 +89,8 @@ row = df[
     (df["predictability_numeric"] == predictability) &
     (df["frequency"] == frequency)
 ].iloc[0]
+
+st.subheader(scenario_label(predictability, frequency))
 
 st.header("Policy outcomes")
 
