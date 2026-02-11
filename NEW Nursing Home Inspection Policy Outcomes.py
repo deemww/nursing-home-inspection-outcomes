@@ -43,7 +43,7 @@ st.markdown(
 
 st.header("Policy controls")
 
-st.subheader(scenario_label(predictability, frequency))
+st.subheader(scenario_label(predictability,frequency))
 
 # Discrete predictability options (UI direction reversed per feedback)
 st.subheader("Inspection timing predictability")
