@@ -43,12 +43,12 @@ Y_LIMS = {
 }
 
 def single_bar_chart(value, title, y_domain, y_label):
-    d = pd.DataFrame({"metric": [title], "value": [float(value)]})
+    d = pd.DataFrame({"value": [float(value)]})
     chart = (
         alt.Chart(d)
         .mark_bar()
         .encode(
-            x=alt.X("metric:N", title=None, axis=alt.Axis(labelAngle=0)),
+            x=alt.X("value:Q", title=None, axis=None),
             y=alt.Y(
                 "value:Q",
                 title=y_label,
@@ -56,7 +56,15 @@ def single_bar_chart(value, title, y_domain, y_label):
             ),
             tooltip=[alt.Tooltip("value:Q", format=",.2f")],
         )
-        .properties(height=220)
+        .properties(
+            height=220,
+            title=alt.TitleParams(
+                text=title,
+                anchor="start",
+                fontSize=14,
+                fontWeight="normal",
+            ),
+        )
     )
     return chart
 
@@ -190,9 +198,9 @@ with p1:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_annually"]),
-            "Lives saved (annual)",
+            "Annual lives saved",
             Y_LIMS["lives_saved_annually"],
-            "Lives saved",
+            "Lives",
         ),
         use_container_width=True,
     )
@@ -201,9 +209,9 @@ with p2:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_per_1000"]),
-            "Lives saved per 1,000",
+            "Lives saved per 1,000 inspections",
             Y_LIMS["lives_saved_per_1000"],
-            "Lives per 1,000 inspections",
+            "Lives",
         ),
         use_container_width=True,
     )
@@ -213,7 +221,7 @@ with p3:
     st.altair_chart(
         single_bar_chart(
             float(row["info_percent"]),
-            "Information (%)",
+            "Regulatory information revealed",
             Y_LIMS["info_percent"],
             "Percent",
         ),
@@ -224,7 +232,7 @@ with p4:
     st.altair_chart(
         single_bar_chart(
             float(total_inspections),
-            "Total inspections",
+            "Total inspections conducted",
             Y_LIMS["total_inspections"],
             "Inspections",
         ),
