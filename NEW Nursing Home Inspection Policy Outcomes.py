@@ -18,21 +18,26 @@ st.markdown(
 
 st.header("Policy controls")
 
-# Discrete predictability options (exactly as in the table)
+# Discrete predictability options (UI direction reversed per feedback)
 st.subheader("Inspection timing predictability")
 st.caption("How predictable is inspection timing?")
-predictability = st.select_slider(
+
+predictability_ui = st.select_slider(
     "",
     options=[0, 50, 100],
     value=50,
     format_func=lambda p: (
-        "0% (scheduled)" if p == 0 else
+        "0% (random)" if p == 0 else
         "50% (current)" if p == 50 else
-        "100% (random)"
+        "100% (predictable)"  # fully predictable at 100%
     )
 )
 
-# Discrete frequency options (only those available for the selected predictability)
+# Map UI scale to paper/CSV coding:
+# CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
+predictability = 100 - predictability_ui
+
+# Discrete frequency options (only those available for the selected predictability regime)
 st.subheader("Inspection frequency")
 st.caption("How many inspections per facility per year?")
 
@@ -42,15 +47,17 @@ freq_options = (
       .tolist()
 )
 
-# Pick the “current” frequency as default when possible
+# Pick the “current” frequency as default when possible (regime-specific baseline)
 default_freq = 0.98 if predictability == 0 else 0.99
 if default_freq in freq_options:
     frequency = st.select_slider("", options=freq_options, value=default_freq)
 else:
     frequency = st.select_slider("", options=freq_options, value=freq_options[1])
 
-# Optional: show the reference points you actually have
-st.caption(f"Available options for this regime: {', '.join([str(x) for x in freq_options])}")
+# Optional: show the reference points you actually have (formatted)
+st.caption(
+    "Available options for this regime: " + ", ".join([f"{x:.2f}" for x in freq_options])
+)
 
 # Lookup the selected scenario row (no interpolation)
 row = df[
@@ -62,7 +69,8 @@ st.header("Policy outcomes")
 
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
-    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections.")
+    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+)
 
 col1, col2, col3, col4 = st.columns(4)
 
