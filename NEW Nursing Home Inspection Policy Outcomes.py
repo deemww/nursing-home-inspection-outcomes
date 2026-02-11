@@ -60,6 +60,10 @@ row = df[
 
 st.header("Policy outcomes")
 
+st.caption(
+    "Note: All outcomes are reported relative to a benchmark with no inspections. "
+    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections.")
+
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
