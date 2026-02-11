@@ -43,6 +43,8 @@ st.markdown(
 
 st.header("Policy controls")
 
+st.subheader(scenario_label(predictability, frequency))
+
 # Discrete predictability options (UI direction reversed per feedback)
 st.subheader("Inspection timing predictability")
 st.caption("How predictable is inspection timing?")
@@ -89,8 +91,6 @@ row = df[
     (df["predictability_numeric"] == predictability) &
     (df["frequency"] == frequency)
 ].iloc[0]
-
-st.subheader(scenario_label(predictability, frequency))
 
 st.header("Policy outcomes")
 
