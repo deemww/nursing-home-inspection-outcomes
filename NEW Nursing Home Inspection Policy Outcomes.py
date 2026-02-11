@@ -42,8 +42,7 @@ st.markdown(
 )
 
 st.header("Policy controls")
-
-st.subheader(scenario_label(predictability,frequency))
+scenario_title = st.empty()
 
 # Discrete predictability options (UI direction reversed per feedback)
 st.subheader("Inspection timing predictability")
@@ -85,6 +84,8 @@ low, mid, high = sorted(freq_options)
 st.caption(
     f"−25% ({low:.2f})   •   Current ({mid:.2f})   •   +25% ({high:.2f})"
 )
+
+scenario_title.subheader(scenario_label(predictability, frequency))
 
 # Lookup the selected scenario row (no interpolation)
 row = df[
