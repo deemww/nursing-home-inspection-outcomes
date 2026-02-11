@@ -86,7 +86,12 @@ st.caption(
 )
 
 scenario_title.markdown(
-    f"<h3 style='text-align: center;'>{scenario_label(predictability, frequency)}</h3>",
+    "<p style='text-align: center; color: #888; margin-bottom: 0;'>"
+    "Selected policy scenario"
+    "</p>"
+    f"<h3 style='text-align: center; margin-top: 0;'>"
+    f"{scenario_label(predictability, frequency)}"
+    "</h3>",
     unsafe_allow_html=True
 )
 # Lookup the selected scenario row (no interpolation)
