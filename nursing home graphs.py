@@ -42,8 +42,8 @@ Y_LIMS = {
     "total_inspections": (0, float(df["frequency"].max() * 15615) * 1.10),
 }
 
-def single_bar_chart(value, title, y_domain, y_label):
-    d = pd.DataFrame({"metric": [title], "value": [float(value)]})
+def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
+    d = pd.DataFrame({"metric": [x_label], "value": [float(value)]})
     chart = (
         alt.Chart(d)
         .mark_bar()
@@ -56,7 +56,7 @@ def single_bar_chart(value, title, y_domain, y_label):
             ),
             tooltip=[alt.Tooltip("value:Q", format=",.2f")],
         )
-        .properties(height=220)
+        .properties(height=220, title=chart_title)
     )
     return chart
 
@@ -184,15 +184,16 @@ with col4:
 
 st.divider()
 
-# Plots (fixed y-axes across toggles)
+# Plots (fixed y-axes across toggles) — ONLY CHANGE: add clear chart titles
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_annually"]),
-            "Lives saved (annual)",
+            "Lives saved (annual)",                 # x-axis label stays
             Y_LIMS["lives_saved_annually"],
             "Lives saved",
+            "Annual lives saved",                   # chart title (NEW)
         ),
         use_container_width=True,
     )
@@ -201,9 +202,10 @@ with p2:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_per_1000"]),
-            "Lives saved per 1,000",
+            "Lives saved per 1,000",                # x-axis label stays
             Y_LIMS["lives_saved_per_1000"],
             "Lives per 1,000 inspections",
+            "Lives saved per 1,000 inspections",    # chart title (NEW)
         ),
         use_container_width=True,
     )
@@ -213,9 +215,10 @@ with p3:
     st.altair_chart(
         single_bar_chart(
             float(row["info_percent"]),
-            "Information (%)",
+            "Information (%)",                      # x-axis label stays
             Y_LIMS["info_percent"],
             "Percent",
+            "Regulatory information revealed",      # chart title (NEW)
         ),
         use_container_width=True,
     )
@@ -224,9 +227,10 @@ with p4:
     st.altair_chart(
         single_bar_chart(
             float(total_inspections),
-            "Total inspections",
+            "Total inspections",                    # x-axis label stays
             Y_LIMS["total_inspections"],
             "Inspections",
+            "Total inspections conducted",          # chart title (NEW)
         ),
         use_container_width=True,
     )
