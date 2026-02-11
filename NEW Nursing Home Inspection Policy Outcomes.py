@@ -54,10 +54,10 @@ if default_freq in freq_options:
 else:
     frequency = st.select_slider("", options=freq_options, value=freq_options[1])
 
-# Optional: show the reference points you actually have (formatted)
+low, mid, high = sorted(freq_options)
 st.caption(
-    "Available options for this regime: " + ", ".join([f"{x:.2f}" for x in freq_options])
-)
+    f"Inspection frequency options: 25% fewer inspections ({low:.2f}), "
+    f"current rate ({mid:.2f}), or 25% more inspections ({high:.2f}) per facility per year.")
 
 # Lookup the selected scenario row (no interpolation)
 row = df[
