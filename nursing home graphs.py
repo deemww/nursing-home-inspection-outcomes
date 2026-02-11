@@ -48,7 +48,15 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
         alt.Chart(d)
         .mark_bar()
         .encode(
-            x=alt.X("metric:N", title=None, axis=alt.Axis(labelAngle=0)),
+            x=alt.X(
+                "metric:N",
+                title=None,
+                axis=alt.Axis(
+                    labelAngle=0,
+                    labelLimit=1000,   # prevent x label truncation
+                    labelPadding=10
+                ),
+            ),
             y=alt.Y(
                 "value:Q",
                 title=y_label,
@@ -56,7 +64,17 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
             ),
             tooltip=[alt.Tooltip("value:Q", format=",.2f")],
         )
-        .properties(height=220, title=chart_title)
+        .properties(
+            height=240,  # slightly taller to avoid clipping
+            title=alt.TitleParams(
+                text=chart_title,
+                anchor="start",
+                fontSize=14,
+                fontWeight="normal",
+                offset=12,  # spacing between title and chart
+            ),
+            padding={"top": 10, "left": 10, "right": 10, "bottom": 20},
+        )
     )
     return chart
 
@@ -184,16 +202,16 @@ with col4:
 
 st.divider()
 
-# Plots (fixed y-axes across toggles) — ONLY CHANGE: add clear chart titles
+# Plots (fixed y-axes across toggles)
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_annually"]),
-            "Lives saved (annual)",                 # x-axis label stays
+            "Lives saved (annual)",
             Y_LIMS["lives_saved_annually"],
             "Lives saved",
-            "Annual lives saved",                   # chart title (NEW)
+            "Annual lives saved",
         ),
         use_container_width=True,
     )
@@ -202,10 +220,10 @@ with p2:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_per_1000"]),
-            "Lives saved per 1,000",                # x-axis label stays
+            "Lives saved per 1,000",
             Y_LIMS["lives_saved_per_1000"],
             "Lives per 1,000 inspections",
-            "Lives saved per 1,000 inspections",    # chart title (NEW)
+            "Lives saved per\n1,000 inspections",  # wrap title to avoid clipping
         ),
         use_container_width=True,
     )
@@ -215,10 +233,10 @@ with p3:
     st.altair_chart(
         single_bar_chart(
             float(row["info_percent"]),
-            "Information (%)",                      # x-axis label stays
+            "Information (%)",
             Y_LIMS["info_percent"],
             "Percent",
-            "Regulatory information revealed",      # chart title (NEW)
+            "Regulatory information revealed",
         ),
         use_container_width=True,
     )
@@ -227,10 +245,10 @@ with p4:
     st.altair_chart(
         single_bar_chart(
             float(total_inspections),
-            "Total inspections",                    # x-axis label stays
+            "Total inspections",
             Y_LIMS["total_inspections"],
             "Inspections",
-            "Total inspections conducted",          # chart title (NEW)
+            "Total inspections conducted",
         ),
         use_container_width=True,
     )
