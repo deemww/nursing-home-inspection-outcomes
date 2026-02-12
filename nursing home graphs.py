@@ -1,38 +1,9 @@
+
 import pandas as pd
 import streamlit as st
 import altair as alt
 
-st.set_page_config(
-    layout="wide",
-    initial_sidebar_state="expanded",  # keep sidebar visible (no “off-screen” feel)
-)
-
-# =============================
-# CSS: eliminate horizontal scroll + force charts to respect container width
-# =============================
-st.markdown(
-    """
-    <style>
-      /* Hard kill any horizontal scrolling anywhere */
-      html, body, [data-testid="stAppViewContainer"] { overflow-x: hidden !important; }
-
-      /* Make the main content never exceed viewport width */
-      [data-testid="stAppViewContainer"] > .main { max-width: 100vw; }
-
-      /* Vega/Altair sometimes creates a min-width; force it to shrink-to-fit */
-      div[data-testid="stVegaLiteChart"] { width: 100% !important; overflow-x: hidden !important; }
-      div[data-testid="stVegaLiteChart"] > div { width: 100% !important; }
-      .vega-embed { width: 100% !important; max-width: 100% !important; }
-      .vega-embed summary { display: none; } /* hides the little '...' menu that can add width */
-
-      /* Ensure column rows can wrap on narrower screens */
-      @media (max-width: 1100px) {
-        div[data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; }
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.set_page_config(layout="wide")
 
 # =============================
 # Data
@@ -79,8 +50,7 @@ Y_LIMS = {
 
 def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
     d = pd.DataFrame({"metric": [x_label], "value": [float(value)]})
-
-    chart = (
+    return (
         alt.Chart(d)
         .mark_bar(color="#800000", size=60, cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
         .encode(
@@ -96,9 +66,7 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
             ),
             tooltip=[alt.Tooltip("value:Q", format=",.2f")],
         )
-        # Critical: tell Vega to fit the container (prevents min-width overflow)
         .properties(
-            width="container",
             height=235,
             title=alt.TitleParams(
                 text=chart_title,
@@ -109,10 +77,7 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
             ),
             padding={"top": 8, "left": 10, "right": 10, "bottom": 18},
         )
-        .configure_autosize(type="fit", contains="padding")
-        .configure_view(stroke=None)
     )
-    return chart
 
 # =============================
 # Helper: get regime-specific frequency options
@@ -120,8 +85,8 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-        .sort_values()
-        .tolist()
+          .sort_values()
+          .tolist()
     )
     low, mid, high = sorted(opts)
     return low, mid, high
@@ -135,7 +100,7 @@ if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
 # =============================
-# Page header
+# Page header (main canvas stays clean)
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -148,7 +113,7 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls
+# Sidebar controls (Idea 4)
 # =============================
 with st.sidebar:
     st.markdown("## Policy controls")
@@ -165,6 +130,8 @@ with st.sidebar:
     )
     st.session_state["pred_choice"] = pred_choice
 
+    # Map UI choice to CSV coding:
+    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
         "Current regime (factual)": 50,
@@ -180,6 +147,7 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
+    # Keep the same “position” across regimes
     pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
     default_index = pos_to_index[st.session_state["freq_position"]]
 
@@ -189,6 +157,7 @@ with st.sidebar:
         index=default_index,
     )
 
+    # Update stored position + set numeric frequency
     if freq_choice.startswith("−25%"):
         st.session_state["freq_position"] = "−25%"
         frequency = float(low)
@@ -200,7 +169,7 @@ with st.sidebar:
         frequency = float(high)
 
 # =============================
-# Selected scenario
+# Selected scenario (main page)
 # =============================
 scenario = scenario_label(predictability, frequency)
 
@@ -213,17 +182,17 @@ st.markdown(
 )
 
 # =============================
-# Selected row
+# Selected row (no interpolation)
 # =============================
 row = df[
-    (df["predictability_numeric"] == predictability)
-    & (df["frequency"] == frequency)
+    (df["predictability_numeric"] == predictability) &
+    (df["frequency"] == frequency)
 ].iloc[0]
 
 total_inspections = int(float(frequency) * 15615)
 
 # =============================
-# Policy outcomes
+# Policy outcomes (boxes + plots)
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_allow_html=True)
 st.caption(
@@ -231,9 +200,9 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
-# 2x2 metrics (prevents the 1x4 row from forcing overflow)
-m1, m2 = st.columns(2)
-with m1:
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
     st.metric(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
@@ -241,7 +210,7 @@ with m1:
     )
     st.caption("per year")
 
-with m2:
+with col2:
     st.metric(
         "Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
@@ -249,8 +218,7 @@ with m2:
     )
     st.caption("per 1,000 inspections")
 
-m3, m4 = st.columns(2)
-with m3:
+with col3:
     st.metric(
         "Information",
         f"{float(row['info_percent']):.1f}%",
@@ -258,7 +226,7 @@ with m3:
     )
     st.caption("of maximum")
 
-with m4:
+with col4:
     st.metric(
         "Total inspections",
         f"{total_inspections:,}",
