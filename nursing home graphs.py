@@ -53,7 +53,7 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
                 title=None,
                 axis=alt.Axis(
                     labelAngle=0,
-                    labelLimit=1000,   # prevent x label truncation
+                    labelLimit=1000,
                     labelPadding=10
                 ),
             ),
@@ -65,13 +65,13 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
             tooltip=[alt.Tooltip("value:Q", format=",.2f")],
         )
         .properties(
-            height=240,  # slightly taller to avoid clipping
+            height=240,
             title=alt.TitleParams(
                 text=chart_title,
                 anchor="start",
                 fontSize=14,
                 fontWeight="normal",
-                offset=12,  # spacing between title and chart
+                offset=12,
             ),
             padding={"top": 10, "left": 10, "right": 10, "bottom": 20},
         )
@@ -94,46 +94,59 @@ st.markdown(
 )
 
 # -----------------------------
-# Policy controls (discrete only)
+# Policy controls (DISCRETE via radio)
 # -----------------------------
 st.header("Policy controls")
 scenario_title = st.empty()
 
-st.subheader("Inspection timing predictability")
-st.caption("How predictable is inspection timing?")
-
-predictability_ui = st.select_slider(
-    "",
-    options=[0, 50, 100],
-    value=50,
-    format_func=lambda p: (
-        "0% — Unpredictable (random)" if p == 0 else
-        "50% — Current regime (factual)" if p == 50 else
-        "100% — Perfectly predictable (scheduled)"
-    ),
+# Predictability: radio (honestly discrete, no interpolation implied)
+predictability_choice = st.radio(
+    "Inspection timing predictability",
+    [
+        "Unpredictable (random)",
+        "Current regime (factual)",
+        "Perfectly predictable (scheduled)",
+    ],
+    index=1,
+    horizontal=True,
 )
 
-# Map UI scale to CSV coding:
+# Map to CSV coding:
 # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
-predictability = 100 - predictability_ui
+predictability_map = {
+    "Unpredictable (random)": 100,
+    "Current regime (factual)": 50,
+    "Perfectly predictable (scheduled)": 0,
+}
+predictability = predictability_map[predictability_choice]
 
-st.subheader("Inspection frequency")
-st.caption("How many inspections per facility per year?")
-
+# Frequency: radio (three analyzed frequencies for this regime)
 freq_options = (
     df.loc[df["predictability_numeric"] == predictability, "frequency"]
     .sort_values()
     .tolist()
 )
 
-default_freq = 0.98 if predictability == 0 else 0.99
-if default_freq in freq_options:
-    frequency = st.select_slider("", options=freq_options, value=default_freq)
-else:
-    frequency = st.select_slider("", options=freq_options, value=freq_options[1])
-
 low, mid, high = sorted(freq_options)
-st.caption(f"−25% ({low:.2f})   •   Current ({mid:.2f})   •   +25% ({high:.2f})")
+
+# Default selection: current (mid)
+frequency_choice = st.radio(
+    "Inspection frequency",
+    [
+        f"−25% ({low:.2f})",
+        f"Current ({mid:.2f})",
+        f"+25% ({high:.2f})",
+    ],
+    index=1,
+    horizontal=True,
+)
+
+freq_map = {
+    f"−25% ({low:.2f})": low,
+    f"Current ({mid:.2f})": mid,
+    f"+25% ({high:.2f})": high,
+}
+frequency = freq_map[frequency_choice]
 
 scenario_title.markdown(
     "<p style='text-align: center; color: #888; margin-bottom: 0;'>"
@@ -208,7 +221,7 @@ with p1:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_annually"]),
-            "Lives saved (annual)",
+            "Annual",
             Y_LIMS["lives_saved_annually"],
             "Lives saved",
             "Annual lives saved",
@@ -220,10 +233,10 @@ with p2:
     st.altair_chart(
         single_bar_chart(
             float(row["lives_saved_per_1000"]),
-            "Lives saved per 1,000",
+            "Per 1,000 inspections",
             Y_LIMS["lives_saved_per_1000"],
             "Lives per 1,000 inspections",
-            "Efficiency: Lives saved per 1,000 inspections",  
+            "Efficiency (lives saved per 1,000 inspections)",
         ),
         use_container_width=True,
     )
@@ -233,7 +246,7 @@ with p3:
     st.altair_chart(
         single_bar_chart(
             float(row["info_percent"]),
-            "Information (%)",
+            "Percent",
             Y_LIMS["info_percent"],
             "Percent",
             "Regulatory information revealed",
@@ -245,7 +258,7 @@ with p4:
     st.altair_chart(
         single_bar_chart(
             float(total_inspections),
-            "Total inspections",
+            "Total",
             Y_LIMS["total_inspections"],
             "Inspections",
             "Total inspections conducted",
