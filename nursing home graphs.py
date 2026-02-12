@@ -28,6 +28,32 @@ st.markdown(
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
+
+    st.markdown(
+    """
+    <style>
+    /* Sidebar section headers (e.g. "Policy controls") */
+    [data-testid="stSidebar"] h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    /* Sidebar widget labels (e.g. "Inspection timing predictability") */
+    [data-testid="stSidebar"] label {
+        font-size: 1.15rem;
+        font-weight: 500;
+    }
+
+    /* Radio option text */
+    [data-testid="stSidebar"] div[role="radiogroup"] label {
+        font-size: 1.15rem;
+        line-height: 1.5;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+    
     </style>
     """,
     unsafe_allow_html=True,
