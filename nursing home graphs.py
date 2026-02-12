@@ -116,7 +116,6 @@ st.markdown(
 # =============================
 with st.sidebar:
     st.markdown("## Policy controls")
-    st.caption("Discrete counterfactuals from Figure 9b (no interpolation).")
 
     pred_options = [
         "Unpredictable (random)",
