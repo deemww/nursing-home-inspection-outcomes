@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -7,7 +5,7 @@ import altair as alt
 st.set_page_config(layout="wide")
 
 # =============================
-# Global CSS (fonts + sidebar sizing)
+# Global CSS (fonts + sidebar sizing + NO horizontal page scroll)
 # =============================
 st.markdown(
     """
@@ -33,6 +31,32 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
+    /* =========================================================
+       FIX: prevent horizontal scrolling of the whole page
+       (caused by wide flex rows from st.columns / charts)
+       ========================================================= */
+    html, body {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewContainer"] > div,
+    [data-testid="stMain"],
+    [data-testid="stHeader"],
+    [data-testid="stMainBlockContainer"] {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    /* Allow Streamlit columns to wrap instead of forcing overflow */
+    div[data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+    /* When wrapped, keep columns readable instead of ultra-narrow */
+    div[data-testid="column"] {
+        min-width: 320px !important;
+        flex: 1 1 320px !important;
+    }
+
     /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
@@ -40,7 +64,7 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
+    /* ---- Sidebar widget label text ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -59,6 +83,11 @@ st.markdown(
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
+    }
+
+    /* Optional: ensure sidebar itself never creates horizontal scroll */
+    [data-testid="stSidebar"] {
+        overflow-x: hidden !important;
     }
     </style>
     """,
@@ -166,7 +195,7 @@ if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
 # =============================
-# Page header (main canvas stays clean)
+# Page header
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -196,8 +225,6 @@ with st.sidebar:
     )
     st.session_state["pred_choice"] = pred_choice
 
-    # Map UI choice to CSV coding:
-    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
         "Current regime (factual)": 50,
@@ -213,7 +240,6 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
-    # Keep the same “position” across regimes
     pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
     default_index = pos_to_index[st.session_state["freq_position"]]
 
@@ -223,7 +249,6 @@ with st.sidebar:
         index=default_index,
     )
 
-    # Update stored position + set numeric frequency
     if freq_choice.startswith("−25%"):
         st.session_state["freq_position"] = "−25%"
         frequency = float(low)
