@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="centered")
 
 # =============================
 # Data
