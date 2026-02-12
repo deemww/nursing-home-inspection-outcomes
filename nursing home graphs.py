@@ -5,6 +5,34 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
+st.markdown(
+    """
+    <style>
+    /* ---- Gotham font faces ---- */
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
+
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Light.otf") format("opentype"); font-weight: 300; font-style: normal; }
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-LightItalic.otf") format("opentype"); font-weight: 300; font-style: italic; }
+
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Medium.otf") format("opentype"); font-weight: 500; font-style: normal; }
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-MediumItalic.otf") format("opentype"); font-weight: 500; font-style: italic; }
+
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BoldItalic.otf") format("opentype"); font-weight: 700; font-style: italic; }
+
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
+    @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
+
+    /* ---- Apply Gotham everywhere in Streamlit UI ---- */
+    html, body, [data-testid="stAppViewContainer"] * {
+        font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # =============================
 # Data
 # =============================
@@ -76,6 +104,12 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
                 offset=10,
             ),
             padding={"top": 8, "left": 10, "right": 10, "bottom": 18},
+        )
+        .configure(
+            font="Gotham",
+            axis=alt.AxisConfig(labelFont="Gotham", titleFont="Gotham"),
+            title=alt.TitleConfig(font="Gotham"),
+            legend=alt.LegendConfig(labelFont="Gotham", titleFont="Gotham"),
         )
     )
 
