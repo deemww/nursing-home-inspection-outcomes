@@ -1,23 +1,9 @@
+
 import pandas as pd
 import streamlit as st
 import altair as alt
 
 st.set_page_config(layout="wide")
-
-# ---- CSS: prevent horizontal overflow + allow wrapping on narrower screens ----
-st.markdown(
-    """
-    <style>
-      html, body, [data-testid="stAppViewContainer"] { overflow-x: hidden; }
-
-      /* Wrap Streamlit "horizontal blocks" (columns) when space is tight */
-      @media (max-width: 1100px) {
-        div[data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; }
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # =============================
 # Data
@@ -127,7 +113,7 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls
+# Sidebar controls (Idea 4)
 # =============================
 with st.sidebar:
     st.markdown("## Policy controls")
@@ -214,9 +200,9 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
-# ---- FIX: use 2x2 metrics instead of 1x4 to prevent overflow ----
-m1, m2 = st.columns(2)
-with m1:
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
     st.metric(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
@@ -224,7 +210,7 @@ with m1:
     )
     st.caption("per year")
 
-with m2:
+with col2:
     st.metric(
         "Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
@@ -232,8 +218,7 @@ with m2:
     )
     st.caption("per 1,000 inspections")
 
-m3, m4 = st.columns(2)
-with m3:
+with col3:
     st.metric(
         "Information",
         f"{float(row['info_percent']):.1f}%",
@@ -241,7 +226,7 @@ with m3:
     )
     st.caption("of maximum")
 
-with m4:
+with col4:
     st.metric(
         "Total inspections",
         f"{total_inspections:,}",
