@@ -1,3 +1,5 @@
+
+
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -57,34 +59,6 @@ st.markdown(
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
-
-    /* 1) Remove horizontal scrolling in sidebar */
-[data-testid="stSidebar"] {
-  overflow-x: hidden !important;
-}
-
-/* 2) Allow radio labels/options to wrap instead of forcing one line */
-[data-testid="stSidebar"] div[role="radiogroup"] label {
-  white-space: normal !important;
-  align-items: flex-start !important;
-}
-
-[data-testid="stSidebar"] div[role="radiogroup"] label span,
-[data-testid="stSidebar"] div[role="radiogroup"] label p {
-  white-space: normal !important;
-  overflow-wrap: anywhere !important; /* breaks long tokens if needed */
-  word-break: break-word !important;
-}
-
-/* 3) If Streamlit puts the option text in a container that prevents wrapping */
-[data-testid="stSidebar"] .stRadio * {
-  white-space: normal !important;
-}
-
-/* 4) Make widget containers not exceed sidebar width */
-[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-  max-width: 100% !important;
-}
     }
     </style>
     """,
