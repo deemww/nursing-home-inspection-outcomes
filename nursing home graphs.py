@@ -36,8 +36,8 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] label {
-        font-size: 1.4rem !important;
-        font-weight: 500 !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
     }
 
     [data-testid="stSidebar"] div[role="radiogroup"] label {
