@@ -1,15 +1,15 @@
-
-
-
 import pandas as pd
 import streamlit as st
 import altair as alt
 
+# =============================
+# Data
+# =============================
 df = pd.read_csv("figure9_summary_raw.csv")
 
-# -----------------------------
+# =============================
 # Scenario label (Figure 9b col 1)
-# -----------------------------
+# =============================
 def scenario_label(predictability, frequency):
     if predictability == 50:
         if frequency == 0.99:
@@ -35,9 +35,9 @@ def scenario_label(predictability, frequency):
         else:
             return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
 
-# -----------------------------
-# Fixed y-axis limits
-# -----------------------------
+# =============================
+# Fixed y-axis limits (constant across toggles)
+# =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
     "lives_saved_per_1000": (0, float(df["lives_saved_per_1000"].max()) * 1.10),
@@ -65,14 +65,32 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
         )
         .properties(
             height=235,
-            title=alt.TitleParams(text=chart_title, anchor="start", fontSize=14, fontWeight="normal", offset=10),
+            title=alt.TitleParams(
+                text=chart_title,
+                anchor="start",
+                fontSize=14,
+                fontWeight="normal",
+                offset=10,
+            ),
             padding={"top": 8, "left": 10, "right": 10, "bottom": 18},
         )
     )
 
-# -----------------------------
-# Page header
-# -----------------------------
+# =============================
+# Helper: get regime-specific frequency options
+# =============================
+def get_freq_options(predictability_numeric):
+    opts = (
+        df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
+          .sort_values()
+          .tolist()
+    )
+    low, mid, high = sorted(opts)
+    return low, mid, high
+
+# =============================
+# Page header (main canvas stays clean)
+# =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
     "<h1 style='margin-bottom:0.25rem;'>Nursing Home Inspection Policy Outcomes</h1>"
@@ -83,18 +101,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# -----------------------------
-# Policy controls (clean + professional)
-# -----------------------------
-st.markdown("<h2 style='margin-bottom:0.5rem;'>Policy controls</h2>", unsafe_allow_html=True)
+# =============================
+# Sidebar controls (Idea 4)
+# =============================
+with st.sidebar:
+    st.markdown("## Policy controls")
+    st.caption("Discrete counterfactuals from Figure 9b (no interpolation).")
 
-c1, c2 = st.columns(2, vertical_alignment="top")
-
-with c1:
-    st.markdown("<div style='font-weight:600; margin-bottom:0.25rem;'>Inspection timing predictability</div>", unsafe_allow_html=True)
     pred_choice = st.radio(
-        label="",
-        options=[
+        "Inspection timing predictability",
+        [
             "Unpredictable (random)",
             "Current regime (factual)",
             "Perfectly predictable (scheduled)",
@@ -102,28 +118,20 @@ with c1:
         index=1,
     )
 
-# Map to CSV coding:
-# CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
-pred_map = {
-    "Unpredictable (random)": 100,
-    "Current regime (factual)": 50,
-    "Perfectly predictable (scheduled)": 0,
-}
-predictability = pred_map[pred_choice]
+    # Map UI choice to CSV coding:
+    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
+    pred_map = {
+        "Unpredictable (random)": 100,
+        "Current regime (factual)": 50,
+        "Perfectly predictable (scheduled)": 0,
+    }
+    predictability = pred_map[pred_choice]
 
-# Frequency options for chosen regime
-freq_options = (
-    df.loc[df["predictability_numeric"] == predictability, "frequency"]
-      .sort_values()
-      .tolist()
-)
-low, mid, high = sorted(freq_options)
+    low, mid, high = get_freq_options(predictability)
 
-with c2:
-    st.markdown("<div style='font-weight:600; margin-bottom:0.25rem;'>Inspection frequency</div>", unsafe_allow_html=True)
     freq_choice = st.radio(
-        label="",
-        options=[
+        "Inspection frequency",
+        [
             f"−25% ({low:.2f})",
             f"Current ({mid:.2f})",
             f"+25% ({high:.2f})",
@@ -131,26 +139,29 @@ with c2:
         index=1,
     )
 
-freq_map = {
-    f"−25% ({low:.2f})": low,
-    f"Current ({mid:.2f})": mid,
-    f"+25% ({high:.2f})": high,
-}
-frequency = float(freq_map[freq_choice])
+    freq_map = {
+        f"−25% ({low:.2f})": low,
+        f"Current ({mid:.2f})": mid,
+        f"+25% ({high:.2f})": high,
+    }
+    frequency = float(freq_map[freq_choice])
 
-# Selected policy scenario callout
+# =============================
+# Selected scenario (main page)
+# =============================
 scenario = scenario_label(predictability, frequency)
+
 st.markdown(
-    "<div style='text-align:center; margin-top:0.6rem; margin-bottom:0.85rem;'>"
+    "<div style='text-align:center; margin-top:0.4rem; margin-bottom:0.85rem;'>"
     "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
-    f"<div style='font-size:1.55rem; font-weight:700; line-height:1.1;'>{scenario}</div>"
+    f"<div style='font-size:1.65rem; font-weight:800; line-height:1.1;'>{scenario}</div>"
     "</div>",
     unsafe_allow_html=True,
 )
 
-# -----------------------------
+# =============================
 # Selected row (no interpolation)
-# -----------------------------
+# =============================
 row = df[
     (df["predictability_numeric"] == predictability) &
     (df["frequency"] == frequency)
@@ -158,39 +169,53 @@ row = df[
 
 total_inspections = int(float(frequency) * 15615)
 
-# -----------------------------
-# Policy outcomes
-# -----------------------------
+# =============================
+# Policy outcomes (boxes + plots)
+# =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_allow_html=True)
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
+# Metric boxes
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("Lives saved", f"{float(row['lives_saved_annually']):.1f}",
-              help="Annual reduction in patient deaths relative to no inspections")
+    st.metric(
+        "Lives saved",
+        f"{float(row['lives_saved_annually']):.1f}",
+        help="Annual reduction in patient deaths relative to no inspections",
+    )
     st.caption("per year")
 
 with col2:
-    st.metric("Efficiency", f"{float(row['lives_saved_per_1000']):.1f}",
-              help="Lives saved per 1,000 inspections")
+    st.metric(
+        "Efficiency",
+        f"{float(row['lives_saved_per_1000']):.1f}",
+        help="Lives saved per 1,000 inspections",
+    )
     st.caption("per 1,000 inspections")
 
 with col3:
-    st.metric("Information", f"{float(row['info_percent']):.1f}%",
-              help="How much regulators learn about facility quality")
+    st.metric(
+        "Information",
+        f"{float(row['info_percent']):.1f}%",
+        help="How much regulators learn about facility quality",
+    )
     st.caption("of maximum")
 
 with col4:
-    st.metric("Total inspections", f"{total_inspections:,}",
-              help="Annual inspections nationwide (frequency × 15,615 facilities)")
+    st.metric(
+        "Total inspections",
+        f"{total_inspections:,}",
+        help="Annual inspections nationwide (frequency × 15,615 facilities)",
+    )
     st.caption("inspections per year")
 
 st.divider()
 
+# Plots (fixed y-axes across toggles)
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
