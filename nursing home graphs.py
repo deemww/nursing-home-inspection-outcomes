@@ -28,11 +28,27 @@ st.markdown(
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
-    
+
+    /* ---- MAKE SIDEBAR TEXT BIGGER ---- */
+    [data-testid="stSidebar"] h2 {
+        font-size: 1.6rem !important;
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stSidebar"] label {
+        font-size: 1.15rem !important;
+        font-weight: 500 !important;
+    }
+
+    [data-testid="stSidebar"] div[role="radiogroup"] label {
+        font-size: 1.15rem !important;
+        line-height: 1.5 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 
 # =============================
 # Data
