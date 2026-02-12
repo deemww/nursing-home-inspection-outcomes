@@ -4,6 +4,9 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
+# =============================
+# Global CSS (fonts + sidebar sizing)
+# =============================
 st.markdown(
     """
     <style>
@@ -28,26 +31,37 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* ---- MAKE SIDEBAR TEXT BIGGER ---- */
-    [data-testid="stSidebar"] h2 {
+    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
-    [data-testid="stSidebar"] label {
+    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 2rem !important;
         font-weight: 700 !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.25rem !important;
     }
 
-    [data-testid="stSidebar"] div[role="radiogroup"] label {
+    /* ---- Sidebar radio option text ---- */
+    [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
+    }
+
+    /* Fallback for some Streamlit/BaseWeb versions (radio text sometimes in <p>) */
+    [data-testid="stSidebar"] div[role="radiogroup"] label p {
+        font-size: 1.15rem !important;
+        line-height: 1.5 !important;
+        margin: 0 !important;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
 
 # =============================
 # Data
@@ -163,7 +177,7 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls (Idea 4)
+# Sidebar controls
 # =============================
 with st.sidebar:
     st.markdown("## Policy Controls")
