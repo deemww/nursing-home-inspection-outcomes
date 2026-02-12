@@ -36,7 +36,7 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] label {
-        font-size: 1.15rem !important;
+        font-size: 1.4rem !important;
         font-weight: 500 !important;
     }
 
