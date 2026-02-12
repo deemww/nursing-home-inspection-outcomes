@@ -1,4 +1,3 @@
-
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -25,35 +24,9 @@ st.markdown(
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
     /* ---- Apply Gotham everywhere in Streamlit UI ---- */
-    html, body, [data-testid="stAppViewContainer"] {
-    font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-}
-
-/* Apply Gotham to normal text elements */
-[data-testid="stAppViewContainer"] p,
-[data-testid="stAppViewContainer"] span,
-[data-testid="stAppViewContainer"] div,
-[data-testid="stAppViewContainer"] label,
-[data-testid="stAppViewContainer"] h1,
-[data-testid="stAppViewContainer"] h2,
-[data-testid="stAppViewContainer"] h3,
-[data-testid="stAppViewContainer"] h4,
-[data-testid="stAppViewContainer"] h5,
-[data-testid="stAppViewContainer"] h6 {
-    font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-}
-
-/* Restore Streamlit/Material icon fonts so ligature text becomes icons again */
-[data-testid="stIconMaterial"],
-[data-testid="stIconMaterial"] span,
-span.material-icons,
-span.material-symbols-outlined,
-span.material-symbols-rounded,
-span.material-symbols-sharp {
-    font-family: "Material Icons" !important;
-    font-weight: normal !important;
-    font-style: normal !important;
-}
+    html, body, [data-testid="stAppViewContainer"] * {
+        font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
 
     /* ---- MAKE SIDEBAR TEXT BIGGER ---- */
     [data-testid="stSidebar"] h2 {
