@@ -4,6 +4,79 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
+st.markdown(
+    """
+    <style>
+    /* -------- Global typography -------- */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                     Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* -------- Sidebar: policy controls -------- */
+    section[data-testid="stSidebar"] {
+        padding-top: 1.5rem;
+    }
+
+    section[data-testid="stSidebar"] h2 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    section[data-testid="stSidebar"] label {
+        font-weight: 500;
+        color: #2e2e2e;
+    }
+
+    /* Tighten radio button spacing */
+    section[data-testid="stSidebar"] .stRadio > div {
+        gap: 0.25rem;
+    }
+
+    section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] {
+        margin-top: 0.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* -------- Captions (editorial tone) -------- */
+    .stCaption {
+        color: #8b8b8b;
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+
+    /* -------- Metrics -------- */
+    div[data-testid="metric-container"] {
+        padding: 0.75rem 0.75rem;
+        border-radius: 6px;
+        background-color: #fafafa;
+    }
+
+    /* Metric labels */
+    div[data-testid="metric-container"] label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #555;
+    }
+
+    /* Metric values */
+    div[data-testid="metric-container"] div {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #111;
+    }
+
+    /* -------- Section headers -------- */
+    h2 {
+        font-weight: 600;
+        margin-top: 1.25rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # =============================
 # Data
 # =============================
