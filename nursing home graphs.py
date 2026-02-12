@@ -10,7 +10,7 @@ df = pd.read_csv("figure9_summary_raw.csv")
 # Scenario label (Figure 9b col 1)
 # -----------------------------
 def scenario_label(predictability, frequency):
-    if predictability == 50:  # Factual / current regime
+    if predictability == 50:
         if frequency == 0.99:
             return "Current Regime"
         elif frequency > 0.99:
@@ -18,7 +18,7 @@ def scenario_label(predictability, frequency):
         else:
             return "Decrease Frequency (↓ 25%)"
 
-    if predictability == 100:  # Unpredictable / random
+    if predictability == 100:
         if frequency == 0.99:
             return "Unpredictable"
         elif frequency > 0.99:
@@ -26,7 +26,7 @@ def scenario_label(predictability, frequency):
         else:
             return "Unpredictable; Decreased Frequency (↓ 25%)"
 
-    if predictability == 0:  # Perfectly predictable / scheduled
+    if predictability == 0:
         if frequency == 0.98:
             return "Perfectly Predictable"
         elif frequency > 0.98:
@@ -83,11 +83,9 @@ def get_freq_options(predictability_numeric):
 # -----------------------------
 if "pred_choice" not in st.session_state:
     st.session_state["pred_choice"] = "Current regime (factual)"
-if "freq_choice" not in st.session_state:
-    st.session_state["freq_choice"] = "Current"
 
 # -----------------------------
-# Sidebar controls (professional + conventional)
+# Sidebar controls (SAME SIDE)
 # -----------------------------
 with st.sidebar:
     st.markdown("## Policy controls")
@@ -126,41 +124,28 @@ with st.sidebar:
     )
 
     if freq_choice.startswith("−25%"):
-        st.session_state["freq_choice"] = "−25%"
         frequency = float(low)
     elif freq_choice.startswith("Current"):
-        st.session_state["freq_choice"] = "Current"
         frequency = float(mid)
     else:
-        st.session_state["freq_choice"] = "+25%"
         frequency = float(high)
 
     st.caption(f"−25% = {low:.2f} • Current = {mid:.2f} • +25% = {high:.2f}")
 
 # -----------------------------
-# Main header
+# Main header (LEFT-ALIGNED to avoid “floating center” look)
 # -----------------------------
-st.markdown(
-    "<div style='text-align:center; margin-top:0.25rem;'>"
-    "<h1 style='margin-bottom:0.25rem;'>Nursing Home Inspection Policy Outcomes</h1>"
-    "<p style='font-size:1.05rem; color:#8b8b8b; margin-top:0;'>"
+st.title("Nursing Home Inspection Policy Outcomes")
+st.caption(
     "Explore how inspection frequency and predictability affect lives saved, efficiency, and regulatory information."
-    "</p>"
-    "</div>",
-    unsafe_allow_html=True,
 )
 
 # -----------------------------
-# Selected scenario title (dynamic)
+# Selected scenario title (dynamic, LEFT-ALIGNED)
 # -----------------------------
 scenario = scenario_label(predictability, frequency)
-st.markdown(
-    "<div style='text-align:center; margin-top:0.4rem; margin-bottom:0.85rem;'>"
-    "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
-    f"<div style='font-size:1.65rem; font-weight:800; line-height:1.1;'>{scenario}</div>"
-    "</div>",
-    unsafe_allow_html=True,
-)
+st.caption("Selected policy scenario")
+st.subheader(scenario)
 
 # -----------------------------
 # Selected row (no interpolation)
@@ -175,13 +160,12 @@ total_inspections = int(float(frequency) * 15615)
 # -----------------------------
 # Policy outcomes
 # -----------------------------
-st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_allow_html=True)
+st.header("Policy outcomes")
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
-# Metric boxes
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -218,7 +202,6 @@ with col4:
 
 st.divider()
 
-# Plots (fixed y-axes across toggles)
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
