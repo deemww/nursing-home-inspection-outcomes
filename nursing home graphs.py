@@ -167,7 +167,7 @@ st.markdown(
 # Sidebar controls (Idea 4)
 # =============================
 with st.sidebar:
-    st.markdown("## Policy controls")
+    st.markdown("## Policy Controls")
 
     pred_options = [
         "Unpredictable (random)",
