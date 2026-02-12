@@ -6,6 +6,7 @@ st.set_page_config(layout="wide")
 
 # =============================
 # Global CSS (fonts + sidebar sizing + NO horizontal page scroll)
+# Key fix: REMOVE min-width:320px on columns (that forces overflow)
 # =============================
 st.markdown(
     """
@@ -29,11 +30,11 @@ st.markdown(
     /* ---- Apply Gotham everywhere in Streamlit UI ---- */
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        box-sizing: border-box !important;
     }
 
     /* =========================================================
-       FIX: prevent horizontal scrolling of the whole page
-       (caused by wide flex rows from st.columns / charts)
+       HARD STOP: prevent horizontal scrolling of the whole page
        ========================================================= */
     html, body {
         max-width: 100vw !important;
@@ -47,17 +48,21 @@ st.markdown(
         max-width: 100vw !important;
         overflow-x: hidden !important;
     }
-    /* Allow Streamlit columns to wrap instead of forcing overflow */
+
+    /* Allow Streamlit columns to wrap if needed */
     div[data-testid="stHorizontalBlock"] {
         flex-wrap: wrap !important;
-    }
-    /* When wrapped, keep columns readable instead of ultra-narrow */
-    div[data-testid="column"] {
-        min-width: 320px !important;
-        flex: 1 1 320px !important;
+        max-width: 100% !important;
     }
 
-    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
+    /* CRITICAL: do NOT force a big min-width for columns (this caused overflow) */
+    div[data-testid="column"] {
+        min-width: 0 !important;      /* allows shrinking */
+        max-width: 100% !important;
+        flex: 1 1 0 !important;       /* shrink/grow without forcing overflow */
+    }
+
+    /* ---- Sidebar section header ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
@@ -76,16 +81,22 @@ st.markdown(
     [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
     }
 
-    /* Fallback for some Streamlit/BaseWeb versions (radio text sometimes in <p>) */
+    /* Fallback for some Streamlit/BaseWeb versions */
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
     }
 
-    /* Optional: ensure sidebar itself never creates horizontal scroll */
+    /* Ensure sidebar itself never creates horizontal scroll */
     [data-testid="stSidebar"] {
         overflow-x: hidden !important;
     }
@@ -180,8 +191,8 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-          .sort_values()
-          .tolist()
+        .sort_values()
+        .tolist()
     )
     low, mid, high = sorted(opts)
     return low, mid, high
@@ -291,6 +302,7 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
+# Keep 4 metrics, but allow them to shrink/wrap without forcing overflow
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
