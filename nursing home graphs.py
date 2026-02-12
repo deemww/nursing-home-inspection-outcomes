@@ -1,3 +1,5 @@
+
+
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -5,8 +7,7 @@ import altair as alt
 st.set_page_config(layout="wide")
 
 # =============================
-# Global CSS (fonts + sidebar sizing + NO horizontal page scroll)
-# Key fix: REMOVE min-width:320px on columns (that forces overflow)
+# Global CSS (fonts + sidebar sizing)
 # =============================
 st.markdown(
     """
@@ -30,46 +31,16 @@ st.markdown(
     /* ---- Apply Gotham everywhere in Streamlit UI ---- */
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-        box-sizing: border-box !important;
     }
 
-    /* =========================================================
-       HARD STOP: prevent horizontal scrolling of the whole page
-       ========================================================= */
-    html, body {
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-    }
-    [data-testid="stAppViewContainer"],
-    [data-testid="stAppViewContainer"] > div,
-    [data-testid="stMain"],
-    [data-testid="stHeader"],
-    [data-testid="stMainBlockContainer"] {
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-    }
-
-    /* Allow Streamlit columns to wrap if needed */
-    div[data-testid="stHorizontalBlock"] {
-        flex-wrap: wrap !important;
-        max-width: 100% !important;
-    }
-
-    /* CRITICAL: do NOT force a big min-width for columns (this caused overflow) */
-    div[data-testid="column"] {
-        min-width: 0 !important;      /* allows shrinking */
-        max-width: 100% !important;
-        flex: 1 1 0 !important;       /* shrink/grow without forcing overflow */
-    }
-
-    /* ---- Sidebar section header ---- */
+    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
-    /* ---- Sidebar widget label text ---- */
+    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -81,24 +52,13 @@ st.markdown(
     [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
-        white-space: normal !important;
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
     }
 
-    /* Fallback for some Streamlit/BaseWeb versions */
+    /* Fallback for some Streamlit/BaseWeb versions (radio text sometimes in <p>) */
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
-        white-space: normal !important;
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
-    }
-
-    /* Ensure sidebar itself never creates horizontal scroll */
-    [data-testid="stSidebar"] {
-        overflow-x: hidden !important;
     }
     </style>
     """,
@@ -191,8 +151,8 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-        .sort_values()
-        .tolist()
+          .sort_values()
+          .tolist()
     )
     low, mid, high = sorted(opts)
     return low, mid, high
@@ -206,7 +166,7 @@ if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
 # =============================
-# Page header
+# Page header (main canvas stays clean)
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -236,6 +196,8 @@ with st.sidebar:
     )
     st.session_state["pred_choice"] = pred_choice
 
+    # Map UI choice to CSV coding:
+    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
         "Current regime (factual)": 50,
@@ -251,6 +213,7 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
+    # Keep the same “position” across regimes
     pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
     default_index = pos_to_index[st.session_state["freq_position"]]
 
@@ -260,6 +223,7 @@ with st.sidebar:
         index=default_index,
     )
 
+    # Update stored position + set numeric frequency
     if freq_choice.startswith("−25%"):
         st.session_state["freq_position"] = "−25%"
         frequency = float(low)
@@ -302,7 +266,6 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
-# Keep 4 metrics, but allow them to shrink/wrap without forcing overflow
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
