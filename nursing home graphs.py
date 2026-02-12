@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
+st.set_page_config(layout="wide")
+
 # =============================
 # Data
 # =============================
@@ -89,6 +91,14 @@ def get_freq_options(predictability_numeric):
     return low, mid, high
 
 # =============================
+# Session defaults (prevents radios from “jumping”)
+# =============================
+if "pred_choice" not in st.session_state:
+    st.session_state["pred_choice"] = "Current regime (factual)"
+if "freq_position" not in st.session_state:
+    st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
+
+# =============================
 # Page header (main canvas stays clean)
 # =============================
 st.markdown(
@@ -108,15 +118,17 @@ with st.sidebar:
     st.markdown("## Policy controls")
     st.caption("Discrete counterfactuals from Figure 9b (no interpolation).")
 
+    pred_options = [
+        "Unpredictable (random)",
+        "Current regime (factual)",
+        "Perfectly predictable (scheduled)",
+    ]
     pred_choice = st.radio(
         "Inspection timing predictability",
-        [
-            "Unpredictable (random)",
-            "Current regime (factual)",
-            "Perfectly predictable (scheduled)",
-        ],
-        index=1,
+        pred_options,
+        index=pred_options.index(st.session_state["pred_choice"]),
     )
+    st.session_state["pred_choice"] = pred_choice
 
     # Map UI choice to CSV coding:
     # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
@@ -129,22 +141,32 @@ with st.sidebar:
 
     low, mid, high = get_freq_options(predictability)
 
+    freq_options = [
+        f"−25% ({low:.2f})",
+        f"Current ({mid:.2f})",
+        f"+25% ({high:.2f})",
+    ]
+
+    # Keep the same “position” across regimes
+    pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
+    default_index = pos_to_index[st.session_state["freq_position"]]
+
     freq_choice = st.radio(
         "Inspection frequency",
-        [
-            f"−25% ({low:.2f})",
-            f"Current ({mid:.2f})",
-            f"+25% ({high:.2f})",
-        ],
-        index=1,
+        freq_options,
+        index=default_index,
     )
 
-    freq_map = {
-        f"−25% ({low:.2f})": low,
-        f"Current ({mid:.2f})": mid,
-        f"+25% ({high:.2f})": high,
-    }
-    frequency = float(freq_map[freq_choice])
+    # Update stored position + set numeric frequency
+    if freq_choice.startswith("−25%"):
+        st.session_state["freq_position"] = "−25%"
+        frequency = float(low)
+    elif freq_choice.startswith("Current"):
+        st.session_state["freq_position"] = "Current"
+        frequency = float(mid)
+    else:
+        st.session_state["freq_position"] = "+25%"
+        frequency = float(high)
 
 # =============================
 # Selected scenario (main page)
@@ -178,7 +200,6 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
-# Metric boxes
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -215,7 +236,6 @@ with col4:
 
 st.divider()
 
-# Plots (fixed y-axes across toggles)
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
