@@ -1,13 +1,12 @@
-
 import pandas as pd
 import streamlit as st
 import altair as alt
 
 df = pd.read_csv("figure9_summary_raw.csv")
 
-# -----------------------------
+# =============================
 # Scenario label (Figure 9b col 1)
-# -----------------------------
+# =============================
 def scenario_label(predictability, frequency):
     if predictability == 50:
         if frequency == 0.99:
@@ -33,9 +32,9 @@ def scenario_label(predictability, frequency):
         else:
             return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
 
-# -----------------------------
-# Fixed y-axis limits
-# -----------------------------
+# =============================
+# Fixed y-axis limits (constant across toggles)
+# =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
     "lives_saved_per_1000": (0, float(df["lives_saved_per_1000"].max()) * 1.10),
@@ -68,9 +67,63 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
         )
     )
 
-# -----------------------------
+# =============================
+# UI helpers
+# =============================
+REGIME_OPTIONS = {
+    "Unpredictable (random)": 100,
+    "Current regime (factual)": 50,
+    "Perfectly predictable (scheduled)": 0,
+}
+
+def regime_mid_frequency(predictability):
+    opts = (
+        df.loc[df["predictability_numeric"] == predictability, "frequency"]
+        .sort_values()
+        .tolist()
+    )
+    low, mid, high = sorted(opts)
+    return low, mid, high
+
+def card_html(title, subtitle, selected=False):
+    # Dark-theme friendly card styling; no fragile widget CSS overrides
+    bg = "rgba(255,255,255,0.06)" if selected else "rgba(255,255,255,0.03)"
+    border = "1px solid rgba(255,255,255,0.22)" if selected else "1px solid rgba(255,255,255,0.10)"
+    badge = (
+        "<span style='font-size:0.75rem; padding:0.15rem 0.45rem; border-radius:999px; "
+        "background:rgba(128,0,0,0.35); border:1px solid rgba(128,0,0,0.65);'>Selected</span>"
+        if selected else ""
+    )
+
+    return f"""
+    <div style="
+        background:{bg};
+        border:{border};
+        border-radius:14px;
+        padding:14px 14px 12px 14px;
+        min-height:110px;
+    ">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+        <div style="font-weight:700; font-size:1.05rem; line-height:1.2;">{title}</div>
+        {badge}
+      </div>
+      <div style="margin-top:6px; color:rgba(255,255,255,0.72); font-size:0.95rem; line-height:1.25;">
+        {subtitle}
+      </div>
+    </div>
+    """
+
+# =============================
+# Defaults
+# =============================
+if "regime_label" not in st.session_state:
+    st.session_state["regime_label"] = "Current regime (factual)"
+if "freq_choice" not in st.session_state:
+    st.session_state["freq_choice"] = "Current"
+
+# =============================
 # Page header
-# -----------------------------
+# =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
     "<h1 style='margin-bottom:0.25rem;'>Nursing Home Inspection Policy Outcomes</h1>"
@@ -81,74 +134,69 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# -----------------------------
-# Policy controls (clean + professional)
-# -----------------------------
-st.markdown("<h2 style='margin-bottom:0.5rem;'>Policy controls</h2>", unsafe_allow_html=True)
+# =============================
+# DESIGN DIRECTION 1:
+# "Policy scenario cards" (primary) + frequency modifier (secondary)
+# =============================
+st.markdown("<h2 style='margin-bottom:0.4rem;'>Policy scenario</h2>", unsafe_allow_html=True)
+st.caption("Select the inspection timing regime (as in Figure 9b), then adjust inspection frequency.")
 
-c1, c2 = st.columns(2, vertical_alignment="top")
+# --- Cards row
+cols = st.columns(3, vertical_alignment="top")
+for i, label in enumerate(REGIME_OPTIONS.keys()):
+    pred_val = REGIME_OPTIONS[label]
+    low, mid, high = regime_mid_frequency(pred_val)
 
-with c1:
-    st.markdown("<div style='font-weight:600; margin-bottom:0.25rem;'>Inspection timing predictability</div>", unsafe_allow_html=True)
-    pred_choice = st.radio(
-        label="",
-        options=[
-            "Unpredictable (random)",
-            "Current regime (factual)",
-            "Perfectly predictable (scheduled)",
-        ],
-        index=1,
-    )
+    # Card text: regime explanation + the “current” frequency for that regime
+    if label.startswith("Unpredictable"):
+        subtitle = f"Random inspection timing<br><span style='opacity:0.95;'>Baseline frequency: {mid:.2f} inspections per facility-year</span>"
+    elif label.startswith("Current"):
+        subtitle = f"Factual (current) timing regime<br><span style='opacity:0.95;'>Baseline frequency: {mid:.2f} inspections per facility-year</span>"
+    else:
+        subtitle = f"Scheduled (perfectly predictable) timing<br><span style='opacity:0.95;'>Baseline frequency: {mid:.2f} inspections per facility-year</span>"
 
-# Map to CSV coding:
-# CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
-pred_map = {
-    "Unpredictable (random)": 100,
-    "Current regime (factual)": 50,
-    "Perfectly predictable (scheduled)": 0,
-}
-predictability = pred_map[pred_choice]
+    selected = (st.session_state["regime_label"] == label)
 
-# Frequency options for chosen regime
-freq_options = (
-    df.loc[df["predictability_numeric"] == predictability, "frequency"]
-      .sort_values()
-      .tolist()
+    with cols[i]:
+        st.markdown(card_html(label, subtitle, selected=selected), unsafe_allow_html=True)
+        # Action row
+        if not selected:
+            if st.button("Select", key=f"select_{i}", use_container_width=True):
+                st.session_state["regime_label"] = label
+                st.session_state["freq_choice"] = "Current"
+        else:
+            st.caption(" ")
+
+# --- Secondary control: frequency modifier
+predictability = REGIME_OPTIONS[st.session_state["regime_label"]]
+low, mid, high = regime_mid_frequency(predictability)
+
+st.markdown("<h3 style='margin-top:0.8rem; margin-bottom:0.2rem;'>Inspection frequency</h3>", unsafe_allow_html=True)
+freq_choice = st.radio(
+    label="",
+    options=["−25%", "Current", "+25%"],
+    index=["−25%", "Current", "+25%"].index(st.session_state["freq_choice"]),
+    horizontal=True,
 )
-low, mid, high = sorted(freq_options)
+st.session_state["freq_choice"] = freq_choice
+st.caption(f"−25% = {low:.2f} • Current = {mid:.2f} • +25% = {high:.2f} inspections per facility-year")
 
-with c2:
-    st.markdown("<div style='font-weight:600; margin-bottom:0.25rem;'>Inspection frequency</div>", unsafe_allow_html=True)
-    freq_choice = st.radio(
-        label="",
-        options=[
-            f"−25% ({low:.2f})",
-            f"Current ({mid:.2f})",
-            f"+25% ({high:.2f})",
-        ],
-        index=1,
-    )
-
-freq_map = {
-    f"−25% ({low:.2f})": low,
-    f"Current ({mid:.2f})": mid,
-    f"+25% ({high:.2f})": high,
-}
+freq_map = {"−25%": low, "Current": mid, "+25%": high}
 frequency = float(freq_map[freq_choice])
 
-# Selected policy scenario callout
+# --- Scenario callout (centered)
 scenario = scenario_label(predictability, frequency)
 st.markdown(
     "<div style='text-align:center; margin-top:0.6rem; margin-bottom:0.85rem;'>"
     "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
-    f"<div style='font-size:1.55rem; font-weight:700; line-height:1.1;'>{scenario}</div>"
+    f"<div style='font-size:1.55rem; font-weight:800; line-height:1.1;'>{scenario}</div>"
     "</div>",
     unsafe_allow_html=True,
 )
 
-# -----------------------------
+# =============================
 # Selected row (no interpolation)
-# -----------------------------
+# =============================
 row = df[
     (df["predictability_numeric"] == predictability) &
     (df["frequency"] == frequency)
@@ -156,9 +204,9 @@ row = df[
 
 total_inspections = int(float(frequency) * 15615)
 
-# -----------------------------
+# =============================
 # Policy outcomes
-# -----------------------------
+# =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_allow_html=True)
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
@@ -168,23 +216,35 @@ st.caption(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("Lives saved", f"{float(row['lives_saved_annually']):.1f}",
-              help="Annual reduction in patient deaths relative to no inspections")
+    st.metric(
+        "Lives saved",
+        f"{float(row['lives_saved_annually']):.1f}",
+        help="Annual reduction in patient deaths relative to no inspections",
+    )
     st.caption("per year")
 
 with col2:
-    st.metric("Efficiency", f"{float(row['lives_saved_per_1000']):.1f}",
-              help="Lives saved per 1,000 inspections")
+    st.metric(
+        "Efficiency",
+        f"{float(row['lives_saved_per_1000']):.1f}",
+        help="Lives saved per 1,000 inspections",
+    )
     st.caption("per 1,000 inspections")
 
 with col3:
-    st.metric("Information", f"{float(row['info_percent']):.1f}%",
-              help="How much regulators learn about facility quality")
+    st.metric(
+        "Information",
+        f"{float(row['info_percent']):.1f}%",
+        help="How much regulators learn about facility quality",
+    )
     st.caption("of maximum")
 
 with col4:
-    st.metric("Total inspections", f"{total_inspections:,}",
-              help="Annual inspections nationwide (frequency × 15,615 facilities)")
+    st.metric(
+        "Total inspections",
+        f"{total_inspections:,}",
+        help="Annual inspections nationwide (frequency × 15,615 facilities)",
+    )
     st.caption("inspections per year")
 
 st.divider()
