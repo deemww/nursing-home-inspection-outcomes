@@ -1,81 +1,8 @@
+
+
 import pandas as pd
 import streamlit as st
 import altair as alt
-
-st.set_page_config(layout="wide")
-
-st.markdown(
-    """
-    <style>
-    /* -------- Global typography -------- */
-    html, body, [class*="css"] {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                     Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    /* -------- Sidebar: policy controls -------- */
-    section[data-testid="stSidebar"] {
-        padding-top: 1.5rem;
-    }
-
-    section[data-testid="stSidebar"] h2 {
-        font-size: 1.15rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    section[data-testid="stSidebar"] label {
-        font-weight: 500;
-        color: #2e2e2e;
-    }
-
-    /* Tighten radio button spacing */
-    section[data-testid="stSidebar"] .stRadio > div {
-        gap: 0.25rem;
-    }
-
-    section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] {
-        margin-top: 0.25rem;
-        margin-bottom: 0.75rem;
-    }
-
-    /* -------- Captions (editorial tone) -------- */
-    .stCaption {
-        color: #8b8b8b;
-        font-size: 0.85rem;
-        line-height: 1.3;
-    }
-
-    /* -------- Metrics -------- */
-    div[data-testid="metric-container"] {
-        padding: 0.75rem 0.75rem;
-        border-radius: 6px;
-        background-color: #fafafa;
-    }
-
-    /* Metric labels */
-    div[data-testid="metric-container"] label {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #555;
-    }
-
-    /* Metric values */
-    div[data-testid="metric-container"] div {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #111;
-    }
-
-    /* -------- Section headers -------- */
-    h2 {
-        font-weight: 600;
-        margin-top: 1.25rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # =============================
 # Data
@@ -124,22 +51,12 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
     d = pd.DataFrame({"metric": [x_label], "value": [float(value)]})
     return (
         alt.Chart(d)
-        .mark_bar(
-            color="#800000",
-            size=60,
-            cornerRadiusTopLeft=3,
-            cornerRadiusTopRight=3,
-        )
+        .mark_bar(color="#800000", size=60, cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
         .encode(
             x=alt.X(
                 "metric:N",
                 title=None,
-                axis=alt.Axis(
-                    labelAngle=0,
-                    labelLimit=1000,
-                    labelPadding=10,
-                    ticks=False,
-                ),
+                axis=alt.Axis(labelAngle=0, labelLimit=1000, labelPadding=10, ticks=False),
             ),
             y=alt.Y(
                 "value:Q",
@@ -167,19 +84,11 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-        .sort_values()
-        .tolist()
+          .sort_values()
+          .tolist()
     )
     low, mid, high = sorted(opts)
     return low, mid, high
-
-# =============================
-# Session defaults (persist user selections)
-# =============================
-if "pred_choice" not in st.session_state:
-    st.session_state["pred_choice"] = "Current regime (factual)"
-if "freq_choice" not in st.session_state:
-    st.session_state["freq_choice"] = "Current"
 
 # =============================
 # Page header (main canvas stays clean)
@@ -201,19 +110,15 @@ with st.sidebar:
     st.markdown("## Policy controls")
     st.caption("Discrete counterfactuals from Figure 9b (no interpolation).")
 
-    pred_options = [
-        "Unpredictable (random)",
-        "Current regime (factual)",
-        "Perfectly predictable (scheduled)",
-    ]
-
     pred_choice = st.radio(
         "Inspection timing predictability",
-        pred_options,
-        index=pred_options.index(st.session_state["pred_choice"]),
-        key="pred_radio",
+        [
+            "Unpredictable (random)",
+            "Current regime (factual)",
+            "Perfectly predictable (scheduled)",
+        ],
+        index=1,
     )
-    st.session_state["pred_choice"] = pred_choice
 
     # Map UI choice to CSV coding:
     # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
@@ -226,34 +131,28 @@ with st.sidebar:
 
     low, mid, high = get_freq_options(predictability)
 
-    # Frequency options depend on predictability regime
-    freq_options = [f"−25% ({low:.2f})", f"Current ({mid:.2f})", f"+25% ({high:.2f})"]
-
-    # Keep the user's last “position” (−25 / Current / +25) when switching regimes
-    default_idx = {"−25%": 0, "Current": 1, "+25%": 2}[st.session_state["freq_choice"]]
-
     freq_choice = st.radio(
         "Inspection frequency",
-        freq_options,
-        index=default_idx,
-        key="freq_radio",
+        [
+            f"−25% ({low:.2f})",
+            f"Current ({mid:.2f})",
+            f"+25% ({high:.2f})",
+        ],
+        index=1,
     )
 
-    # Store simplified state
-    if freq_choice.startswith("−25%"):
-        st.session_state["freq_choice"] = "−25%"
-        frequency = float(low)
-    elif freq_choice.startswith("Current"):
-        st.session_state["freq_choice"] = "Current"
-        frequency = float(mid)
-    else:
-        st.session_state["freq_choice"] = "+25%"
-        frequency = float(high)
+    freq_map = {
+        f"−25% ({low:.2f})": low,
+        f"Current ({mid:.2f})": mid,
+        f"+25% ({high:.2f})": high,
+    }
+    frequency = float(freq_map[freq_choice])
 
 # =============================
 # Selected scenario (main page)
 # =============================
 scenario = scenario_label(predictability, frequency)
+
 st.markdown(
     "<div style='text-align:center; margin-top:0.4rem; margin-bottom:0.85rem;'>"
     "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
@@ -266,8 +165,8 @@ st.markdown(
 # Selected row (no interpolation)
 # =============================
 row = df[
-    (df["predictability_numeric"] == predictability)
-    & (df["frequency"] == frequency)
+    (df["predictability_numeric"] == predictability) &
+    (df["frequency"] == frequency)
 ].iloc[0]
 
 total_inspections = int(float(frequency) * 15615)
@@ -281,6 +180,7 @@ st.caption(
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
 
+# Metric boxes
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -317,6 +217,7 @@ with col4:
 
 st.divider()
 
+# Plots (fixed y-axes across toggles)
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
