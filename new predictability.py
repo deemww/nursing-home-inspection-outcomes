@@ -1,13 +1,24 @@
 # app.py
+# Streamlit app: paper-accurate mechanism (Figure 10a/10b/12a) with a zero-background UI.
+# Main view = “100 weeks as dots” (intuitive).
+# “Paper check” view = effort path + distribution of weeks-since + effort distribution (matches paper objects).
+
 import numpy as np
 import pandas as pd
 import streamlit as st
 import altair as alt
 
 # -----------------------------
-# Page setup
+# Page config
 # -----------------------------
 st.set_page_config(page_title="Why Predictability Matters", layout="wide")
+
+# -----------------------------
+# Constants from paper text
+# -----------------------------
+CYCLE_WEEKS = 53          # ~ one inspection every 53 weeks (paper: ~0.99/year ≈ 53 weeks)
+REVISIT_WEEKS = 20        # paper discusses revisit window and robustness to eliminating w<=20
+DOTS_PER_REGIME = 100     # intuitive “100-week” view
 
 # -----------------------------
 # Helpers
@@ -15,337 +26,363 @@ st.set_page_config(page_title="Why Predictability Matters", layout="wide")
 def logistic(z: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-z))
 
-def time_share_from_hazard(h: np.ndarray) -> np.ndarray:
+def expected_cycle_length_from_hazard(h: np.ndarray, horizon: int = 400) -> float:
     """
-    Convert weekly inspection chance into 'share of time spent' at each week since inspection.
-    (No jargon shown to users; this is just internal plumbing.)
+    Approx E[L] = sum_{w>=0} S(w), where S(w)=P(L > w).
+    For discrete-time inspection hazard h(w)=P(inspection occurs at week w | reached w).
     """
-    S = np.ones_like(h, dtype=float)
-    for w in range(1, len(h)):
-        S[w] = S[w - 1] * (1 - h[w - 1])
-    pi = S / S.sum()
+    S = 1.0
+    EL = 0.0
+    for w in range(horizon):
+        EL += S
+        hw = float(h[w] if w < len(h) else h[-1])  # extend with last value
+        S *= (1.0 - hw)
+        if S < 1e-10:
+            break
+    return EL
+
+def scale_hazard_to_target_length(shape: np.ndarray, target_len: float) -> np.ndarray:
+    """
+    Takes a nonnegative hazard 'shape' (not necessarily in [0,1]) and finds a scalar m
+    such that hazard h = clip(m*shape, 0, 0.999) yields expected cycle length ~ target_len.
+    Uses monotone bisection on m.
+    """
+    shape = np.asarray(shape, dtype=float)
+    shape = np.clip(shape, 0.0, None)
+
+    # If shape is all zeros, can't scale; fall back to flat hazard
+    if float(shape.max()) == 0.0:
+        return np.full_like(shape, 1.0 / target_len, dtype=float)
+
+    lo, hi = 0.0, 50.0
+    for _ in range(60):
+        mid = (lo + hi) / 2.0
+        h_mid = np.clip(mid * shape, 0.0, 0.999)
+        EL = expected_cycle_length_from_hazard(h_mid)
+        if EL > target_len:
+            lo = mid  # hazard too small -> cycles too long -> increase m
+        else:
+            hi = mid
+    return np.clip(hi * shape, 0.0, 0.999)
+
+def time_share_from_hazard(h: np.ndarray, horizon: int = 400) -> np.ndarray:
+    """
+    Long-run share of time spent at each week-since-inspection w is proportional to survival S(w).
+    pi(w) ∝ S(w). (This is exactly the object behind Figure 10a/10b/12a overlays.)
+    """
+    S_vals = []
+    S = 1.0
+    for w in range(horizon):
+        S_vals.append(S)
+        hw = float(h[w] if w < len(h) else h[-1])
+        S *= (1.0 - hw)
+        if S < 1e-10:
+            break
+    S_arr = np.array(S_vals, dtype=float)
+    pi = S_arr / S_arr.sum()
     return pi
 
-def badge(text: str) -> None:
-    st.markdown(
-        f"""
-        <div style="
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.08);
-            font-size: 16px;
-            line-height: 1.35;
-            ">
-            {text}
-        </div>
-        """,
-        unsafe_allow_html=True,
+def effort_scheduled_like(w: np.ndarray, low: float, high: float, center: float, width: float) -> np.ndarray:
+    """
+    Minimal effort for most of cycle, concentrated near scheduled inspection (paper: predictable regime).
+    """
+    ramp = logistic((w - center) / width)
+    return low + (high - low) * ramp
+
+def effort_unpredictable_like(w: np.ndarray, level: float) -> np.ndarray:
+    """
+    Modest constant effort (paper: unpredictable regime).
+    """
+    return np.full_like(w, level, dtype=float)
+
+def shade_revisit_layer(xmax: int, height: int = 260) -> alt.Chart:
+    return alt.Chart(pd.DataFrame({"x0": [0], "x1": [xmax]})).mark_rect(opacity=0.10).encode(
+        x="x0:Q", x2="x1:Q", y=alt.value(0), y2=alt.value(1)
+    ).properties(height=height)
+
+def sample_weeks(pi: np.ndarray, n: int, rng: np.random.Generator) -> np.ndarray:
+    w_support = np.arange(len(pi))
+    return rng.choice(w_support, size=n, replace=True, p=pi)
+
+def dot_grid_df(effort_samples: np.ndarray, regime_name: str) -> pd.DataFrame:
+    n = len(effort_samples)
+    cols = 10
+    rows = int(np.ceil(n / cols))
+    xs = np.tile(np.arange(cols), rows)[:n]
+    ys = np.repeat(np.arange(rows), cols)[:n]
+    # y inverted for nicer grid
+    return pd.DataFrame(
+        {
+            "x": xs,
+            "y": (rows - 1) - ys,
+            "effort": effort_samples,
+            "regime": regime_name,
+        }
     )
 
-def big_number(title: str, value: str, delta: str | None = None):
-    if delta is None:
-        st.metric(title, value)
-    else:
-        st.metric(title, value, delta)
+def effort_bin(series: pd.Series) -> pd.Series:
+    # 3 bins for “no background” users
+    q1 = series.quantile(0.33)
+    q2 = series.quantile(0.66)
+    return pd.cut(series, bins=[-np.inf, q1, q2, np.inf], labels=["Low", "Medium", "High"])
 
 # -----------------------------
-# State (so the app is guided, not a dashboard)
-# -----------------------------
-if "step" not in st.session_state:
-    st.session_state.step = 1
-
-# -----------------------------
-# Header
+# Title (plain English)
 # -----------------------------
 st.markdown(
-    """
-    <h1 style="text-align:center; margin-bottom:0;">
-        Why Predictability Matters
-    </h1>
-    """,
+    "<h1 style='text-align:center; margin-bottom:0;'>Why Predictability Matters</h1>",
     unsafe_allow_html=True,
 )
 st.markdown(
-    """
-    <p style="text-align:center; margin-top:8px; font-size:18px;">
-        Random inspections raise <b>average</b> effort because nursing homes stop spending most weeks at low effort.
-    </p>
-    """,
+    "<p style='text-align:center; margin-top:8px; font-size:18px;'>"
+    "Random inspections raise <b>average</b> effort because high-effort weeks stop being rare."
+    "</p>",
     unsafe_allow_html=True,
 )
-
 st.divider()
 
 # -----------------------------
-# Sidebar: ONE control + optional autoplay
+# Sidebar controls (simple)
 # -----------------------------
-st.sidebar.header("Policy control")
+st.sidebar.header("Controls")
 
 predictability = st.sidebar.slider(
-    "How random are inspections?",
+    "Predictability",
     0,
     100,
     50,
-    help="0 = very predictable (close to scheduled) • 50 = current regime • 100 = fully random",
+    help="0 = fully scheduled (most predictable) • 100 = flat hazard (unpredictable), frequency held fixed (~1 per 53 weeks).",
 )
-st.sidebar.caption("0 = predictable • 50 = current • 100 = random")
+st.sidebar.caption("Paper extremes: scheduled hazard vs flat hazard (Figure 12).")
 
-autoplay = st.sidebar.checkbox("Auto-play explanation", value=False)
-speed = st.sidebar.slider("Auto-play speed (seconds per step)", 1, 6, 3) if autoplay else None
+show_paper_check = st.sidebar.checkbox("Show paper-check panels (10a/10b/12a view)", value=False)
 
-# -----------------------------
-# Build the mechanism data (kept simple + aligned to feedback)
-# -----------------------------
-weeks = np.arange(0, 61)
-T = int(weeks.max())
-LOW_CUTOFF = 40
-
-# Interpret predictability as "randomness"
-rand_strength = predictability / 100.0
-
-# 1) Effort by week since inspection
-# Random regime: flat (use ~0.05 scale to match feedback language)
-e_random = 0.050
-effort_random = np.full_like(weeks, e_random, dtype=float)
-
-# Predictable regime: low early, higher late (ramps after ~40)
-ramp_center = 42
-ramp_width = 4
-ramp = logistic((weeks - ramp_center) / ramp_width)
-
-max_amp = 0.030  # bigger -> clearer difference
-amp = max_amp * (1 - rand_strength)
-
-low_level = e_random - amp
-high_level = e_random + amp
-effort_predictable_core = low_level + (high_level - low_level) * ramp
-
-# Blend toward flat as inspections become more random
-effort_predictable = (1 - rand_strength) * effort_predictable_core + rand_strength * effort_random
-
-# 2) "Where they spend time" (weeks since inspection distribution)
-# Random inspections: constant weekly chance
-base_weekly_chance = 0.06
-h_random = np.full_like(weeks, base_weekly_chance, dtype=float)
-
-# Predictable inspections: very unlikely early, much more likely later
-h_low = 0.004
-h_high = 0.16
-haz_ramp = logistic((weeks - ramp_center) / ramp_width)
-h_predictable_core = h_low + (h_high - h_low) * haz_ramp
-
-# Blend hazard toward constant as regime becomes more random
-h_predictable = (1 - rand_strength) * h_predictable_core + rand_strength * h_random
-
-h_random = np.clip(h_random, 0.001, 0.5)
-h_predictable = np.clip(h_predictable, 0.001, 0.5)
-
-pi_pred = time_share_from_hazard(h_predictable)
-pi_rand = time_share_from_hazard(h_random)
-
-# 3) Averages (what professor cares about)
-avg_pred = float(np.sum(pi_pred * effort_predictable))
-avg_rand = float(np.sum(pi_rand * effort_random))
+seed = st.sidebar.number_input("Random seed (for dot sampling)", min_value=0, max_value=9999, value=7, step=1)
 
 # -----------------------------
-# Layout: “guided story” controls on the page (stable + intuitive)
+# Build hazard: interpolate between scheduled and flat, then (re)scale to keep frequency fixed
+# Paper:
+# - Unpredictable: constant hazard h(w)=hbar
+# - Scheduled: h(w)=0 for w<53 and h(53)=1 (per notes)
+# We'll implement scheduled as a spike near week 53 (discrete). For computations, we include a 1 at w=53.
+# For mixed regimes, we blend shapes then scale to keep E[L]≈53.
 # -----------------------------
-left, right = st.columns([1.2, 1.0], gap="large")
+horizon = 300
+w_full = np.arange(horizon)
 
-with left:
-    badge(
-        "<b>How to use this:</b> Read one card at a time. Click <b>Next</b>. "
-        "You only need the slider if you want to see what changes under more/less randomness."
-    )
+# Scheduled hazard: inspection happens in the same week each cycle
+h_sched = np.zeros(horizon, dtype=float)
+h_sched[CYCLE_WEEKS] = 1.0  # exactly scheduled
 
-with right:
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c1:
-        if st.button("◀ Back", use_container_width=True, disabled=(st.session_state.step == 1)):
-            st.session_state.step -= 1
-    with c2:
-        st.markdown(
-            f"<div style='text-align:center; padding-top:8px; font-weight:600;'>Step {st.session_state.step} of 3</div>",
-            unsafe_allow_html=True,
-        )
-    with c3:
-        if st.button("Next ▶", use_container_width=True, disabled=(st.session_state.step == 3)):
-            st.session_state.step += 1
+# Flat hazard: constant chance each week; choose level to target E[L]≈53
+h_flat = np.full(horizon, 1.0 / CYCLE_WEEKS, dtype=float)
 
-# Auto-play (no user confusion: it just advances steps)
-if autoplay:
-    # NOTE: Streamlit reruns scripts; a simple approach is to show a timer hint and rely on user interaction.
-    # This avoids brittle sleep loops.
-    st.sidebar.info("Auto-play is ON. Click Next to advance; the slider updates live.")
+# “Predictability” slider:
+# p=0 -> scheduled, p=100 -> flat
+p = predictability / 100.0
 
-st.divider()
+# Blend shapes but keep “scheduled spike” structure present when p small.
+# We do:
+#   shape = (1-p)*sched_like + p*flat_like
+# then rescale non-spike part to target length, while preserving spike at week 53 when (1-p) is dominant.
+shape = (1.0 - p) * h_sched + p * h_flat
+
+# If p < 1, the spike is present but diluted; scaling could distort it.
+# Approach: keep the spike component fixed relative to (1-p), and scale the rest to hit target length.
+spike = np.zeros_like(shape)
+spike[CYCLE_WEEKS] = (1.0 - p) * 1.0
+rest = np.clip(shape - spike, 0.0, None)
+
+# Scale rest so that the combined hazard has expected length ~53 (spike contributes automatically).
+# If spike already forces exact length near 53 for low p, scaling will have minimal effect.
+rest_scaled = scale_hazard_to_target_length(rest + 1e-12, CYCLE_WEEKS)  # +eps to avoid zero-shape issues
+h = np.clip(spike + rest_scaled, 0.0, 0.999)
+
+# Time-share distribution pi(w): where homes spend time (Figure 10a/10b overlays)
+pi = time_share_from_hazard(h, horizon=horizon)
 
 # -----------------------------
-# STEP 1 — Effort over the cycle (10a vs 12a intuition)
+# Build effort policy e(w) consistent with paper narrative:
+# - Unpredictable: modest constant effort
+# - Scheduled: minimal effort for most of cycle, concentrated near inspection
+# Also: revisit window shading; we do NOT change behavior there (we simply visually mark it).
 # -----------------------------
-if st.session_state.step == 1:
-    st.subheader("Step 1 — What homes do between inspections")
+# Levels are “index-like” and only need to preserve the paper ordering:
+# predictable has very low effort for most weeks, spikes near end; unpredictable has steady modest effort.
+e_unpred_level = 0.05
+e_sched_low = 0.01
+e_sched_high = 0.12
 
-    badge(
-        "When inspections are <b>predictable</b>, effort is <b>low right after</b> an inspection and "
-        "<b>rises as the next inspection approaches</b>. When inspections are <b>random</b>, effort stays steady."
-    )
+# Scheduled-like effort
+e_sched = effort_scheduled_like(w_full, low=e_sched_low, high=e_sched_high, center=CYCLE_WEEKS - 6, width=2.5)
 
+# Unpredictable effort
+e_unpred = effort_unpredictable_like(w_full, level=e_unpred_level)
+
+# Mixed effort (predictability affects incentives): interpolate effort policies
+e = (1.0 - p) * e_sched + p * e_unpred
+
+# -----------------------------
+# Two regimes to compare (what user sees)
+# Left: current chosen predictability (mixed)
+# Right: fully unpredictable (paper’s flat hazard)
+# This makes the “average effort higher under random” comparison explicit.
+# -----------------------------
+pi_mixed = pi
+e_mixed = e
+
+pi_unpred = time_share_from_hazard(h_flat, horizon=horizon)
+e_unpred_policy = e_unpred
+
+avg_mixed = float(np.sum(pi_mixed * e_mixed))
+avg_unpred = float(np.sum(pi_unpred * e_unpred_policy))
+
+# -----------------------------
+# Intuitive main view: “100 weeks as dots”
+# -----------------------------
+st.subheader("What a typical year looks like (each dot is a week)")
+
+c1, c2 = st.columns([1, 1], gap="large")
+
+rng = np.random.default_rng(int(seed))
+
+weeks_mixed = sample_weeks(pi_mixed, DOTS_PER_REGIME, rng)
+weeks_unpred = sample_weeks(pi_unpred, DOTS_PER_REGIME, rng)
+
+eff_mixed_samples = e_mixed[weeks_mixed]
+eff_unpred_samples = e_unpred_policy[weeks_unpred]
+
+df_dots = pd.concat(
+    [
+        dot_grid_df(eff_mixed_samples, "Predictable / current-ish"),
+        dot_grid_df(eff_unpred_samples, "Random / unpredictable"),
+    ],
+    ignore_index=True,
+)
+
+# Bin effort into Low/Medium/High for readability
+df_dots["level"] = effort_bin(df_dots["effort"])
+
+dot_chart = alt.Chart(df_dots).mark_circle(size=120).encode(
+    x=alt.X("x:Q", axis=None),
+    y=alt.Y("y:Q", axis=None),
+    color=alt.Color("level:N", title="Effort this week"),
+    column=alt.Column("regime:N", title=None),
+    tooltip=[
+        alt.Tooltip("regime:N", title="Regime"),
+        alt.Tooltip("effort:Q", title="Effort", format=".3f"),
+        alt.Tooltip("level:N", title="Level"),
+    ],
+).properties(height=220)
+
+with c1:
+    st.metric("Average effort (Predictable / current-ish)", f"{avg_mixed:.3f}")
+
+with c2:
+    st.metric("Average effort (Random / unpredictable)", f"{avg_unpred:.3f}")
+
+st.altair_chart(dot_chart, use_container_width=True)
+
+st.markdown(
+    "<div style='font-size:16px; line-height:1.35; padding:10px 12px; "
+    "border-radius:12px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08);'>"
+    "<b>How to read this:</b> If most dots are “Low” on the left but not on the right, "
+    "then average effort is lower under predictability even if a few weeks are very high."
+    "</div>",
+    unsafe_allow_html=True,
+)
+
+# -----------------------------
+# Paper-check view (optional): shows the actual paper objects behind the dots
+# - Effort path e(w) + distribution of w (pi) overlay idea (Figure 10a / 12a panels a,b)
+# - Distribution of effort implied by weighting e(w) by pi(w) (Figure 10b / 12c)
+# -----------------------------
+if show_paper_check:
+    st.divider()
+    st.subheader("Paper-check panels (mechanism components)")
+
+    # Panel A: effort by week since inspection (two regimes)
     df_eff = pd.DataFrame(
         {
-            "Week": weeks,
-            "Predictable timing": effort_predictable,
-            "Random timing": effort_random,
+            "Week since last inspection (w)": np.arange(len(pi_mixed)),
+            "Predictable/current-ish": e_mixed[: len(pi_mixed)],
+            "Random/unpredictable": e_unpred_policy[: len(pi_unpred)],
         }
-    ).melt("Week", var_name="Regime", value_name="Effort")
+    ).melt("Week since last inspection (w)", var_name="Regime", value_name="Effort")
 
-    # Shading for early vs late weeks (no jargon)
-    shade = pd.DataFrame(
-        {"x0": [0, LOW_CUTOFF], "x1": [LOW_CUTOFF, T], "label": ["Early weeks", "Late weeks"]}
-    )
-    shade_chart = alt.Chart(shade).mark_rect(opacity=0.10).encode(
-        x="x0:Q", x2="x1:Q", y=alt.value(0), y2=alt.value(1)
-    )
-
-    cutoff_rule = alt.Chart(pd.DataFrame({"x": [LOW_CUTOFF]})).mark_rule(strokeDash=[4, 4], opacity=0.7).encode(x="x:Q")
-    cutoff_text = alt.Chart(pd.DataFrame({"x": [LOW_CUTOFF], "y": [0.001]})).mark_text(
-        align="center", baseline="bottom", dy=-2
-    ).encode(x="x:Q", y="y:Q", text=alt.value("≈ week 40"))
-
-    mean_rule = alt.Chart(pd.DataFrame({"y": [e_random]})).mark_rule(strokeDash=[6, 4], opacity=0.8).encode(y="y:Q")
-    mean_text = alt.Chart(pd.DataFrame({"x": [2], "y": [e_random]})).mark_text(
-        align="left", baseline="bottom", dx=6
-    ).encode(x="x:Q", y="y:Q", text=alt.value("Random level"))
-
-    line = alt.Chart(df_eff).mark_line(strokeWidth=3).encode(
-        x=alt.X("Week:Q", title="Weeks since last inspection"),
-        y=alt.Y("Effort:Q", title="Effort (index)", scale=alt.Scale(domain=[0.0, max(0.085, e_random + max_amp + 0.01)])),
+    base_eff = alt.Chart(df_eff).mark_line(strokeWidth=3).encode(
+        x=alt.X("Week since last inspection (w):Q", title="Weeks since last inspection"),
+        y=alt.Y("Effort:Q", title="Effort", scale=alt.Scale(domain=[0.0, float(max(e_sched_high, e_unpred_level) * 1.15)])),
         color=alt.Color("Regime:N", title=None),
         tooltip=[
-            alt.Tooltip("Week:Q", title="Week since inspection"),
-            alt.Tooltip("Regime:N", title="Line"),
+            alt.Tooltip("Week since last inspection (w):Q", title="w"),
+            alt.Tooltip("Regime:N", title="Regime"),
             alt.Tooltip("Effort:Q", title="Effort", format=".3f"),
         ],
-    )
+    ).properties(height=260)
 
-    # Simple on-chart labels (plain language)
-    labels = alt.Chart(
-        pd.DataFrame(
-            {
-                "x": [6, 52],
-                "y": [float(effort_predictable[6]), float(effort_predictable[52])],
-                "t": ["After inspection: lower effort", "Closer to next inspection: higher effort"],
-            }
-        )
-    ).mark_text(align="left", dx=6, dy=-10).encode(x="x:Q", y="y:Q", text="t:N")
-
-    chart = (shade_chart + line + mean_rule + mean_text + cutoff_rule + cutoff_text + labels).properties(height=420)
-    st.altair_chart(chart, use_container_width=True)
-
-    badge(
-        f"<b>Key takeaway:</b> The predictable line is mostly <b>below</b> the random level in early weeks "
-        f"(weeks 0–{LOW_CUTOFF}), and only goes <b>above</b> it late in the cycle."
-    )
-
-# -----------------------------
-# STEP 2 — Where they spend time (10b intuition)
-# -----------------------------
-elif st.session_state.step == 2:
-    st.subheader("Step 2 — Where homes spend most weeks")
-
-    badge(
-        "Now the crucial part: even if effort is sometimes high under predictable inspections, "
-        "it only matters if homes spend a lot of time in those high-effort weeks."
-    )
-
-    df_time = pd.DataFrame(
-        {
-            "Week": weeks,
-            "Predictable timing": pi_pred,
-            "Random timing": pi_rand,
-        }
-    ).melt("Week", var_name="Regime", value_name="Share of time")
-
-    shade = alt.Chart(pd.DataFrame({"x0": [0], "x1": [LOW_CUTOFF]})).mark_rect(opacity=0.10).encode(
+    # Shade revisit window (paper notes show gray areas)
+    revisit = alt.Chart(pd.DataFrame({"x0": [0], "x1": [REVISIT_WEEKS]})).mark_rect(opacity=0.12).encode(
         x="x0:Q", x2="x1:Q", y=alt.value(0), y2=alt.value(1)
-    )
-    cutoff_rule = alt.Chart(pd.DataFrame({"x": [LOW_CUTOFF]})).mark_rule(strokeDash=[4, 4], opacity=0.7).encode(x="x:Q")
-    cutoff_text = alt.Chart(pd.DataFrame({"x": [LOW_CUTOFF], "y": [0.0]})).mark_text(
-        align="center", baseline="bottom", dy=2
-    ).encode(x="x:Q", y="y:Q", text=alt.value("early weeks (mostly low effort)"))
+    ).properties(height=260)
 
-    area = alt.Chart(df_time).mark_area(opacity=0.50).encode(
-        x=alt.X("Week:Q", title="Weeks since last inspection"),
-        y=alt.Y("Share of time:Q", title="Share of weeks spent here"),
+    st.altair_chart(revisit + base_eff, use_container_width=True)
+    st.caption(f"Gray shading marks the revisit window (w ≤ {REVISIT_WEEKS}), consistent with the paper’s discussion.")
+
+    # Panel B: distribution of weeks since inspection (pi(w))
+    df_pi = pd.DataFrame(
+        {
+            "w": np.arange(len(pi_mixed)),
+            "Predictable/current-ish": pi_mixed,
+            "Random/unpredictable": pi_unpred[: len(pi_mixed)],
+        }
+    ).melt("w", var_name="Regime", value_name="Share of time at w")
+
+    base_pi = alt.Chart(df_pi).mark_area(opacity=0.5).encode(
+        x=alt.X("w:Q", title="Weeks since last inspection"),
+        y=alt.Y("Share of time at w:Q", title="Share of time"),
         color=alt.Color("Regime:N", title=None),
         tooltip=[
-            alt.Tooltip("Week:Q", title="Week since inspection"),
+            alt.Tooltip("w:Q", title="w"),
             alt.Tooltip("Regime:N", title="Regime"),
-            alt.Tooltip("Share of time:Q", title="Share", format=".3f"),
+            alt.Tooltip("Share of time at w:Q", title="Share", format=".4f"),
         ],
-    ).properties(height=420)
+    ).properties(height=260)
 
-    st.altair_chart(shade + area + cutoff_rule + cutoff_text, use_container_width=True)
+    st.altair_chart(revisit + base_pi, use_container_width=True)
+    st.caption("This is the second force in the mechanism: predictable regimes concentrate time in early-cycle weeks.")
 
-    badge(
-        f"<b>Key takeaway:</b> Under the predictable/current regime, homes spend <b>most of their time</b> "
-        f"in weeks 0–{LOW_CUTOFF}. Those are the same weeks where effort is usually <b>below</b> the random level."
-    )
+    # Panel C: implied effort distribution (weight e(w) by pi(w)) — matches the paper logic of right-skew
+    def weighted_effort_samples(pi_arr: np.ndarray, e_arr: np.ndarray, n: int, rng_: np.random.Generator) -> np.ndarray:
+        ww = sample_weeks(pi_arr, n, rng_)
+        return e_arr[ww]
 
-# -----------------------------
-# STEP 3 — The punchline (average effort)
-# -----------------------------
-else:
-    st.subheader("Step 3 — So why is average effort higher under random inspections?")
+    N_hist = 8000
+    samp_mixed = weighted_effort_samples(pi_mixed, e_mixed, N_hist, rng)
+    samp_unpred = weighted_effort_samples(pi_unpred, e_unpred_policy, N_hist, rng)
 
-    badge(
-        "Average effort is basically: <b>(effort in a week)</b> × <b>(how often that week happens)</b>, "
-        "added up across weeks."
-    )
-
-    c1, c2 = st.columns(2)
-    with c1:
-        big_number("Average effort (Predictable/current)", f"{avg_pred:.3f}")
-    with c2:
-        big_number("Average effort (Random/unpredictable)", f"{avg_rand:.3f}")
-
-    delta = avg_rand - avg_pred
-    badge(
-        f"<b>Final takeaway:</b> Under predictable inspections, low-effort weeks are common and high-effort weeks are rare, "
-        f"so the average ends up lower. Here, random inspections increase average effort by <b>{delta:.3f}</b>."
-    )
-
-    # Optional: a single, simple visual that combines both forces (no extra jargon)
-    st.markdown("**One-line summary visual (what drives the average):**")
-
-    df_combo = pd.DataFrame(
+    df_hist = pd.DataFrame(
         {
-            "Week": weeks,
-            "Predictable: effort × time": effort_predictable * pi_pred,
-            "Random: effort × time": effort_random * pi_rand,
+            "Effort": np.concatenate([samp_mixed, samp_unpred]),
+            "Regime": (["Predictable/current-ish"] * N_hist) + (["Random/unpredictable"] * N_hist),
         }
-    ).melt("Week", var_name="Term", value_name="Contribution")
-
-    bar = alt.Chart(df_combo).mark_bar(opacity=0.65).encode(
-        x=alt.X("Week:Q", title="Weeks since last inspection"),
-        y=alt.Y("Contribution:Q", title="Contribution to average"),
-        color=alt.Color("Term:N", title=None),
-        tooltip=[
-            alt.Tooltip("Week:Q", title="Week"),
-            alt.Tooltip("Term:N", title=""),
-            alt.Tooltip("Contribution:Q", title="Contribution", format=".5f"),
-        ],
-    ).properties(height=360)
-
-    st.altair_chart(bar, use_container_width=True)
-
-    badge(
-        "This last chart shows which weeks actually matter for the average. "
-        "If most of the weight is in early weeks, then early-week effort drives the mean."
     )
 
+    hist = alt.Chart(df_hist).mark_bar(opacity=0.55).encode(
+        x=alt.X("Effort:Q", bin=alt.Bin(maxbins=40), title="Effort"),
+        y=alt.Y("count():Q", title="Frequency (weighted sample)"),
+        color=alt.Color("Regime:N", title=None),
+        tooltip=[alt.Tooltip("count():Q", title="Count")],
+    ).properties(height=260)
+
+    st.altair_chart(hist, use_container_width=True)
+    st.caption("This corresponds to the paper’s point: predictable regimes can have rare high-effort weeks but many low-effort weeks (right-skew).")
+
+# -----------------------------
+# Footer: one-sentence mechanism (no jargon)
+# -----------------------------
 st.divider()
 st.caption(
-    "Design goal: one idea per step. The slider is optional—you can understand the mechanism without touching it."
+    "Mechanism: predictable timing creates low-effort weeks after inspection and high-effort weeks near inspection; "
+    "if most weeks are low-effort, the average is lower than under random timing."
 )
