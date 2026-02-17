@@ -317,10 +317,6 @@ st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
-st.caption(
-    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
-    "The highlighted bar corresponds to the selected policy shown above."
-)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -355,6 +351,11 @@ with col4:
         help="Annual inspections nationwide (frequency × 15,615 facilities)",
     )
     st.caption("inspections per year")
+
+st.caption(
+    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
+    "The highlighted bar corresponds to the selected policy shown above."
+)
 
 st.divider()
 
