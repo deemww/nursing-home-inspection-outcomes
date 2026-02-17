@@ -331,7 +331,7 @@ with col3:
         f"{float(row['info_percent']):.1f}%",
         help="How much regulators learn about facility quality",
     )
-    st.caption("of maximum")
+    st.caption("of maximum possible information")
 
 with col4:
     st.metric(
