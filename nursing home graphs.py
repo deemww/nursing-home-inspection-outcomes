@@ -28,6 +28,28 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
+    /* ---- METRIC STYLING (The Numbers) ---- */
+    [data-testid="stMetricValue"] {
+        font-size: 3.5rem !important;
+        font-weight: 900 !important; /* Uses Gotham-Black */
+        color: #000000 !important;
+        line-height: 1 !important;
+    }
+
+    /* ---- METRIC LABEL STYLING (The Titles above numbers) ---- */
+    [data-testid="stMetricLabel"] p {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+    }
+
+    /* ---- CAPTION STYLING (The "per year" text) ---- */
+    [data-testid="stCaptionContainer"] {
+        font-size: 1rem !important;
+        color: #333333 !important;
+        margin-top: -10px !important; /* Pulls caption closer to the number */
+    }
+
     /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
@@ -54,6 +76,7 @@ st.markdown(
         margin: 0 !important;
     }
 
+    /* ---- Icons ---- */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
@@ -68,9 +91,6 @@ st.markdown(
     span[class*=" material-symbols"] {
         font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
     }
-
-    
-    
     </style>
     """,
     unsafe_allow_html=True,
