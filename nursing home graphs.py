@@ -171,7 +171,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
         ),
         strokeWidth=alt.condition(
             alt.datum.scenario_key == selected_key,
-            alt.value(3),          # Thicker border to make it pop
+            alt.value(10),          # Thicker border to make it pop
             alt.value(0)
         ),
 
