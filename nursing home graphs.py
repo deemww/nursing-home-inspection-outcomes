@@ -138,14 +138,14 @@ Y_LIMS = {
     "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
-def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key, x_axis_title):
+def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
-            title=x_axis_title,
+            title=None,  # Removed X-axis label title
             sort=alt.SortField(field="x_order", order="ascending"),
             axis=alt.Axis(
-                labels=False,  # hide long scenario labels to avoid busy x-axis
+                labels=False,  # Hide scenario names
                 ticks=False,
                 domain=False,
             ),
@@ -184,7 +184,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
                 fontWeight="normal",
                 offset=10,
             ),
-            padding={"top": 8, "left": 10, "right": 10, "bottom": 18},
+            padding={"top": 8, "left": 10, "right": 10, "bottom": 5}, # Tightened bottom padding
         )
         .configure(
             font="Gotham",
@@ -355,7 +355,6 @@ st.divider()
 
 # =============================
 # Plots: show all 9 bars, highlight selected in maroon
-# x-axis labels are hidden; x-axis title shows the metric label you want.
 # =============================
 p1, p2 = st.columns(2)
 with p1:
@@ -367,7 +366,6 @@ with p1:
             "Lives saved",
             "Annual lives saved",
             selected_key,
-            "Lives saved (annual)",
         ),
         use_container_width=True,
     )
@@ -381,7 +379,6 @@ with p2:
             "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
-            "Lives saved per 1,000",
         ),
         use_container_width=True,
     )
@@ -396,7 +393,6 @@ with p3:
             "Percent",
             "Regulatory information revealed",
             selected_key,
-            "Information (%)",
         ),
         use_container_width=True,
     )
@@ -410,7 +406,6 @@ with p4:
             "Inspections",
             "Total inspections conducted",
             selected_key,
-            "Total inspections",
         ),
         use_container_width=True,
     )
