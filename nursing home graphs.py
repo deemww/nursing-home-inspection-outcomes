@@ -190,6 +190,8 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             font="Gotham",
             axis=alt.AxisConfig(labelFont="Gotham", titleFont="Gotham"),
             title=alt.TitleConfig(font="Gotham"),
+            labelFontSize=14,
+            titleFontSize=18
             legend=alt.LegendConfig(labelFont="Gotham", titleFont="Gotham"),
         )
     )
