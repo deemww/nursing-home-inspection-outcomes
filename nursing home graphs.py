@@ -356,6 +356,11 @@ st.divider()
 # =============================
 # Plots: show all 9 bars, highlight selected in maroon
 # =============================
+st.caption(
+    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
+    "The highlighted bar corresponds to the selected policy shown above."
+)
+
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
