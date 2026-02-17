@@ -163,6 +163,18 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             alt.value("#800000"),
             alt.value("#c9c9c9"),
         ),
+
+        stroke=alt.condition(
+            alt.datum.scenario_key == selected_key,
+            alt.value("#FFD700"),  # Gold color hex
+            alt.value(None)        # No border for unselected bars
+        ),
+        strokeWidth=alt.condition(
+            alt.datum.scenario_key == selected_key,
+            alt.value(3),          # Thicker border to make it pop
+            alt.value(0)
+        ),
+
         opacity=alt.condition(
             alt.datum.scenario_key == selected_key,
             alt.value(1.0),
