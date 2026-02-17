@@ -358,36 +358,76 @@ st.caption(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(
-        "Lives saved",
-        f"{float(row['lives_saved_annually']):.1f}",
-        help="Annual reduction in patient deaths relative to no inspections",
+    st.markdown(
+        f"""
+        <div>
+            <div style="font-size:1rem; font-weight:600; color:#333;">
+                Lives saved
+            </div>
+            <div style="font-size:2.8rem; font-weight:800; color:#000;">
+                {float(row['lives_saved_annually']):.1f}
+            </div>
+            <div style="font-size:0.95rem; color:#777;">
+                per year
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.caption("per year")
 
 with col2:
-    st.metric(
-        "Efficiency",
-        f"{float(row['lives_saved_per_1000']):.1f}",
-        help="Lives saved per 1,000 inspections",
+    st.markdown(
+        f"""
+        <div>
+            <div style="font-size:1rem; font-weight:600; color:#333;">
+                Efficiency
+            </div>
+            <div style="font-size:2.8rem; font-weight:800; color:#000;">
+                {float(row['lives_saved_per_1000']):.1f}
+            </div>
+            <div style="font-size:0.95rem; color:#777;">
+                per 1,000 inspections
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.caption("per 1,000 inspections")
 
 with col3:
-    st.metric(
-        "Information",
-        f"{float(row['info_percent']):.1f}%",
-        help="How much regulators learn about facility quality",
+    st.markdown(
+        f"""
+        <div>
+            <div style="font-size:1rem; font-weight:600; color:#333;">
+                Information
+            </div>
+            <div style="font-size:2.8rem; font-weight:800; color:#000;">
+                {float(row['info_percent']):.1f}%
+            </div>
+            <div style="font-size:0.95rem; color:#777;">
+                of maximum possible information
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.caption("of maximum possible information")
 
 with col4:
-    st.metric(
-        "Total inspections",
-        f"{total_inspections:,}",
-        help="Annual inspections nationwide (frequency × 15,615 facilities)",
+    st.markdown(
+        f"""
+        <div>
+            <div style="font-size:1rem; font-weight:600; color:#333;">
+                Total inspections
+            </div>
+            <div style="font-size:2.8rem; font-weight:800; color:#000;">
+                {total_inspections:,}
+            </div>
+            <div style="font-size:0.95rem; color:#777;">
+                inspections per year
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.caption("inspections per year")
 
 st.divider()
 
