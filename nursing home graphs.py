@@ -305,10 +305,6 @@ with st.sidebar:
         st.session_state["freq_position"] = "+25%"
         frequency = float(high)
 
-# =============================
-# Selected scenario (main page)
-# =============================
-scenario = scenario_label(predictability, frequency)
 
 # =============================
 # Selected scenario (main page)
@@ -335,14 +331,6 @@ st.markdown(
         </span>
     </div>
     """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    "<div style='text-align:center; margin-top:0.4rem; margin-bottom:0.85rem;'>"
-    "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
-    f"<div style='font-size:1.65rem; font-weight:800; line-height:1.1;'>{scenario}</div>"
-    "</div>",
     unsafe_allow_html=True,
 )
 
