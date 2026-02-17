@@ -128,13 +128,17 @@ Y_LIMS = {
     "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
-def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
+def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key, x_axis_title):
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
-            title=None,
+            title=x_axis_title,
             sort=alt.SortField(field="x_order", order="ascending"),
-            axis=alt.Axis(labelAngle=0, labelLimit=260, labelPadding=10),
+            axis=alt.Axis(
+                labels=False,  # hide long scenario labels to avoid busy x-axis
+                ticks=False,
+                domain=False,
+            ),
         ),
         y=alt.Y(
             f"{metric_col}:Q",
@@ -341,6 +345,7 @@ st.divider()
 
 # =============================
 # Plots: show all 9 bars, highlight selected in maroon
+# x-axis labels are hidden; x-axis title shows the metric label you want.
 # =============================
 p1, p2 = st.columns(2)
 with p1:
@@ -352,6 +357,7 @@ with p1:
             "Lives saved",
             "Annual lives saved",
             selected_key,
+            "Lives saved (annual)",
         ),
         use_container_width=True,
     )
@@ -365,6 +371,7 @@ with p2:
             "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
+            "Lives saved per 1,000",
         ),
         use_container_width=True,
     )
@@ -379,6 +386,7 @@ with p3:
             "Percent",
             "Regulatory information revealed",
             selected_key,
+            "Information (%)",
         ),
         use_container_width=True,
     )
@@ -392,6 +400,7 @@ with p4:
             "Inspections",
             "Total inspections conducted",
             selected_key,
+            "Total inspections",
         ),
         use_container_width=True,
     )
