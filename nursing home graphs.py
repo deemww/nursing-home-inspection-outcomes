@@ -58,6 +58,22 @@ st.markdown(
         line-height: 1.5 !important;
         margin: 0 !important;
     }
+
+    /* Restore Material Icons / Material Symbols so ligature text doesn't appear */
+    [data-testid="stIconMaterial"],
+    [data-testid="stIconMaterial"] span,
+    span.material-icons,
+    span.material-icons-outlined,
+    span.material-icons-round,
+    span.material-icons-sharp,
+    span.material-icons-two-tone,
+    span.material-symbols-outlined,
+    span.material-symbols-rounded,
+    span.material-symbols-sharp,
+    span[class^="material-symbols"],
+    span[class*=" material-symbols"] {
+        font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
