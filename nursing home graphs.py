@@ -3,6 +3,7 @@ import streamlit as st
 import altair as alt
 
 st.set_page_config(layout="wide")
+
 st.markdown(
     """
     <style>
@@ -27,14 +28,14 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* ---- Sidebar section header ---- */
+    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
-    /* ---- Sidebar widget label text ---- */
+    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -42,14 +43,17 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    [data-testid="stSidebar"] div[role="radiogroup"] label span,
+    [data-testid="stSidebar"] div[role="radiogroup"] label span {
+        font-size: 1.15rem !important;
+        line-height: 1.5 !important;
+    }
+
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
 
-    /* ---- Restore Material Icons ---- */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
@@ -65,30 +69,8 @@ st.markdown(
         font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
     }
 
-    /* =============================
-       METRIC STYLING (ADDED)
-       ============================= */
-
-    /* Big metric numbers */
-    div[data-testid="stMetricValue"] {
-        font-size: 2.8rem !important;
-        font-weight: 800 !important;
-        color: #000000 !important;
-        line-height: 1.1 !important;
-    }
-
-    /* Metric labels */
-    div[data-testid="stMetricLabel"] {
-        font-size: 1.25rem !important;
-        font-weight: 700 !important;
-        color: #000000 !important;
-    }
     
-    div[data-testid="stMetric"] + div p {
-        font-size: 1.05rem !important;
-        color: #000000 !important;
-    }
-
+    
     </style>
     """,
     unsafe_allow_html=True,
