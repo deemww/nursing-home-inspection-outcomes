@@ -145,7 +145,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             title=None,  # Removed X-axis label title
             sort=alt.SortField(field="x_order", order="ascending"),
             axis=alt.Axis(
-                labels=False,  # Hide scenario names
+                labels=False,
                 ticks=False,
                 domain=False,
             ),
@@ -180,7 +180,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             title=alt.TitleParams(
                 text=chart_title,
                 anchor="start",
-                fontSize=14,
+                fontSize=20,
                 fontWeight="normal",
                 offset=10,
             ),
