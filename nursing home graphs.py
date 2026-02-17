@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -99,34 +97,71 @@ def scenario_label(predictability, frequency):
             return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
 
 # =============================
+# Precompute columns for 9-bar charts + stable selection key
+# =============================
+df["freq_round"] = df["frequency"].round(4)
+df["scenario_key"] = (
+    df["predictability_numeric"].astype(int).astype(str) + "_" + df["freq_round"].astype(str)
+)
+df["scenario_label"] = df.apply(
+    lambda r: scenario_label(int(r["predictability_numeric"]), float(r["frequency"])),
+    axis=1,
+)
+
+# Stable x ordering: within each predictability regime, sort by frequency
+pred_order = {0: 0, 50: 1, 100: 2}
+df["pred_order"] = df["predictability_numeric"].map(pred_order)
+df = df.sort_values(["pred_order", "frequency"]).copy()
+df["freq_rank"] = df.groupby("predictability_numeric").cumcount() + 1  # 1..3
+df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
+
+# Add computed metric for plotting total inspections as 9 bars too
+df["total_inspections"] = (df["frequency"] * 15615).round(0)
+
+# =============================
 # Fixed y-axis limits (constant across toggles)
 # =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
     "lives_saved_per_1000": (0, float(df["lives_saved_per_1000"].max()) * 1.10),
     "info_percent": (0, 100),
-    "total_inspections": (0, float(df["frequency"].max() * 15615) * 1.10),
+    "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
-def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
-    d = pd.DataFrame({"metric": [x_label], "value": [float(value)]})
+def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
+    base = alt.Chart(df_all).encode(
+        x=alt.X(
+            "scenario_label:N",
+            title=None,
+            sort=alt.SortField(field="x_order", order="ascending"),
+            axis=alt.Axis(labelAngle=0, labelLimit=260, labelPadding=10),
+        ),
+        y=alt.Y(
+            f"{metric_col}:Q",
+            title=y_label,
+            scale=alt.Scale(domain=list(y_domain), nice=False),
+        ),
+        tooltip=[
+            alt.Tooltip("scenario_label:N", title="Scenario"),
+            alt.Tooltip(f"{metric_col}:Q", format=",.2f", title=y_label),
+        ],
+    )
+
+    bars = base.mark_bar(size=40, cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
+        color=alt.condition(
+            alt.datum.scenario_key == selected_key,
+            alt.value("#800000"),  # selected (maroon)
+            alt.value("#c9c9c9"),  # others (grey)
+        ),
+        opacity=alt.condition(
+            alt.datum.scenario_key == selected_key,
+            alt.value(1.0),
+            alt.value(0.55),
+        ),
+    )
+
     return (
-        alt.Chart(d)
-        .mark_bar(color="#800000", size=60, cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
-        .encode(
-            x=alt.X(
-                "metric:N",
-                title=None,
-                axis=alt.Axis(labelAngle=0, labelLimit=1000, labelPadding=10, ticks=False),
-            ),
-            y=alt.Y(
-                "value:Q",
-                title=y_label,
-                scale=alt.Scale(domain=list(y_domain), nice=False),
-            ),
-            tooltip=[alt.Tooltip("value:Q", format=",.2f")],
-        )
-        .properties(
+        bars.properties(
             height=235,
             title=alt.TitleParams(
                 text=chart_title,
@@ -151,8 +186,8 @@ def single_bar_chart(value, x_label, y_domain, y_label, chart_title):
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-          .sort_values()
-          .tolist()
+        .sort_values()
+        .tolist()
     )
     low, mid, high = sorted(opts)
     return low, mid, high
@@ -251,11 +286,13 @@ st.markdown(
 # Selected row (no interpolation)
 # =============================
 row = df[
-    (df["predictability_numeric"] == predictability) &
-    (df["frequency"] == frequency)
+    (df["predictability_numeric"] == predictability) & (df["frequency"] == frequency)
 ].iloc[0]
 
 total_inspections = int(float(frequency) * 15615)
+
+# Stable key for highlighting the selected bar
+selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 
 # =============================
 # Policy outcomes (boxes + plots)
@@ -302,27 +339,32 @@ with col4:
 
 st.divider()
 
+# =============================
+# Plots: show all 9 bars, highlight selected in maroon
+# =============================
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
-        single_bar_chart(
-            float(row["lives_saved_annually"]),
-            "Lives saved (annual)",
+        multi_bar_chart(
+            df,
+            "lives_saved_annually",
             Y_LIMS["lives_saved_annually"],
             "Lives saved",
             "Annual lives saved",
+            selected_key,
         ),
         use_container_width=True,
     )
 
 with p2:
     st.altair_chart(
-        single_bar_chart(
-            float(row["lives_saved_per_1000"]),
-            "Lives saved per 1,000",
+        multi_bar_chart(
+            df,
+            "lives_saved_per_1000",
             Y_LIMS["lives_saved_per_1000"],
             "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
+            selected_key,
         ),
         use_container_width=True,
     )
@@ -330,24 +372,26 @@ with p2:
 p3, p4 = st.columns(2)
 with p3:
     st.altair_chart(
-        single_bar_chart(
-            float(row["info_percent"]),
-            "Information (%)",
+        multi_bar_chart(
+            df,
+            "info_percent",
             Y_LIMS["info_percent"],
             "Percent",
             "Regulatory information revealed",
+            selected_key,
         ),
         use_container_width=True,
     )
 
 with p4:
     st.altair_chart(
-        single_bar_chart(
-            float(total_inspections),
-            "Total inspections",
+        multi_bar_chart(
+            df,
+            "total_inspections",
             Y_LIMS["total_inspections"],
             "Inspections",
             "Total inspections conducted",
+            selected_key,
         ),
         use_container_width=True,
     )
