@@ -7,6 +7,9 @@ st.set_page_config(layout="wide")
 # =============================
 # Global CSS (fonts + sidebar sizing)
 # =============================
+# =============================
+# Global CSS (fonts + sidebar sizing)
+# =============================
 st.markdown(
     """
     <style>
@@ -57,6 +60,14 @@ st.markdown(
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
+    }
+
+    /* Restore Material Icons so ligature text doesn't appear */
+    [data-testid="stIconMaterial"],
+    [data-testid="stIconMaterial"] span,
+    span.material-icons,
+    span.material-symbols-outlined {
+        font-family: "Material Icons", "Material Symbols Outlined" !important;
     }
     </style>
     """,
