@@ -317,6 +317,10 @@ st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
+st.caption(
+    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
+    "The highlighted bar corresponds to the selected policy shown above."
+)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -357,12 +361,6 @@ st.divider()
 # =============================
 # Plots: show all 9 bars, highlight selected in maroon (no x-axis text)
 # =============================
-
-st.caption(
-    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
-    "The highlighted bar corresponds to the selected policy shown above."
-)
-
 p1, p2 = st.columns(2)
 with p1:
     st.altair_chart(
