@@ -142,13 +142,9 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
-            title=None,  # Removed X-axis label title
+            title=None,
             sort=alt.SortField(field="x_order", order="ascending"),
-            axis=alt.Axis(
-                labels=False,
-                ticks=False,
-                domain=False,
-            ),
+            axis=alt.Axis(labels=False, ticks=False, domain=False),
         ),
         y=alt.Y(
             f"{metric_col}:Q",
@@ -164,8 +160,8 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
     bars = base.mark_bar(size=40, cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
         color=alt.condition(
             alt.datum.scenario_key == selected_key,
-            alt.value("#800000"),  # selected (maroon)
-            alt.value("#c9c9c9"),  # others (grey)
+            alt.value("#800000"),
+            alt.value("#c9c9c9"),
         ),
         opacity=alt.condition(
             alt.datum.scenario_key == selected_key,
@@ -184,15 +180,24 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
                 fontWeight="normal",
                 offset=10,
             ),
-            padding={"top": 8, "left": 10, "right": 10, "bottom": 5}, # Tightened bottom padding
+            padding={"top": 8, "left": 10, "right": 10, "bottom": 5},
         )
         .configure(
             font="Gotham",
-            axis=alt.AxisConfig(labelFont="Gotham", titleFont="Gotham"),
-            title=alt.TitleConfig(font="Gotham"),
-            labelFontSize=14,
-            titleFontSize=18,
-            legend=alt.LegendConfig(labelFont="Gotham", titleFont="Gotham"),
+            axis=alt.AxisConfig(
+                labelFont="Gotham",
+                titleFont="Gotham",
+                labelFontSize=14,
+                titleFontSize=18,
+            ),
+            title=alt.TitleConfig(
+                font="Gotham",
+                fontSize=20,
+            ),
+            legend=alt.LegendConfig(
+                labelFont="Gotham",
+                titleFont="Gotham",
+            ),
         )
     )
 
