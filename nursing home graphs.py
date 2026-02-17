@@ -310,6 +310,34 @@ with st.sidebar:
 # =============================
 scenario = scenario_label(predictability, frequency)
 
+# =============================
+# Selected scenario (main page)
+# =============================
+scenario = scenario_label(predictability, frequency)
+
+st.markdown(
+    f"""
+    <div style='text-align:center; margin-top:0.4rem; margin-bottom:1.2rem;'>
+        <div style='color:#8b8b8b; font-size:1.0rem; margin-bottom:0.6rem;'>Selected policy scenario</div>
+        <span style='
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #800000;
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 800;
+            border: 4px solid #EAAA00;
+            border-radius: 12px;
+            line-height: 1.1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        '>
+            {scenario}
+        </span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.markdown(
     "<div style='text-align:center; margin-top:0.4rem; margin-bottom:0.85rem;'>"
     "<div style='color:#8b8b8b; font-size:0.95rem; margin-bottom:0.1rem;'>Selected policy scenario</div>"
