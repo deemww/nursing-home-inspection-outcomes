@@ -4,9 +4,6 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
-# =============================
-# Global CSS (fonts + sidebar sizing + icon font fix)
-# =============================
 st.markdown(
     """
     <style>
@@ -31,14 +28,14 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* ---- Sidebar section header ---- */
+    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
-    /* ---- Sidebar widget label text ---- */
+    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -46,20 +43,17 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Sidebar radio option text ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
     }
 
-    /* Fallback (radio text sometimes in <p>) */
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
 
-    /* Restore Material Icons / Material Symbols so ligature text doesn't appear */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
@@ -144,17 +138,16 @@ Y_LIMS = {
     "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
-def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
+def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key, x_axis_title):
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
-            title=None,  # IMPORTANT: no x-axis title (removes bottom text)
+            title=x_axis_title,
             sort=alt.SortField(field="x_order", order="ascending"),
             axis=alt.Axis(
-                labels=False,  # hide long scenario labels
+                labels=False,  # hide long scenario labels to avoid busy x-axis
                 ticks=False,
                 domain=False,
-                title=None,
             ),
         ),
         y=alt.Y(
@@ -163,7 +156,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             scale=alt.Scale(domain=list(y_domain), nice=False),
         ),
         tooltip=[
-            alt.Tooltip("scenario_label:N", title="Policy scenario"),
+            alt.Tooltip("scenario_label:N", title="Scenario"),
             alt.Tooltip(f"{metric_col}:Q", format=",.2f", title=y_label),
         ],
     )
@@ -171,8 +164,8 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
     bars = base.mark_bar(size=40, cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
         color=alt.condition(
             alt.datum.scenario_key == selected_key,
-            alt.value("#800000"),
-            alt.value("#c9c9c9"),
+            alt.value("#800000"),  # selected (maroon)
+            alt.value("#c9c9c9"),  # others (grey)
         ),
         opacity=alt.condition(
             alt.datum.scenario_key == selected_key,
@@ -222,7 +215,7 @@ if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
 # =============================
-# Page header
+# Page header (main canvas stays clean)
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -252,6 +245,8 @@ with st.sidebar:
     )
     st.session_state["pred_choice"] = pred_choice
 
+    # Map UI choice to CSV coding:
+    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
         "Current regime (factual)": 50,
@@ -267,6 +262,7 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
+    # Keep the same “position” across regimes
     pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
     default_index = pos_to_index[st.session_state["freq_position"]]
 
@@ -276,6 +272,7 @@ with st.sidebar:
         index=default_index,
     )
 
+    # Update stored position + set numeric frequency
     if freq_choice.startswith("−25%"):
         st.session_state["freq_position"] = "−25%"
         frequency = float(low)
@@ -307,6 +304,8 @@ row = df[
 ].iloc[0]
 
 total_inspections = int(float(frequency) * 15615)
+
+# Stable key for highlighting the selected bar
 selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 
 # =============================
@@ -316,10 +315,6 @@ st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_al
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
-)
-st.caption(
-    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
-    "The highlighted bar corresponds to the selected policy shown above."
 )
 
 col1, col2, col3, col4 = st.columns(4)
@@ -359,7 +354,8 @@ with col4:
 st.divider()
 
 # =============================
-# Plots: show all 9 bars, highlight selected in maroon (no x-axis text)
+# Plots: show all 9 bars, highlight selected in maroon
+# x-axis labels are hidden; x-axis title shows the metric label you want.
 # =============================
 p1, p2 = st.columns(2)
 with p1:
@@ -371,6 +367,7 @@ with p1:
             "Lives saved",
             "Annual lives saved",
             selected_key,
+            "Lives saved (annual)",
         ),
         use_container_width=True,
     )
@@ -381,9 +378,10 @@ with p2:
             df,
             "lives_saved_per_1000",
             Y_LIMS["lives_saved_per_1000"],
-            "Lives saved per 1,000 inspections",
+            "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
+            "Lives saved per 1,000",
         ),
         use_container_width=True,
     )
@@ -395,9 +393,10 @@ with p3:
             df,
             "info_percent",
             Y_LIMS["info_percent"],
-            "Percent of maximum possible information",
+            "Percent",
             "Regulatory information revealed",
             selected_key,
+            "Information (%)",
         ),
         use_container_width=True,
     )
@@ -411,6 +410,7 @@ with p4:
             "Inspections",
             "Total inspections conducted",
             selected_key,
+            "Total inspections",
         ),
         use_container_width=True,
     )
