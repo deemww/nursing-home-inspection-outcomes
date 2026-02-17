@@ -4,9 +4,6 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
-# =============================
-# Global CSS (fonts + sidebar sizing + icon font fix)
-# =============================
 st.markdown(
     """
     <style>
@@ -46,20 +43,17 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Sidebar radio option text ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
     }
 
-    /* Fallback for some Streamlit/BaseWeb versions (radio text sometimes in <p>) */
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
 
-    /* Restore Material Icons / Material Symbols so ligature text doesn't appear */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
@@ -144,11 +138,11 @@ Y_LIMS = {
     "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
-def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key, x_axis_title=None):
+def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key, x_axis_title):
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
-            title=x_axis_title,  # pass None to hide title
+            title=x_axis_title,
             sort=alt.SortField(field="x_order", order="ascending"),
             axis=alt.Axis(
                 labels=False,  # hide long scenario labels to avoid busy x-axis
@@ -162,7 +156,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             scale=alt.Scale(domain=list(y_domain), nice=False),
         ),
         tooltip=[
-            alt.Tooltip("scenario_label:N", title="Policy scenario"),
+            alt.Tooltip("scenario_label:N", title="Scenario"),
             alt.Tooltip(f"{metric_col}:Q", format=",.2f", title=y_label),
         ],
     )
@@ -322,10 +316,6 @@ st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
 )
-st.caption(
-    "Each bar represents a different inspection policy (a combination of inspection timing predictability and inspection frequency). "
-    "The highlighted bar corresponds to the selected policy shown above."
-)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -365,6 +355,7 @@ st.divider()
 
 # =============================
 # Plots: show all 9 bars, highlight selected in maroon
+# x-axis labels are hidden; x-axis title shows the metric label you want.
 # =============================
 p1, p2 = st.columns(2)
 with p1:
@@ -387,10 +378,10 @@ with p2:
             df,
             "lives_saved_per_1000",
             Y_LIMS["lives_saved_per_1000"],
-            "Lives saved per 1,000 inspections",
+            "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
-            None,  # remove repetitive x-axis title for this chart only
+            "Lives saved per 1,000",
         ),
         use_container_width=True,
     )
@@ -402,7 +393,7 @@ with p3:
             df,
             "info_percent",
             Y_LIMS["info_percent"],
-            "Percent of maximum possible information",
+            "Percent",
             "Regulatory information revealed",
             selected_key,
             "Information (%)",
