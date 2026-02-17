@@ -4,9 +4,6 @@ import altair as alt
 
 st.set_page_config(layout="wide")
 
-# =============================
-# Global CSS (fonts + sidebar sizing)
-# =============================
 st.markdown(
     """
     <style>
@@ -46,20 +43,17 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Sidebar radio option text ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
     }
 
-    /* Fallback for some Streamlit/BaseWeb versions (radio text sometimes in <p>) */
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
 
-    /* Restore Material Icons / Material Symbols so ligature text doesn't appear */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
