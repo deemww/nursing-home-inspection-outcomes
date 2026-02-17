@@ -395,7 +395,7 @@ with p3:
             df,
             "info_percent",
             Y_LIMS["info_percent"],
-            "Percent",
+            "Percent (%)",
             "Regulatory information revealed",
             selected_key,
         ),
