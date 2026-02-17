@@ -241,7 +241,7 @@ if "freq_position" not in st.session_state:
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
-    "<h1 style='margin-bottom:0.25rem;'>Nursing Home Inspection Policy Outcomes</h1>"
+    "<h1 style='margin-bottom:0.25rem; color:#000000;'>Nursing Home Inspection Policy Outcomes</h1>"
     "<p style='font-size:1.25rem; font-weight:700; color:#000000; margin-top:0;'>"
     "Explore how inspection frequency and predictability affect lives saved, efficiency, and regulatory information."
     "</p>"
