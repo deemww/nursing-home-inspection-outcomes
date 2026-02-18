@@ -354,9 +354,12 @@ selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 # Policy outcomes
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
-st.caption(
+st.markdown(
+    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+    "</p>",
+    unsafe_allow_html=True,
 )
 
 col1, col2, col3, col4 = st.columns(4)
