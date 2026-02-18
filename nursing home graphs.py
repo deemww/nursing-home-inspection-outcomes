@@ -8,16 +8,8 @@ st.markdown(
     """
     <style>
 
-    [data-testid="stAppViewContainer"] > .main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
     [data-testid="stSidebar"] {
-    background-color: #D9D9D9 !important;
-}
+    background-color: #D9D9D9 !important;}
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
