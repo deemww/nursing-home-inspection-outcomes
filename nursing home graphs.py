@@ -7,6 +7,10 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
+    /* Hide Altair/Vega-Lite chart action buttons (view data / export / open editor) */
+.vega-actions {
+  display: none !important;
+}
 
     [data-testid="stSidebar"] {
     background-color: #D9D9D9 !important;}
