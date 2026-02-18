@@ -220,7 +220,7 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
                 labelFont="Gotham",
                 titleFont="Gotham",
                 labelFontSize=14,
-                titleFontSize=15.7,
+                titleFontSize=15.2,
                 titleColor="#000000",
                 labelColor="#000000",
                 titleFontWeight="bold"
