@@ -13,20 +13,23 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
-
-    /* KPI cards: style the Streamlit metric container directly */
+    /* KPI cards (cleaner) */
 [data-testid="stMetric"]{
   background:#ffffff;
   border:1px solid rgba(0,0,0,0.10);
-  border-radius:14px;
-  padding:14px 16px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  border-radius:16px;
+  padding:16px 18px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* Add some space between the 4 cards */
-[data-testid="stHorizontalBlock"] > div:has([data-testid="stMetric"]) {
-  padding-right: 10px;
+/* Unit text placed inside each card */
+.metric-sub{
+  margin-top:-6px;
+  font-size:0.95rem;
+  font-weight:600;
+  color:rgba(0,0,0,0.55);
 }
+    
     
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
@@ -385,7 +388,7 @@ with col1:
         f"{float(row['lives_saved_annually']):.1f}",
         help="Annual reduction in patient deaths relative to no inspections",
     )
-    st.caption("per year")
+    st.markdown("<div class='metric-sub'>per year</div>", unsafe_allow_html=True)
 
 with col2:
     st.metric(
@@ -393,7 +396,7 @@ with col2:
         f"{float(row['lives_saved_per_1000']):.1f}",
         help="Lives saved per 1,000 inspections",
     )
-    st.caption("per 1,000 inspections")
+    st.markdown("<div class='metric-sub'>per 1,000 inspections</div>", unsafe_allow_html=True)
 
 with col3:
     st.metric(
@@ -401,7 +404,7 @@ with col3:
         f"{float(row['info_percent']):.1f}%",
         help="How much information inspections give regulators about a facility’s underlying quality, relative to no inspections.",
     )
-    st.caption("about facility quality")
+    st.markdown("<div class='metric-sub'>about facility quality</div>", unsafe_allow_html=True)
 
 with col4:
     st.metric(
@@ -409,7 +412,7 @@ with col4:
         f"{total_inspections:,}",
         help="Annual inspections nationwide (frequency × 15,615 facilities)",
     )
-    st.caption("inspections per year")
+    st.markdown("<div class='metric-sub'>inspections per year</div>", unsafe_allow_html=True)
 
 # Divider (tight spacing)
 st.markdown(
