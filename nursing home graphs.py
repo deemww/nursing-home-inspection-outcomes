@@ -280,7 +280,7 @@ with st.sidebar:
 
     pred_options = [
         "Unpredictable (random)",
-        "Current regime (factual)",
+        "Current regime (status quo)",
         "Perfectly predictable (scheduled)",
     ]
     pred_choice = st.radio(
