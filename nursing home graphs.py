@@ -8,6 +8,23 @@ st.markdown(
     """
     <style>
 
+    /* Center metrics (label, value, caption) */
+[data-testid="stMetric"] {
+  text-align: center;
+}
+
+[data-testid="stMetricLabel"] {
+  justify-content: center;
+}
+
+[data-testid="stMetricValue"] {
+  justify-content: center;
+}
+
+[data-testid="stCaptionContainer"] {
+  text-align: center;
+}
+
     [data-testid="stSidebar"] {
     background-color: #D9D9D9 !important;}
 
