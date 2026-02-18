@@ -415,7 +415,7 @@ with col4:
 st.divider()
 
 st.markdown(
-    "<h2 style='margin-top:0.01rem; margin-bottom:0.25rem;'>Policy Comparisons</h2>",
+    "<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>",
     unsafe_allow_html=True,
 )
 
