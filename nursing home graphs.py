@@ -414,7 +414,10 @@ with col4:
 
 st.divider()
 
-st.markdown("<h2 style='margin-top:1.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
+st.markdown(
+    "<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>",
+    unsafe_allow_html=True,
+)
 
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
