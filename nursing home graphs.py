@@ -373,10 +373,6 @@ selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 # Policy outcomes (boxes + plots)
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
-st.caption(
-    "Note: All outcomes are reported relative to a benchmark with no inspections. "
-    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
-)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -411,6 +407,14 @@ with col4:
         help="Annual inspections nationwide (frequency × 15,615 facilities)",
     )
     st.caption("inspections per year")
+
+    st.markdown(
+    "<p style='font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.75rem;'>"
+    "Note: All outcomes are reported relative to a benchmark with no inspections. "
+    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+    "</p>",
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
