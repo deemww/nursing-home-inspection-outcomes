@@ -2,14 +2,21 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
+# =============================
+# Page config
+# =============================
 st.set_page_config(layout="wide")
 
+# =============================
+# Global CSS
+# =============================
 st.markdown(
     """
     <style>
+    [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
-    [data-testid="stSidebar"] {
-    background-color: #D9D9D9 !important;}
+    /* Hide Altair/Vega-Lite chart action buttons (view data / export / open editor) */
+    [data-testid="stVegaLiteChart"] .vega-actions { display: none !important; }
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
@@ -32,14 +39,14 @@ st.markdown(
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* ---- Sidebar section header (e.g., "Policy Controls") ---- */
+    /* ---- Sidebar section header ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
-    /* ---- Sidebar widget label text (e.g., "Inspection timing predictability") ---- */
+    /* ---- Sidebar widget label text ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -47,17 +54,14 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    [data-testid="stSidebar"] div[role="radiogroup"] label span {
-        font-size: 1.15rem !important;
-        line-height: 1.5 !important;
-    }
-
+    [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
 
+    /* Restore Material icon fonts */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
@@ -74,23 +78,10 @@ st.markdown(
     }
 
     /* ---- METRICS: bold label + value + caption text ---- */
-[data-testid="stMetricLabel"] p {
-    font-weight: 700 !important;
-}
-
-[data-testid="stMetricValue"] {
-    font-weight: 800 !important;
-}
-
-/* if you ever use deltas */
-[data-testid="stMetricDelta"] {
-    font-weight: 700 !important;
-}
-
-/* captions under metrics (your st.caption lines) */
-[data-testid="stCaptionContainer"] p {
-    font-weight: 700 !important;
-}
+    [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
+    [data-testid="stMetricValue"] { font-weight: 800 !important; }
+    [data-testid="stMetricDelta"] { font-weight: 700 !important; }
+    [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -141,14 +132,12 @@ df["scenario_label"] = df.apply(
     axis=1,
 )
 
-# Stable x ordering: within each predictability regime, sort by frequency
 pred_order = {0: 0, 50: 1, 100: 2}
 df["pred_order"] = df["predictability_numeric"].map(pred_order)
 df = df.sort_values(["pred_order", "frequency"]).copy()
-df["freq_rank"] = df.groupby("predictability_numeric").cumcount() + 1  # 1..3
+df["freq_rank"] = df.groupby("predictability_numeric").cumcount() + 1
 df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
 
-# Add computed metric for plotting total inspections as 9 bars too
 df["total_inspections"] = (df["frequency"] * 15615).round(0)
 
 # =============================
@@ -186,18 +175,16 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
             alt.value("#800000"),
             alt.value("#c9c9c9"),
         ),
-
         stroke=alt.condition(
             alt.datum.scenario_key == selected_key,
-            alt.value("#EAAA00"),  # Gold color hex
-            alt.value(None)        # No border for unselected bars
+            alt.value("#EAAA00"),
+            alt.value(None),
         ),
         strokeWidth=alt.condition(
             alt.datum.scenario_key == selected_key,
-            alt.value(10),          # Thicker border to make it pop
-            alt.value(0)
+            alt.value(10),
+            alt.value(0),
         ),
-
         opacity=alt.condition(
             alt.datum.scenario_key == selected_key,
             alt.value(1.0),
@@ -226,22 +213,13 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
                 titleFontSize=15.2,
                 titleColor="#000000",
                 labelColor="#000000",
-                titleFontWeight="bold"
+                titleFontWeight="bold",
             ),
-            title=alt.TitleConfig(
-                font="Gotham",
-                fontSize=20,
-            ),
-            legend=alt.LegendConfig(
-                labelFont="Gotham",
-                titleFont="Gotham",
-            ),
+            title=alt.TitleConfig(font="Gotham", fontSize=20),
+            legend=alt.LegendConfig(labelFont="Gotham", titleFont="Gotham"),
         )
     )
 
-# =============================
-# Helper: get regime-specific frequency options
-# =============================
 def get_freq_options(predictability_numeric):
     opts = (
         df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
@@ -252,15 +230,18 @@ def get_freq_options(predictability_numeric):
     return low, mid, high
 
 # =============================
-# Session defaults (prevents radios from “jumping”)
+# Session defaults
 # =============================
 if "pred_choice" not in st.session_state:
     st.session_state["pred_choice"] = "Current regime (status quo)"
 if "freq_position" not in st.session_state:
-    st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
+    st.session_state["freq_position"] = "Current"  # "−25%", "Current", "+25%"
+# we will store the actual radio string in freq_choice; initialize lazily after we know options
+if "freq_choice" not in st.session_state:
+    st.session_state["freq_choice"] = None
 
 # =============================
-# Page header (main canvas stays clean)
+# Page header
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -273,32 +254,30 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls
+# Sidebar controls (FIXED: no jumping)
 # =============================
+pred_options = [
+    "Unpredictable (random)",
+    "Current regime (status quo)",
+    "Perfectly predictable (scheduled)",
+]
+pred_map = {
+    "Unpredictable (random)": 100,
+    "Current regime (status quo)": 50,
+    "Perfectly predictable (scheduled)": 0,
+}
+
 with st.sidebar:
     st.markdown("## Policy Controls")
 
-    pred_options = [
-        "Unpredictable (random)",
-        "Current regime (status quo)",
-        "Perfectly predictable (scheduled)",
-    ]
+    # Use key-based widget state; do not force index every rerun
     pred_choice = st.radio(
         "Inspection timing predictability",
         pred_options,
-        index=pred_options.index(st.session_state["pred_choice"]),
+        key="pred_choice",
     )
-    st.session_state["pred_choice"] = pred_choice
 
-    # Map UI choice to CSV coding:
-    # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
-    pred_map = {
-        "Unpredictable (random)": 100,
-        "Current regime (status quo)": 50,
-        "Perfectly predictable (scheduled)": 0,
-    }
     predictability = pred_map[pred_choice]
-
     low, mid, high = get_freq_options(predictability)
 
     freq_options = [
@@ -307,14 +286,19 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
-    # Keep the same “position” across regimes
-    pos_to_index = {"−25%": 0, "Current": 1, "+25%": 2}
-    default_index = pos_to_index[st.session_state["freq_position"]]
+    # Ensure the stored freq_choice is valid for the current regime; otherwise set from freq_position
+    pos_to_string = {
+        "−25%": freq_options[0],
+        "Current": freq_options[1],
+        "+25%": freq_options[2],
+    }
+    if st.session_state["freq_choice"] not in freq_options:
+        st.session_state["freq_choice"] = pos_to_string[st.session_state["freq_position"]]
 
     freq_choice = st.radio(
         "Inspection frequency",
         freq_options,
-        index=default_index,
+        key="freq_choice",
     )
 
     # Update stored position + set numeric frequency
@@ -327,7 +311,6 @@ with st.sidebar:
     else:
         st.session_state["freq_position"] = "+25%"
         frequency = float(high)
-
 
 # =============================
 # Selected scenario (main page)
@@ -365,12 +348,10 @@ row = df[
 ].iloc[0]
 
 total_inspections = int(float(frequency) * 15615)
-
-# Stable key for highlighting the selected bar
 selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 
 # =============================
-# Policy outcomes (boxes + plots)
+# Policy outcomes
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
 st.caption(
@@ -412,15 +393,16 @@ with col4:
     )
     st.caption("inspections per year")
 
+# Divider (tight spacing)
 st.markdown(
     "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    "<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>",
-    unsafe_allow_html=True,
-)
+# =============================
+# Policy comparisons
+# =============================
+st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
