@@ -255,7 +255,7 @@ def get_freq_options(predictability_numeric):
 # Session defaults (prevents radios from “jumping”)
 # =============================
 if "pred_choice" not in st.session_state:
-    st.session_state["pred_choice"] = "Current regime (status quo)"
+    st.session_state["pred_choice"] = "Current regime (factual)"
 if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
