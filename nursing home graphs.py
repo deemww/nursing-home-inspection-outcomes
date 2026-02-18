@@ -92,10 +92,6 @@ st.markdown(
 [data-testid="stCaptionContainer"] p {
     font-weight: 700 !important;
 }
-
-    html, body, [data-testid="stAppViewContainer"] {
-    background-color: #D9D9D9 !important;}
-    
     </style>
     """,
     unsafe_allow_html=True,
