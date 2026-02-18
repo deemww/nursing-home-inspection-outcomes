@@ -9,7 +9,7 @@ st.markdown(
     <style>
 
     [data-testid="stSidebar"] {
-    background-color: #737373 !important;
+    background-color: #A6A6A6 !important;
 }
 
     /* ---- Gotham font faces ---- */
