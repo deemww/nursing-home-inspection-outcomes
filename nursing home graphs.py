@@ -2,24 +2,13 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
-# =============================
-# Page config
-# =============================
 st.set_page_config(layout="wide")
 
-# =============================
-# Global CSS
-# =============================
 st.markdown(
     """
     <style>
 
-    
-    
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
-
-    /* Hide Altair/Vega-Lite chart action buttons (view data / export / open editor) */
-    [data-testid="stVegaLiteChart"] .vega-actions { display: none !important; }
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
@@ -37,19 +26,15 @@ st.markdown(
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
-    /* ---- Apply Gotham everywhere in Streamlit UI ---- */
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* ---- Sidebar section header ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
-        font-weight: 700 !important;
-    }
-
-    /* ---- Sidebar widget label text ---- */
+        font-weight: 700 !important;}
+        
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -64,7 +49,6 @@ st.markdown(
         margin: 0 !important;
     }
 
-    /* Restore Material icon fonts */
     [data-testid="stIconMaterial"],
     [data-testid="stIconMaterial"] span,
     span.material-icons,
