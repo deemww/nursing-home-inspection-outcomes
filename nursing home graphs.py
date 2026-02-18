@@ -7,6 +7,11 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
+
+    [data-testid="stAppViewContainer"] > .main {
+    background-color: #F5F1E8 !important;
+}
+
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
