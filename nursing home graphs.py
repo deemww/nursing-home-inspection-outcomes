@@ -69,7 +69,24 @@ st.markdown(
         font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
     }
 
-    
+    /* ---- METRICS: bold label + value + caption text ---- */
+[data-testid="stMetricLabel"] p {
+    font-weight: 700 !important;
+}
+
+[data-testid="stMetricValue"] {
+    font-weight: 800 !important;
+}
+
+/* if you ever use deltas */
+[data-testid="stMetricDelta"] {
+    font-weight: 700 !important;
+}
+
+/* captions under metrics (your st.caption lines) */
+[data-testid="stCaptionContainer"] p {
+    font-weight: 700 !important;
+}
     
     </style>
     """,
