@@ -13,6 +13,21 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
+
+    /* KPI cards: style the Streamlit metric container directly */
+[data-testid="stMetric"]{
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,0.10);
+  border-radius:14px;
+  padding:14px 16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Add some space between the 4 cards */
+[data-testid="stHorizontalBlock"] > div:has([data-testid="stMetric"]) {
+  padding-right: 10px;
+}
+    
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
     /* Hide Altair/Vega-Lite chart action buttons (view data / export / open editor) */
