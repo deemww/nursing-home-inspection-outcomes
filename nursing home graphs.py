@@ -369,7 +369,7 @@ selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
 # =============================
 # Policy outcomes (boxes + plots)
 # =============================
-st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy outcomes</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
 st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
