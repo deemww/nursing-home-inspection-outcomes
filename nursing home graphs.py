@@ -334,7 +334,7 @@ scenario = scenario_label(predictability, frequency)
 st.markdown(
     f"""
     <div style='text-align:center; margin-top:0.4rem; margin-bottom:1.2rem;'>
-        <div style='color:#000000; font-size:1.5rem; font-weight:700; margin-bottom:0.6rem;'>Selected policy scenario</div>
+        <div style='color:#000000; font-size:1.5rem; font-weight:700; margin-bottom:0.6rem;'>Selected Policy Scenario</div>
         <span style='
             display: inline-block;
             padding: 12px 24px;
