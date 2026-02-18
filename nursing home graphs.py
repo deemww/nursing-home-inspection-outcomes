@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+alt.renderers.set_embed_options(actions=False)
 
 st.set_page_config(layout="wide")
 
