@@ -412,7 +412,10 @@ with col4:
     )
     st.caption("inspections per year")
 
-st.divider()
+st.markdown(
+    "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
+    unsafe_allow_html=True,
+)
 
 st.markdown(
     "<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>",
