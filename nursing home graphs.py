@@ -13,19 +13,6 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
-
-    .metric-card{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,0.10);
-  border-radius:14px;
-  padding:14px 16px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
-}
-
-.metric-card [data-testid="stMetricValue"]{
-  padding-top: 0.2rem;
-}
-    
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
     /* Hide Altair/Vega-Lite chart action buttons (view data / export / open editor) */
@@ -378,44 +365,36 @@ st.markdown(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
     st.metric(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
         help="Annual reduction in patient deaths relative to no inspections",
     )
     st.caption("per year")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
     st.metric(
         "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
         help="Lives saved per 1,000 inspections",
     )
     st.caption("per 1,000 inspections")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 with col3:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
     st.metric(
         "Regulatory information",
         f"{float(row['info_percent']):.1f}%",
         help="How much information inspections give regulators about a facility’s underlying quality, relative to no inspections.",
     )
     st.caption("about facility quality")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 with col4:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
     st.metric(
         "Total inspections",
         f"{total_inspections:,}",
         help="Annual inspections nationwide (frequency × 15,615 facilities)",
     )
     st.caption("inspections per year")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # Divider (tight spacing)
 st.markdown(
