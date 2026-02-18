@@ -255,7 +255,7 @@ def get_freq_options(predictability_numeric):
 # Session defaults (prevents radios from “jumping”)
 # =============================
 if "pred_choice" not in st.session_state:
-    st.session_state["pred_choice"] = "Current regime (factual)"
+    st.session_state["pred_choice"] = "Current regime (status quo)"
 if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
@@ -294,7 +294,7 @@ with st.sidebar:
     # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
-        "Current regime (factual)": 50,
+        "Current regime (status quo)": 50,
         "Perfectly predictable (scheduled)": 0,
     }
     predictability = pred_map[pred_choice]
