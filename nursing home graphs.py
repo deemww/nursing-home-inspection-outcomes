@@ -398,11 +398,11 @@ with col2:
 
 with col3:
     st.metric(
-        "Information",
+        "Regulatory information",
         f"{float(row['info_percent']):.1f}%",
-        help="How much regulators learn about facility quality",
+        help="How much information inspections give regulators about a facility’s underlying quality, relative to no inspections.",
     )
-    st.caption("of maximum possible information")
+    st.caption("about facility quality")
 
 with col4:
     st.metric(
