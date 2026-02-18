@@ -87,22 +87,6 @@ st.markdown(
 [data-testid="stCaptionContainer"] p {
     font-weight: 700 !important;
 }
-
-    /* ---- Metric cards ---- */
-.metric-card {
-    border: 1px solid #e6e6e6;
-    border-radius: 14px;
-    padding: 14px 16px;
-    background: #fbfbfb;
-}
-
-.metric-card [data-testid="stMetric"] {
-    margin-bottom: 0.25rem;
-}
-
-.metric-card [data-testid="stCaptionContainer"] {
-    margin-top: -0.35rem;
-}
     
     </style>
     """,
@@ -394,8 +378,6 @@ st.caption(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-
     st.metric(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
@@ -403,11 +385,7 @@ with col1:
     )
     st.caption("per year")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 with col2:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-
     st.metric(
         "Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
@@ -415,11 +393,7 @@ with col2:
     )
     st.caption("per 1,000 inspections")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 with col3:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-
     st.metric(
         "Information",
         f"{float(row['info_percent']):.1f}%",
@@ -427,19 +401,13 @@ with col3:
     )
     st.caption("of maximum possible information")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 with col4:
-    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-
     st.metric(
         "Total inspections",
         f"{total_inspections:,}",
         help="Annual inspections nationwide (frequency × 15,615 facilities)",
     )
     st.caption("inspections per year")
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
