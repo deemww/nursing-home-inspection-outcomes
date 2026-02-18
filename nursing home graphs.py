@@ -8,6 +8,23 @@ st.markdown(
     """
     <style>
 
+    /* Keep metric label left-aligned (so the help icon looks normal) */
+[data-testid="stMetricLabel"] {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+/* Center the metric VALUE only */
+[data-testid="stMetricValue"] {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Center the caption under metrics */
+[data-testid="stCaptionContainer"] {
+  text-align: center !important;
+}
+
     [data-testid="stSidebar"] {
     background-color: #D9D9D9 !important;}
 
