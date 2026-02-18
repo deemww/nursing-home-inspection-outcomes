@@ -255,7 +255,7 @@ def get_freq_options(predictability_numeric):
 # Session defaults (prevents radios from “jumping”)
 # =============================
 if "pred_choice" not in st.session_state:
-    st.session_state["pred_choice"] = "Current regime (factual)"
+    st.session_state["pred_choice"] = "Current regime (status quo)"
 if "freq_position" not in st.session_state:
     st.session_state["freq_position"] = "Current"  # one of: "−25%", "Current", "+25%"
 
@@ -280,7 +280,7 @@ with st.sidebar:
 
     pred_options = [
         "Unpredictable (random)",
-        "Current regime (factual)",
+        "Current regime (status quo)",
         "Perfectly predictable (scheduled)",
     ]
     pred_choice = st.radio(
@@ -294,7 +294,7 @@ with st.sidebar:
     # CSV: 0 = perfectly predictable, 50 = current, 100 = fully random
     pred_map = {
         "Unpredictable (random)": 100,
-        "Current regime (factual)": 50,
+        "Current regime (status quo)": 50,
         "Perfectly predictable (scheduled)": 0,
     }
     predictability = pred_map[pred_choice]
@@ -412,7 +412,10 @@ with col4:
     )
     st.caption("inspections per year")
 
-st.divider()
+st.markdown(
+    "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
+    unsafe_allow_html=True,
+)
 
 st.markdown(
     "<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>",
