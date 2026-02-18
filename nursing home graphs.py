@@ -414,6 +414,8 @@ with col4:
 
 st.divider()
 
+st.markdown("<h2 style='margin-top:1.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
+
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
     "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
