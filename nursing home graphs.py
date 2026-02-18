@@ -8,8 +8,8 @@ st.markdown(
     """
     <style>
 
-    [data-testid="stAppViewContainer"] > .main {
-    background-color: #F5F1E8 !important;
+    [data-testid="stSidebar"] {
+    background-color: #EEE6D8 !important;
 }
 
     /* ---- Gotham font faces ---- */
