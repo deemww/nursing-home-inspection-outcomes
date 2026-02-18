@@ -390,7 +390,7 @@ with col1:
 
 with col2:
     st.metric(
-        "Efficiency",
+        "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
         help="Lives saved per 1,000 inspections",
     )
