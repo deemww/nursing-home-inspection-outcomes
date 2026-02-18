@@ -414,8 +414,12 @@ with col4:
 
 st.divider()
 
-st.caption(
-    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above.")
+st.markdown(
+    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
+    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
+    "</p>",
+    unsafe_allow_html=True,
+)
 
 p1, p2 = st.columns(2)
 with p1:
