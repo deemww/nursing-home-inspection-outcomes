@@ -408,12 +408,9 @@ with col4:
     )
     st.caption("inspections per year")
 
-    st.markdown(
-    "<p style='font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.75rem;'>"
+    st.caption(
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
-    "</p>",
-    unsafe_allow_html=True,
 )
 
 st.divider()
