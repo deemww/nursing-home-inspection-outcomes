@@ -197,9 +197,14 @@ CHART_KEYS = [
 ]
 
 def parse_clicked_key_from_chart_state(chart_state) -> str | None:
+    """
+    chart_state is whatever Streamlit stores under st.session_state[chart_key].
+    We defensively handle common shapes.
+    """
     if not chart_state:
         return None
 
+    # Typically: chart_state.selection is a dict
     sel = getattr(chart_state, "selection", None)
     if sel is None and isinstance(chart_state, dict):
         sel = chart_state.get("selection")
@@ -211,12 +216,14 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
     if point is None:
         return None
 
+    # Shape A: list of selected records: [{'scenario_key': '50_0.99', ...}]
     if isinstance(point, list):
         if not point:
             return None
         first = point[0]
         return first.get("scenario_key") if isinstance(first, dict) else None
 
+    # Shape B: dict with field -> value or field -> [value]
     if isinstance(point, dict):
         val = point.get("scenario_key")
 
@@ -233,6 +240,7 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
 
         return None
 
+    # Shape C: direct string (rare)
     if isinstance(point, str):
         return point
 
@@ -257,6 +265,7 @@ if "selected_key" not in st.session_state:
     low0, mid0, high0 = get_freq_options(50)
     st.session_state["selected_key"] = f"50_{round(float(mid0), 4)}"
 
+# Initialize radio state if missing
 if "pred_choice" not in st.session_state or "freq_choice" not in st.session_state:
     set_radios_from_selected_key(st.session_state["selected_key"])
 
@@ -277,17 +286,10 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls + TOGGLE
+# Sidebar controls (callbacks update selected_key)
 # =============================
 with st.sidebar:
     st.markdown("## Policy Controls")
-
-    # Toggle: sort bars by magnitude (per chart)
-    sort_by_magnitude = st.checkbox(
-        "Sort bars by magnitude",
-        value=False,
-        help="If enabled, bars in each chart are ordered from largest to smallest value for that chart’s metric.",
-    )
 
     st.radio(
         "Inspection timing predictability",
@@ -305,6 +307,7 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
+    # Ensure valid freq_choice under this predictability
     if st.session_state["freq_choice"] not in freq_options:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
@@ -406,17 +409,9 @@ st.markdown(
 )
 
 # =============================
-# Vega-Lite bar chart specs (clickable) + SORT TOGGLE
+# Vega-Lite bar chart specs (clickable)
 # =============================
-def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style, sort_by_magnitude_flag):
-    # Choose sort rule based on toggle
-    if sort_by_magnitude_flag:
-        sort_spec = {"field": metric_col, "order": "descending"}
-        x_field = "scenario_key"  # unique + stable when sorting by values
-    else:
-        sort_spec = {"field": "x_order", "order": "ascending"}
-        x_field = "scenario_key"  # keep unique regardless; axis labels are hidden anyway
-
+def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style):
     return {
         "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
         "height": 235,
@@ -427,9 +422,9 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
         ],
         "encoding": {
             "x": {
-                "field": x_field,
+                "field": "scenario_label",
                 "type": "nominal",
-                "sort": sort_spec,
+                "sort": {"field": "x_order", "order": "ascending"},
                 "axis": {"labels": False, "ticks": False, "domain": False, "title": None},
             },
             "y": {
@@ -475,6 +470,7 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
     }
 
 def render_chart(df_in, spec, key):
+    # The selection state is stored under st.session_state[key] and will be available next rerun.
     st.vega_lite_chart(
         df_in,
         spec,
@@ -505,7 +501,6 @@ with p1:
             "Lives saved",
             "Annual lives saved",
             selected_key,
-            sort_by_magnitude,
         ),
         key="vega_lives_saved_annually",
     )
@@ -519,7 +514,6 @@ with p2:
             "Lives per 1,000 inspections",
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
-            sort_by_magnitude,
         ),
         key="vega_lives_saved_per_1000",
     )
@@ -534,7 +528,6 @@ with p3:
             "Percent (%)",
             "Regulatory information revealed",
             selected_key,
-            sort_by_magnitude,
         ),
         key="vega_info_percent",
     )
@@ -548,14 +541,12 @@ with p4:
             "Inspections",
             "Total inspections conducted",
             selected_key,
-            sort_by_magnitude,
         ),
         key="vega_total_inspections",
     )
 
-# Optional debugging
+# Optional debugging (uncomment temporarily)
 # with st.expander("Debug"):
 #     st.write("Selected key:", st.session_state["selected_key"])
-#     st.write("Sort by magnitude:", sort_by_magnitude)
 #     for k in CHART_KEYS:
 #         st.write(k, st.session_state.get(k))
