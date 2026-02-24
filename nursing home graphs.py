@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-import altair as alt
+import altair as alt  # still used for constants/fonts; charts rendered via Vega-Lite spec
 
 st.set_page_config(layout="wide")
 
@@ -10,14 +10,19 @@ st.markdown(
 
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
+    /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
+
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Light.otf") format("opentype"); font-weight: 300; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-LightItalic.otf") format("opentype"); font-weight: 300; font-style: italic; }
+
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Medium.otf") format("opentype"); font-weight: 500; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-MediumItalic.otf") format("opentype"); font-weight: 500; font-style: italic; }
+
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BoldItalic.otf") format("opentype"); font-weight: 700; font-style: italic; }
+
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
@@ -44,21 +49,7 @@ st.markdown(
         margin: 0 !important;
     }
 
-    [data-testid="stIconMaterial"],
-    [data-testid="stIconMaterial"] span,
-    span.material-icons,
-    span.material-icons-outlined,
-    span.material-icons-round,
-    span.material-icons-sharp,
-    span.material-icons-two-tone,
-    span.material-symbols-outlined,
-    span.material-symbols-rounded,
-    span.material-symbols-sharp,
-    span[class^="material-symbols"],
-    span[class*=" material-symbols"] {
-        font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
-    }
-
+    /* ---- METRICS: bold label + value + caption text ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
@@ -81,28 +72,28 @@ def scenario_label(predictability, frequency):
         if frequency == 0.99:
             return "Current Regime"
         elif frequency > 0.99:
-            return "Increase Frequency (\u2191 25%)"
+            return "Increase Frequency (↑ 25%)"
         else:
-            return "Decrease Frequency (\u2193 25%)"
+            return "Decrease Frequency (↓ 25%)"
 
     if predictability == 100:
         if frequency == 0.99:
             return "Unpredictable"
         elif frequency > 0.99:
-            return "Unpredictable; Increased Frequency (\u2191 25%)"
+            return "Unpredictable; Increased Frequency (↑ 25%)"
         else:
-            return "Unpredictable; Decreased Frequency (\u2193 25%)"
+            return "Unpredictable; Decreased Frequency (↓ 25%)"
 
     if predictability == 0:
         if frequency == 0.98:
             return "Perfectly Predictable"
         elif frequency > 0.98:
-            return "Perfectly Predictable; Increased Frequency (\u2191 25%)"
+            return "Perfectly Predictable; Increased Frequency (↑ 25%)"
         else:
-            return "Perfectly Predictable; Decreased Frequency (\u2193 25%)"
+            return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
 
 # =============================
-# Precompute columns
+# Precompute columns + stable key
 # =============================
 df["freq_round"] = df["frequency"].round(4)
 df["scenario_key"] = (
@@ -118,6 +109,7 @@ df["pred_order"] = df["predictability_numeric"].map(pred_order)
 df = df.sort_values(["pred_order", "frequency"]).copy()
 df["freq_rank"] = df.groupby("predictability_numeric").cumcount() + 1
 df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
+
 df["total_inspections"] = (df["frequency"] * 15615).round(0)
 
 # =============================
@@ -131,7 +123,7 @@ Y_LIMS = {
 }
 
 # =============================
-# Pred map
+# Sidebar helpers
 # =============================
 pred_options = [
     "Unpredictable (random)",
@@ -143,6 +135,7 @@ pred_map = {
     "Current regime (status quo)": 50,
     "Perfectly predictable (scheduled)": 0,
 }
+pred_to_label = {100: pred_options[0], 50: pred_options[1], 0: pred_options[2]}
 
 def get_freq_options(predictability_numeric):
     opts = (
@@ -153,115 +146,59 @@ def get_freq_options(predictability_numeric):
     low, mid, high = sorted(opts)
     return low, mid, high
 
-# =============================
-# Session defaults (internal keys, not bound to widgets)
-# =============================
-if "pred_internal" not in st.session_state:
-    st.session_state["pred_internal"] = "Current regime (status quo)"
-if "freq_position" not in st.session_state:
-    st.session_state["freq_position"] = "Current"
+def sync_sidebar_from_selected_key(selected_key: str) -> None:
+    r = df.loc[df["scenario_key"] == selected_key].iloc[0]
+    pred = int(r["predictability_numeric"])
+    freq = float(r["frequency"])
 
-# =============================
-# Click handler
-# =============================
-def _handle_chart_click(event):
-    try:
-        clicked_key = event["selection"]["bar_select"][0]["scenario_key"]
-    except (KeyError, IndexError, TypeError):
-        return
+    st.session_state["pred_choice"] = pred_to_label[pred]
 
-    pred_str, freq_str = clicked_key.split("_", 1)
-    pred_num = int(pred_str)
-    freq_num = float(freq_str)
+    low, mid, high = get_freq_options(pred)
+    freq_options = [
+        f"−25% ({low:.2f})",
+        f"Current ({mid:.2f})",
+        f"+25% ({high:.2f})",
+    ]
 
-    reverse_pred = {v: k for k, v in pred_map.items()}
-    st.session_state["pred_internal"] = reverse_pred[pred_num]
-
-    low, mid, high = get_freq_options(pred_num)
-    if abs(freq_num - low) < 1e-6:
-        st.session_state["freq_position"] = "\u221225%"
-    elif abs(freq_num - mid) < 1e-6:
-        st.session_state["freq_position"] = "Current"
+    if freq == float(low):
+        st.session_state["freq_choice"] = freq_options[0]
+    elif freq == float(mid):
+        st.session_state["freq_choice"] = freq_options[1]
     else:
-        st.session_state["freq_position"] = "+25%"
+        st.session_state["freq_choice"] = freq_options[2]
+
+def update_selected_key_from_sidebar():
+    pred = pred_map[st.session_state["pred_choice"]]
+    low, mid, high = get_freq_options(pred)
+
+    fc = st.session_state["freq_choice"]
+    if fc.startswith("−25%"):
+        freq = float(low)
+    elif fc.startswith("Current"):
+        freq = float(mid)
+    else:
+        freq = float(high)
+
+    st.session_state["selected_key"] = f"{int(pred)}_{round(float(freq), 4)}"
 
 # =============================
-# Chart function
+# Session defaults
 # =============================
-def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
-    selection = alt.selection_point(name="bar_select", fields=["scenario_key"], empty=False)
+if "selected_key" not in st.session_state:
+    low0, mid0, high0 = get_freq_options(50)
+    st.session_state["selected_key"] = f"50_{round(float(mid0), 4)}"
 
-    base = alt.Chart(df_all).encode(
-        x=alt.X(
-            "scenario_label:N",
-            title=None,
-            sort=alt.SortField(field="x_order", order="ascending"),
-            axis=alt.Axis(labels=False, ticks=False, domain=False),
-        ),
-        y=alt.Y(
-            f"{metric_col}:Q",
-            title=y_label,
-            scale=alt.Scale(domain=list(y_domain), nice=False),
-        ),
-        tooltip=[
-            alt.Tooltip("scenario_label:N", title="Scenario"),
-            alt.Tooltip(f"{metric_col}:Q", format=",.2f", title=y_label),
-        ],
-    )
+if "pred_choice" not in st.session_state:
+    st.session_state["pred_choice"] = pred_to_label[50]
+if "freq_choice" not in st.session_state:
+    # set based on selected_key
+    sync_sidebar_from_selected_key(st.session_state["selected_key"])
 
-    bars = base.mark_bar(size=40, cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
-        color=alt.condition(
-            selection | (alt.datum.scenario_key == selected_key),
-            alt.value("#800000"),
-            alt.value("#c9c9c9"),
-        ),
-        stroke=alt.condition(
-            selection | (alt.datum.scenario_key == selected_key),
-            alt.value("#EAAA00"),
-            alt.value(None),
-        ),
-        strokeWidth=alt.condition(
-            selection | (alt.datum.scenario_key == selected_key),
-            alt.value(10),
-            alt.value(0),
-        ),
-        opacity=alt.condition(
-            selection | (alt.datum.scenario_key == selected_key),
-            alt.value(1.0),
-            alt.value(0.55),
-        ),
-    ).add_params(selection)
-
-    return (
-        bars.properties(
-            height=235,
-            title=alt.TitleParams(
-                text=chart_title,
-                anchor="middle",
-                fontSize=20,
-                fontWeight="bold",
-                offset=10,
-            ),
-            padding={"top": 8, "left": 10, "right": 10, "bottom": 5},
-        )
-        .configure(
-            font="Gotham",
-            axis=alt.AxisConfig(
-                labelFont="Gotham",
-                titleFont="Gotham",
-                labelFontSize=14,
-                titleFontSize=15.2,
-                titleColor="#000000",
-                labelColor="#000000",
-                titleFontWeight="bold",
-            ),
-            title=alt.TitleConfig(font="Gotham", fontSize=20),
-            legend=alt.LegendConfig(labelFont="Gotham", titleFont="Gotham"),
-        )
-    )
+# Keep sidebar in sync with selected scenario on every run
+sync_sidebar_from_selected_key(st.session_state["selected_key"])
 
 # =============================
-# Page header
+# Header
 # =============================
 st.markdown(
     "<div style='text-align:center; margin-top:0.25rem;'>"
@@ -274,61 +211,47 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls
+# Sidebar controls (callbacks only)
 # =============================
 with st.sidebar:
     st.markdown("## Policy Controls")
 
-    pred_index = pred_options.index(st.session_state["pred_internal"])
-    pred_choice = st.radio(
+    st.radio(
         "Inspection timing predictability",
         pred_options,
-        index=pred_index,
-        key="pred_choice_widget",
+        key="pred_choice",
+        on_change=update_selected_key_from_sidebar,
     )
-    # Keep internal state in sync when user clicks the radio
-    st.session_state["pred_internal"] = pred_choice
 
-    predictability = pred_map[pred_choice]
-    low, mid, high = get_freq_options(predictability)
-
+    # Frequency options depend on predictability
+    pred_numeric = pred_map[st.session_state["pred_choice"]]
+    low, mid, high = get_freq_options(pred_numeric)
     freq_options = [
-        f"\u221225% ({low:.2f})",
+        f"−25% ({low:.2f})",
         f"Current ({mid:.2f})",
         f"+25% ({high:.2f})",
     ]
 
-    pos_to_string = {
-        "\u221225%": freq_options[0],
-        "Current": freq_options[1],
-        "+25%": freq_options[2],
-    }
+    # Ensure current freq_choice is valid under this predictability
+    if st.session_state["freq_choice"] not in freq_options:
+        # default to "Current" if options changed
+        st.session_state["freq_choice"] = freq_options[1]
 
-    # If freq_position is somehow invalid for current options, reset to Current
-    if st.session_state["freq_position"] not in pos_to_string:
-        st.session_state["freq_position"] = "Current"
-
-    freq_index = freq_options.index(pos_to_string[st.session_state["freq_position"]])
-    freq_choice = st.radio(
+    st.radio(
         "Inspection frequency",
         freq_options,
-        index=freq_index,
-        key="freq_choice_widget",
+        key="freq_choice",
+        on_change=update_selected_key_from_sidebar,
     )
 
-    if freq_choice.startswith("\u221225%"):
-        st.session_state["freq_position"] = "\u221225%"
-        frequency = float(low)
-    elif freq_choice.startswith("Current"):
-        st.session_state["freq_position"] = "Current"
-        frequency = float(mid)
-    else:
-        st.session_state["freq_position"] = "+25%"
-        frequency = float(high)
+# =============================
+# Selected scenario (source of truth: selected_key)
+# =============================
+selected_key = st.session_state["selected_key"]
+row = df.loc[df["scenario_key"] == selected_key].iloc[0]
 
-# =============================
-# Selected scenario
-# =============================
+predictability = int(row["predictability_numeric"])
+frequency = float(row["frequency"])
 scenario = scenario_label(predictability, frequency)
 
 st.markdown(
@@ -349,29 +272,24 @@ st.markdown(
         '>
             {scenario}
         </span>
+        <div style='margin-top:0.5rem; font-size:0.9rem; color:rgba(0,0,0,0.6);'>
+            Tip: Click a bar below to select that scenario.
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
 # =============================
-# Selected row
-# =============================
-row = df[
-    (df["predictability_numeric"] == predictability) & (df["frequency"] == frequency)
-].iloc[0]
-
-total_inspections = int(float(frequency) * 15615)
-selected_key = f"{int(predictability)}_{round(float(frequency), 4)}"
-
-# =============================
 # Policy outcomes
 # =============================
+total_inspections = int(float(frequency) * 15615)
+
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
-    "\u201cLives saved\u201d reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
     unsafe_allow_html=True,
 )
@@ -379,35 +297,23 @@ st.markdown(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(
-        "Lives saved",
-        f"{float(row['lives_saved_annually']):.1f}",
-        help="Annual reduction in patient deaths relative to no inspections",
-    )
+    st.metric("Lives saved", f"{float(row['lives_saved_annually']):.1f}",
+              help="Annual reduction in patient deaths relative to no inspections")
     st.caption("per year")
 
 with col2:
-    st.metric(
-        "Inspection Efficiency",
-        f"{float(row['lives_saved_per_1000']):.1f}",
-        help="Lives saved per 1,000 inspections",
-    )
+    st.metric("Inspection Efficiency", f"{float(row['lives_saved_per_1000']):.1f}",
+              help="Lives saved per 1,000 inspections")
     st.caption("per 1,000 inspections")
 
 with col3:
-    st.metric(
-        "Regulatory information",
-        f"{float(row['info_percent']):.1f}%",
-        help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
-    )
+    st.metric("Regulatory information", f"{float(row['info_percent']):.1f}%",
+              help="Information regulators learn about facility quality, relative to no inspections")
     st.caption("about facility quality")
 
 with col4:
-    st.metric(
-        "Total inspections",
-        f"{total_inspections:,}",
-        help="Annual inspections nationwide (frequency x 15,615 facilities)",
-    )
+    st.metric("Total inspections", f"{total_inspections:,}",
+              help="Annual inspections nationwide (frequency × 15,615 facilities)")
     st.caption("inspections per year")
 
 st.markdown(
@@ -416,51 +322,177 @@ st.markdown(
 )
 
 # =============================
+# Clickable Vega-Lite bar chart builder
+# =============================
+POINT_PARAM = "point_selection"
+
+def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style):
+    # Selection is defined as a Vega-Lite "param" with select="point"
+    # Streamlit returns selection under event.selection[POINT_PARAM].  [oai_citation:1‡Streamlit Docs](https://docs.streamlit.io/develop/api-reference/charts/st.vega_lite_chart?utm_source=chatgpt.com)
+    return {
+        "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
+        "height": 235,
+        "padding": {"top": 8, "left": 10, "right": 10, "bottom": 5},
+        "mark": {"type": "bar", "size": 40, "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
+        "params": [
+            {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
+        ],
+        "encoding": {
+            "x": {
+                "field": "scenario_label",
+                "type": "nominal",
+                "sort": {"field": "x_order", "order": "ascending"},
+                "axis": {"labels": False, "ticks": False, "domain": False, "title": None},
+            },
+            "y": {
+                "field": metric_col,
+                "type": "quantitative",
+                "scale": {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False},
+                "axis": {"title": y_label, "titleFontWeight": "bold"},
+            },
+            "tooltip": [
+                {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
+                {"field": metric_col, "type": "quantitative", "title": y_label, "format": ",.2f"},
+                {"field": "scenario_key", "type": "nominal", "title": "Key"},
+            ],
+            # Highlight the currently selected scenario_key (from session_state)
+            "color": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
+                "value": "#c9c9c9",
+            },
+            "opacity": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
+                "value": 0.55,
+            },
+            "stroke": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#EAAA00"},
+                "value": None,
+            },
+            "strokeWidth": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 10},
+                "value": 0,
+            },
+        },
+        "config": {
+            "font": "Gotham",
+            "axis": {
+                "labelFont": "Gotham",
+                "titleFont": "Gotham",
+                "labelFontSize": 14,
+                "titleFontSize": 15.2,
+                "labelColor": "#000000",
+                "titleColor": "#000000",
+            },
+            "title": {"font": "Gotham", "fontSize": 20},
+            "legend": {"labelFont": "Gotham", "titleFont": "Gotham"},
+        },
+    }
+
+def parse_clicked_key(event):
+    """
+    Streamlit returns a VegaLiteState with .selection holding parameter states.  [oai_citation:2‡Streamlit Docs](https://docs.streamlit.io/develop/api-reference/charts/st.vega_lite_chart?utm_source=chatgpt.com)
+    For our point param, event.selection[POINT_PARAM] contains something like:
+      {"scenario_key": "50_0.99"} or {"scenario_key": ["50_0.99"]}
+    """
+    if not event:
+        return None
+
+    sel = getattr(event, "selection", None)
+    if not sel:
+        return None
+
+    point = sel.get(POINT_PARAM)
+    if not point:
+        return None
+
+    val = point.get("scenario_key")
+    if isinstance(val, list):
+        return val[0] if val else None
+    if isinstance(val, str):
+        return val
+    return None
+
+def render_clickable_chart(data, spec, key):
+    event = st.vega_lite_chart(
+        data,
+        spec,
+        use_container_width=True,
+        key=key,
+        on_select="rerun",
+        selection_mode=POINT_PARAM,
+    )
+    clicked = parse_clicked_key(event)
+    if clicked and clicked != st.session_state["selected_key"]:
+        st.session_state["selected_key"] = clicked
+        sync_sidebar_from_selected_key(clicked)
+        st.rerun()
+
+# =============================
 # Policy comparisons
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
-    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above. "
-    "Click any bar to select that policy."
+    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
     "</p>",
     unsafe_allow_html=True,
 )
 
 p1, p2 = st.columns(2)
 with p1:
-    event1 = st.altair_chart(
-        multi_bar_chart(df, "lives_saved_annually", Y_LIMS["lives_saved_annually"], "Lives saved", "Annual lives saved", selected_key),
-        use_container_width=True,
-        on_select="rerun",
-        key="chart_lives",
+    render_clickable_chart(
+        df,
+        vega_bar_spec(
+            "lives_saved_annually",
+            Y_LIMS["lives_saved_annually"],
+            "Lives saved",
+            "Annual lives saved",
+            selected_key,
+        ),
+        key="vega_lives_saved_annually",
     )
-    _handle_chart_click(event1)
 
 with p2:
-    event2 = st.altair_chart(
-        multi_bar_chart(df, "lives_saved_per_1000", Y_LIMS["lives_saved_per_1000"], "Lives per 1,000 inspections", "Efficiency (lives saved per 1,000 inspections)", selected_key),
-        use_container_width=True,
-        on_select="rerun",
-        key="chart_efficiency",
+    render_clickable_chart(
+        df,
+        vega_bar_spec(
+            "lives_saved_per_1000",
+            Y_LIMS["lives_saved_per_1000"],
+            "Lives per 1,000 inspections",
+            "Efficiency (lives saved per 1,000 inspections)",
+            selected_key,
+        ),
+        key="vega_lives_saved_per_1000",
     )
-    _handle_chart_click(event2)
 
 p3, p4 = st.columns(2)
 with p3:
-    event3 = st.altair_chart(
-        multi_bar_chart(df, "info_percent", Y_LIMS["info_percent"], "Percent (%)", "Regulatory information revealed", selected_key),
-        use_container_width=True,
-        on_select="rerun",
-        key="chart_info",
+    render_clickable_chart(
+        df,
+        vega_bar_spec(
+            "info_percent",
+            Y_LIMS["info_percent"],
+            "Percent (%)",
+            "Regulatory information revealed",
+            selected_key,
+        ),
+        key="vega_info_percent",
     )
-    _handle_chart_click(event3)
 
 with p4:
-    event4 = st.altair_chart(
-        multi_bar_chart(df, "total_inspections", Y_LIMS["total_inspections"], "Inspections", "Total inspections conducted", selected_key),
-        use_container_width=True,
-        on_select="rerun",
-        key="chart_inspections",
+    render_clickable_chart(
+        df,
+        vega_bar_spec(
+            "total_inspections",
+            Y_LIMS["total_inspections"],
+            "Inspections",
+            "Total inspections conducted",
+            selected_key,
+        ),
+        key="vega_total_inspections",
     )
-    _handle_chart_click(event4)
+
+# Optional: quick debug view (uncomment if needed)
+# with st.expander("Debug"):
+#     st.write("Streamlit version:", st.__version__)
+#     st.write("Selected key:", st.session_state["selected_key"])
