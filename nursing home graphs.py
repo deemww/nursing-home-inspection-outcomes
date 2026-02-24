@@ -1,9 +1,11 @@
 import pandas as pd
 import streamlit as st
-import altair as alt  # still used for constants/fonts; charts rendered via Vega-Lite spec
 
 st.set_page_config(layout="wide")
 
+# =============================
+# Styling
+# =============================
 st.markdown(
     """
     <style>
@@ -33,7 +35,8 @@ st.markdown(
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
-        font-weight: 700 !important;}
+        font-weight: 700 !important;
+    }
 
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
@@ -113,7 +116,7 @@ df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
 df["total_inspections"] = (df["frequency"] * 15615).round(0)
 
 # =============================
-# Fixed y-axis limits
+# Fixed y-axis limits (constant across toggles)
 # =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
@@ -182,7 +185,7 @@ def update_selected_key_from_sidebar():
     st.session_state["selected_key"] = f"{int(pred)}_{round(float(freq), 4)}"
 
 # =============================
-# Session defaults
+# Session defaults (selected_key is source of truth)
 # =============================
 if "selected_key" not in st.session_state:
     low0, mid0, high0 = get_freq_options(50)
@@ -191,10 +194,9 @@ if "selected_key" not in st.session_state:
 if "pred_choice" not in st.session_state:
     st.session_state["pred_choice"] = pred_to_label[50]
 if "freq_choice" not in st.session_state:
-    # set based on selected_key
     sync_sidebar_from_selected_key(st.session_state["selected_key"])
 
-# Keep sidebar in sync with selected scenario on every run
+# Ensure sidebar reflects current selected_key (e.g., after clicking a bar)
 sync_sidebar_from_selected_key(st.session_state["selected_key"])
 
 # =============================
@@ -211,7 +213,7 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls (callbacks only)
+# Sidebar controls (do NOT overwrite selected_key every rerun; only on change)
 # =============================
 with st.sidebar:
     st.markdown("## Policy Controls")
@@ -223,7 +225,6 @@ with st.sidebar:
         on_change=update_selected_key_from_sidebar,
     )
 
-    # Frequency options depend on predictability
     pred_numeric = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred_numeric)
     freq_options = [
@@ -232,10 +233,10 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
-    # Ensure current freq_choice is valid under this predictability
+    # If predictability changed and current freq_choice is invalid, default to "Current"
     if st.session_state["freq_choice"] not in freq_options:
-        # default to "Current" if options changed
         st.session_state["freq_choice"] = freq_options[1]
+        update_selected_key_from_sidebar()
 
     st.radio(
         "Inspection frequency",
@@ -245,7 +246,7 @@ with st.sidebar:
     )
 
 # =============================
-# Selected scenario (source of truth: selected_key)
+# Selected scenario
 # =============================
 selected_key = st.session_state["selected_key"]
 row = df.loc[df["scenario_key"] == selected_key].iloc[0]
@@ -273,7 +274,7 @@ st.markdown(
             {scenario}
         </span>
         <div style='margin-top:0.5rem; font-size:0.9rem; color:rgba(0,0,0,0.6);'>
-            Tip: Click a bar below to select that scenario.
+            Tip: Click a bar in any chart below to select that scenario.
         </div>
     </div>
     """,
@@ -297,23 +298,35 @@ st.markdown(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("Lives saved", f"{float(row['lives_saved_annually']):.1f}",
-              help="Annual reduction in patient deaths relative to no inspections")
+    st.metric(
+        "Lives saved",
+        f"{float(row['lives_saved_annually']):.1f}",
+        help="Annual reduction in patient deaths relative to no inspections",
+    )
     st.caption("per year")
 
 with col2:
-    st.metric("Inspection Efficiency", f"{float(row['lives_saved_per_1000']):.1f}",
-              help="Lives saved per 1,000 inspections")
+    st.metric(
+        "Inspection Efficiency",
+        f"{float(row['lives_saved_per_1000']):.1f}",
+        help="Lives saved per 1,000 inspections",
+    )
     st.caption("per 1,000 inspections")
 
 with col3:
-    st.metric("Regulatory information", f"{float(row['info_percent']):.1f}%",
-              help="Information regulators learn about facility quality, relative to no inspections")
+    st.metric(
+        "Regulatory information",
+        f"{float(row['info_percent']):.1f}%",
+        help="How much information inspections give regulators about a facility’s underlying quality, relative to no inspections.",
+    )
     st.caption("about facility quality")
 
 with col4:
-    st.metric("Total inspections", f"{total_inspections:,}",
-              help="Annual inspections nationwide (frequency × 15,615 facilities)")
+    st.metric(
+        "Total inspections",
+        f"{total_inspections:,}",
+        help="Annual inspections nationwide (frequency × 15,615 facilities)",
+    )
     st.caption("inspections per year")
 
 st.markdown(
@@ -322,13 +335,12 @@ st.markdown(
 )
 
 # =============================
-# Clickable Vega-Lite bar chart builder
+# Clickable Vega-Lite charts (selection -> selected_key)
 # =============================
 POINT_PARAM = "point_selection"
 
 def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style):
-    # Selection is defined as a Vega-Lite "param" with select="point"
-    # Streamlit returns selection under event.selection[POINT_PARAM].  [oai_citation:1‡Streamlit Docs](https://docs.streamlit.io/develop/api-reference/charts/st.vega_lite_chart?utm_source=chatgpt.com)
+    # NOTE: selection param stored in event.selection[POINT_PARAM]
     return {
         "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
         "height": 235,
@@ -353,9 +365,8 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             "tooltip": [
                 {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
                 {"field": metric_col, "type": "quantitative", "title": y_label, "format": ",.2f"},
-                {"field": "scenario_key", "type": "nominal", "title": "Key"},
             ],
-            # Highlight the currently selected scenario_key (from session_state)
+            # Highlight current selected_key (from session_state)
             "color": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
                 "value": "#c9c9c9",
@@ -390,37 +401,62 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
 
 def parse_clicked_key(event):
     """
-    Streamlit returns a VegaLiteState with .selection holding parameter states.  [oai_citation:2‡Streamlit Docs](https://docs.streamlit.io/develop/api-reference/charts/st.vega_lite_chart?utm_source=chatgpt.com)
-    For our point param, event.selection[POINT_PARAM] contains something like:
-      {"scenario_key": "50_0.99"} or {"scenario_key": ["50_0.99"]}
+    Robust extraction of scenario_key from Streamlit VegaLiteState.
+    Handles multiple shapes across Streamlit versions.
     """
     if not event:
         return None
 
     sel = getattr(event, "selection", None)
-    if not sel:
+    if not sel or not isinstance(sel, dict):
         return None
 
     point = sel.get(POINT_PARAM)
-    if not point:
+    if point is None:
         return None
 
-    val = point.get("scenario_key")
-    if isinstance(val, list):
-        return val[0] if val else None
-    if isinstance(val, str):
-        return val
+    # Shape A: list of selected records: [{'scenario_key': '50_0.99', ...}]
+    if isinstance(point, list):
+        if not point:
+            return None
+        first = point[0]
+        if isinstance(first, dict):
+            return first.get("scenario_key")
+        return None
+
+    # Shape B: dict mapping field -> value or field -> [value]
+    if isinstance(point, dict):
+        val = point.get("scenario_key")
+
+        if isinstance(val, dict):
+            if "value" in val:
+                return val["value"]
+            return val.get("scenario_key")
+
+        if isinstance(val, list):
+            return val[0] if val else None
+
+        if isinstance(val, str):
+            return val
+
+        return None
+
+    # Shape C: sometimes it's a string directly
+    if isinstance(point, str):
+        return point
+
     return None
 
-def render_clickable_chart(data, spec, key):
+def render_clickable_chart(dataframe, spec, key):
     event = st.vega_lite_chart(
-        data,
+        dataframe,
         spec,
         use_container_width=True,
         key=key,
         on_select="rerun",
         selection_mode=POINT_PARAM,
     )
+
     clicked = parse_clicked_key(event)
     if clicked and clicked != st.session_state["selected_key"]:
         st.session_state["selected_key"] = clicked
@@ -492,7 +528,8 @@ with p4:
         key="vega_total_inspections",
     )
 
-# Optional: quick debug view (uncomment if needed)
+# Optional debugging (uncomment if you need to see selection payloads)
 # with st.expander("Debug"):
 #     st.write("Streamlit version:", st.__version__)
 #     st.write("Selected key:", st.session_state["selected_key"])
+#     st.write("Example selection object (first chart):", st.session_state.get("vega_lives_saved_annually"))
