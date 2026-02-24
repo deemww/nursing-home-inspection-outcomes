@@ -149,7 +149,7 @@ def get_freq_options(predictability_numeric):
     return low, mid, high
 
 # =============================
-# Chart click helpers
+# Chart click parsing
 # =============================
 POINT_PARAM = "point_selection"
 CHART_KEYS = [
@@ -158,11 +158,6 @@ CHART_KEYS = [
     "vega_info_percent",
     "vega_total_inspections",
 ]
-
-def clear_chart_selections():
-    for k in CHART_KEYS:
-        if k in st.session_state:
-            st.session_state[k] = None
 
 def parse_clicked_key_from_chart_state(chart_state) -> str | None:
     if not chart_state:
@@ -179,12 +174,14 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
     if point is None:
         return None
 
+    # list of records
     if isinstance(point, list):
         if not point:
             return None
         first = point[0]
         return first.get("scenario_key") if isinstance(first, dict) else None
 
+    # dict form
     if isinstance(point, dict):
         val = point.get("scenario_key")
 
@@ -201,9 +198,17 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
 
         return None
 
+    # direct string (rare)
     if isinstance(point, str):
         return point
 
+    return None
+
+def get_latest_chart_clicked_key() -> str | None:
+    for k in CHART_KEYS:
+        clicked = parse_clicked_key_from_chart_state(st.session_state.get(k))
+        if clicked:
+            return clicked
     return None
 
 # =============================
@@ -234,10 +239,10 @@ def set_radios_from_selected_key(selected_key: str) -> None:
 def update_selected_key_from_sidebar():
     """
     Widget callback:
-    - sidebar becomes source of truth
-    - clear old chart selection to prevent jumping back
+    - sidebar is source of truth
+    - mark last_action so chart clicks are not re-applied
+    - DO NOT write to any chart widget keys
     """
-    clear_chart_selections()
     st.session_state["last_action"] = "sidebar"
 
     pred = pred_map[st.session_state["pred_choice"]]
@@ -256,29 +261,46 @@ def update_selected_key_from_sidebar():
 def apply_chart_click_if_any():
     """
     MUST run before sidebar widgets are created.
-    Applies a click only if the rerun did not come from the sidebar.
+
+    Key idea:
+    - Never clear or assign to chart widget keys.
+    - Instead, only apply a chart click when it is "new" (different from last consumed click).
+    - If the last action was sidebar, consume the current chart selection (if any) without applying it,
+      so it cannot override the sidebar later.
     """
+    clicked = get_latest_chart_clicked_key()
+
+    # If rerun was triggered by sidebar, do not apply chart click.
+    # But "consume" current chart selection so it doesn't apply on the next idle rerun.
     if st.session_state.get("last_action") == "sidebar":
+        if clicked:
+            st.session_state["last_chart_clicked_key"] = clicked
         st.session_state["last_action"] = None
         return
 
-    for k in CHART_KEYS:
-        clicked = parse_clicked_key_from_chart_state(st.session_state.get(k))
-        if clicked and clicked != st.session_state.get("selected_key"):
-            st.session_state["selected_key"] = clicked
-            set_radios_from_selected_key(clicked)
-            st.session_state["last_action"] = "chart"
-            break
+    if not clicked:
+        return
+
+    if clicked == st.session_state.get("last_chart_clicked_key"):
+        return  # already handled; prevents re-applying stale selection
+
+    # Apply new chart click
+    st.session_state["selected_key"] = clicked
+    st.session_state["last_chart_clicked_key"] = clicked
+    set_radios_from_selected_key(clicked)
 
 # =============================
 # Session defaults
 # =============================
 if "selected_key" not in st.session_state:
-    low0, mid0, _ = get_freq_options(50)
+    _, mid0, _ = get_freq_options(50)
     st.session_state["selected_key"] = f"50_{round(float(mid0), 4)}"
 
 if "pred_choice" not in st.session_state or "freq_choice" not in st.session_state:
     set_radios_from_selected_key(st.session_state["selected_key"])
+
+if "last_chart_clicked_key" not in st.session_state:
+    st.session_state["last_chart_clicked_key"] = None
 
 # Apply any pending chart click BEFORE widgets
 apply_chart_click_if_any()
@@ -443,7 +465,7 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
         ],
         "encoding": {
-            # Use scenario_key as x to keep categories unique and sorting stable.
+            # Use scenario_key for uniqueness (axis labels are hidden).
             "x": {
                 "field": "scenario_key",
                 "type": "nominal",
@@ -575,8 +597,8 @@ with p4:
 
 # Optional debugging
 # with st.expander("Debug"):
-#     st.write("Selected key:", st.session_state["selected_key"])
-#     st.write("Last action:", st.session_state.get("last_action"))
-#     st.write("Sort flag:", sort_flag)
+#     st.write("selected_key:", st.session_state["selected_key"])
+#     st.write("last_action:", st.session_state.get("last_action"))
+#     st.write("last_chart_clicked_key:", st.session_state.get("last_chart_clicked_key"))
 #     for k in CHART_KEYS:
 #         st.write(k, st.session_state.get(k))
