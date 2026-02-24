@@ -9,7 +9,6 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
-
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
     /* ---- Gotham font faces ---- */
@@ -116,7 +115,7 @@ df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
 df["total_inspections"] = (df["frequency"] * 15615).round(0)
 
 # =============================
-# Fixed y-axis limits (constant across toggles)
+# Fixed y-axis limits
 # =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
@@ -126,7 +125,7 @@ Y_LIMS = {
 }
 
 # =============================
-# Sidebar helpers
+# Sidebar options
 # =============================
 pred_options = [
     "Unpredictable (random)",
@@ -149,7 +148,8 @@ def get_freq_options(predictability_numeric):
     low, mid, high = sorted(opts)
     return low, mid, high
 
-def sync_sidebar_from_selected_key(selected_key: str) -> None:
+def set_radios_from_selected_key(selected_key: str) -> None:
+    """Safe ONLY before widgets are created."""
     r = df.loc[df["scenario_key"] == selected_key].iloc[0]
     pred = int(r["predictability_numeric"])
     freq = float(r["frequency"])
@@ -171,6 +171,7 @@ def sync_sidebar_from_selected_key(selected_key: str) -> None:
         st.session_state["freq_choice"] = freq_options[2]
 
 def update_selected_key_from_sidebar():
+    """Widget callback: safe to set selected_key because it is not itself a widget key."""
     pred = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred)
 
@@ -185,19 +186,91 @@ def update_selected_key_from_sidebar():
     st.session_state["selected_key"] = f"{int(pred)}_{round(float(freq), 4)}"
 
 # =============================
-# Session defaults (selected_key is source of truth)
+# Click-selection parsing (from stored chart state)
+# =============================
+POINT_PARAM = "point_selection"
+CHART_KEYS = [
+    "vega_lives_saved_annually",
+    "vega_lives_saved_per_1000",
+    "vega_info_percent",
+    "vega_total_inspections",
+]
+
+def parse_clicked_key_from_chart_state(chart_state) -> str | None:
+    """
+    chart_state is whatever Streamlit stores under st.session_state[chart_key].
+    We defensively handle common shapes.
+    """
+    if not chart_state:
+        return None
+
+    # Typically: chart_state.selection is a dict
+    sel = getattr(chart_state, "selection", None)
+    if sel is None and isinstance(chart_state, dict):
+        sel = chart_state.get("selection")
+
+    if not sel or not isinstance(sel, dict):
+        return None
+
+    point = sel.get(POINT_PARAM)
+    if point is None:
+        return None
+
+    # Shape A: list of selected records: [{'scenario_key': '50_0.99', ...}]
+    if isinstance(point, list):
+        if not point:
+            return None
+        first = point[0]
+        return first.get("scenario_key") if isinstance(first, dict) else None
+
+    # Shape B: dict with field -> value or field -> [value]
+    if isinstance(point, dict):
+        val = point.get("scenario_key")
+
+        if isinstance(val, dict):
+            if "value" in val:
+                return val["value"]
+            return val.get("scenario_key")
+
+        if isinstance(val, list):
+            return val[0] if val else None
+
+        if isinstance(val, str):
+            return val
+
+        return None
+
+    # Shape C: direct string (rare)
+    if isinstance(point, str):
+        return point
+
+    return None
+
+def apply_chart_click_if_any():
+    """
+    MUST run before sidebar widgets are created.
+    Looks at stored selection state for each chart key and updates selected_key and radios.
+    """
+    for k in CHART_KEYS:
+        clicked = parse_clicked_key_from_chart_state(st.session_state.get(k))
+        if clicked and clicked != st.session_state.get("selected_key"):
+            st.session_state["selected_key"] = clicked
+            set_radios_from_selected_key(clicked)
+            break
+
+# =============================
+# Session defaults
 # =============================
 if "selected_key" not in st.session_state:
     low0, mid0, high0 = get_freq_options(50)
     st.session_state["selected_key"] = f"50_{round(float(mid0), 4)}"
 
-if "pred_choice" not in st.session_state:
-    st.session_state["pred_choice"] = pred_to_label[50]
-if "freq_choice" not in st.session_state:
-    sync_sidebar_from_selected_key(st.session_state["selected_key"])
+# Initialize radio state if missing
+if "pred_choice" not in st.session_state or "freq_choice" not in st.session_state:
+    set_radios_from_selected_key(st.session_state["selected_key"])
 
-# Ensure sidebar reflects current selected_key (e.g., after clicking a bar)
-sync_sidebar_from_selected_key(st.session_state["selected_key"])
+# Apply any pending chart click BEFORE widgets
+apply_chart_click_if_any()
 
 # =============================
 # Header
@@ -213,7 +286,7 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls (do NOT overwrite selected_key every rerun; only on change)
+# Sidebar controls (callbacks update selected_key)
 # =============================
 with st.sidebar:
     st.markdown("## Policy Controls")
@@ -227,13 +300,14 @@ with st.sidebar:
 
     pred_numeric = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred_numeric)
+
     freq_options = [
         f"−25% ({low:.2f})",
         f"Current ({mid:.2f})",
         f"+25% ({high:.2f})",
     ]
 
-    # If predictability changed and current freq_choice is invalid, default to "Current"
+    # Ensure valid freq_choice under this predictability
     if st.session_state["freq_choice"] not in freq_options:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
@@ -246,7 +320,7 @@ with st.sidebar:
     )
 
 # =============================
-# Selected scenario
+# Selected scenario (source of truth)
 # =============================
 selected_key = st.session_state["selected_key"]
 row = df.loc[df["scenario_key"] == selected_key].iloc[0]
@@ -335,12 +409,9 @@ st.markdown(
 )
 
 # =============================
-# Clickable Vega-Lite charts (selection -> selected_key)
+# Vega-Lite bar chart specs (clickable)
 # =============================
-POINT_PARAM = "point_selection"
-
 def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style):
-    # NOTE: selection param stored in event.selection[POINT_PARAM]
     return {
         "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
         "height": 235,
@@ -366,7 +437,6 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                 {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
                 {"field": metric_col, "type": "quantitative", "title": y_label, "format": ",.2f"},
             ],
-            # Highlight current selected_key (from session_state)
             "color": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
                 "value": "#c9c9c9",
@@ -399,69 +469,16 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
         },
     }
 
-def parse_clicked_key(event):
-    """
-    Robust extraction of scenario_key from Streamlit VegaLiteState.
-    Handles multiple shapes across Streamlit versions.
-    """
-    if not event:
-        return None
-
-    sel = getattr(event, "selection", None)
-    if not sel or not isinstance(sel, dict):
-        return None
-
-    point = sel.get(POINT_PARAM)
-    if point is None:
-        return None
-
-    # Shape A: list of selected records: [{'scenario_key': '50_0.99', ...}]
-    if isinstance(point, list):
-        if not point:
-            return None
-        first = point[0]
-        if isinstance(first, dict):
-            return first.get("scenario_key")
-        return None
-
-    # Shape B: dict mapping field -> value or field -> [value]
-    if isinstance(point, dict):
-        val = point.get("scenario_key")
-
-        if isinstance(val, dict):
-            if "value" in val:
-                return val["value"]
-            return val.get("scenario_key")
-
-        if isinstance(val, list):
-            return val[0] if val else None
-
-        if isinstance(val, str):
-            return val
-
-        return None
-
-    # Shape C: sometimes it's a string directly
-    if isinstance(point, str):
-        return point
-
-    return None
-
-def render_clickable_chart(dataframe, spec, key):
-    event = st.vega_lite_chart(
-        dataframe,
+def render_chart(df_in, spec, key):
+    # The selection state is stored under st.session_state[key] and will be available next rerun.
+    st.vega_lite_chart(
+        df_in,
         spec,
         use_container_width=True,
         key=key,
         on_select="rerun",
         selection_mode=POINT_PARAM,
     )
-
-    clicked = parse_clicked_key(event)
-    if clicked and clicked != st.session_state["selected_key"]:
-        st.session_state["selected_key"] = clicked
-        sync_sidebar_from_selected_key(clicked)
-        st.rerun()
 
 # =============================
 # Policy comparisons
@@ -476,7 +493,7 @@ st.markdown(
 
 p1, p2 = st.columns(2)
 with p1:
-    render_clickable_chart(
+    render_chart(
         df,
         vega_bar_spec(
             "lives_saved_annually",
@@ -489,7 +506,7 @@ with p1:
     )
 
 with p2:
-    render_clickable_chart(
+    render_chart(
         df,
         vega_bar_spec(
             "lives_saved_per_1000",
@@ -503,7 +520,7 @@ with p2:
 
 p3, p4 = st.columns(2)
 with p3:
-    render_clickable_chart(
+    render_chart(
         df,
         vega_bar_spec(
             "info_percent",
@@ -516,7 +533,7 @@ with p3:
     )
 
 with p4:
-    render_clickable_chart(
+    render_chart(
         df,
         vega_bar_spec(
             "total_inspections",
@@ -528,8 +545,8 @@ with p4:
         key="vega_total_inspections",
     )
 
-# Optional debugging (uncomment if you need to see selection payloads)
+# Optional debugging (uncomment temporarily)
 # with st.expander("Debug"):
-#     st.write("Streamlit version:", st.__version__)
 #     st.write("Selected key:", st.session_state["selected_key"])
-#     st.write("Example selection object (first chart):", st.session_state.get("vega_lives_saved_annually"))
+#     for k in CHART_KEYS:
+#         st.write(k, st.session_state.get(k))
