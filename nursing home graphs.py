@@ -10,19 +10,14 @@ st.markdown(
 
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
-    /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
-
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Light.otf") format("opentype"); font-weight: 300; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-LightItalic.otf") format("opentype"); font-weight: 300; font-style: italic; }
-
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Medium.otf") format("opentype"); font-weight: 500; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-MediumItalic.otf") format("opentype"); font-weight: 500; font-style: italic; }
-
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BoldItalic.otf") format("opentype"); font-weight: 700; font-style: italic; }
-
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
@@ -34,7 +29,7 @@ st.markdown(
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;}
-        
+
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
@@ -64,7 +59,6 @@ st.markdown(
         font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
     }
 
-    /* ---- METRICS: bold label + value + caption text ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
@@ -80,7 +74,7 @@ st.markdown(
 df = pd.read_csv("figure9_summary_raw.csv")
 
 # =============================
-# Scenario label (Figure 9b col 1)
+# Scenario label
 # =============================
 def scenario_label(predictability, frequency):
     if predictability == 50:
@@ -108,7 +102,7 @@ def scenario_label(predictability, frequency):
             return "Perfectly Predictable; Decreased Frequency (↓ 25%)"
 
 # =============================
-# Precompute columns for 9-bar charts + stable selection key
+# Precompute columns
 # =============================
 df["freq_round"] = df["frequency"].round(4)
 df["scenario_key"] = (
@@ -128,7 +122,7 @@ df["x_order"] = df["pred_order"] * 10 + df["freq_rank"]
 df["total_inspections"] = (df["frequency"] * 15615).round(0)
 
 # =============================
-# Fixed y-axis limits (constant across toggles)
+# Fixed y-axis limits
 # =============================
 Y_LIMS = {
     "lives_saved_annually": (0, float(df["lives_saved_annually"].max()) * 1.10),
@@ -137,7 +131,62 @@ Y_LIMS = {
     "total_inspections": (0, float(df["total_inspections"].max()) * 1.10),
 }
 
+# =============================
+# Pred map (defined early so _handle_chart_click can use it)
+# =============================
+pred_options = [
+    "Unpredictable (random)",
+    "Current regime (status quo)",
+    "Perfectly predictable (scheduled)",
+]
+pred_map = {
+    "Unpredictable (random)": 100,
+    "Current regime (status quo)": 50,
+    "Perfectly predictable (scheduled)": 0,
+}
+
+def get_freq_options(predictability_numeric):
+    opts = (
+        df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
+        .sort_values()
+        .tolist()
+    )
+    low, mid, high = sorted(opts)
+    return low, mid, high
+
+# =============================
+# Click handler
+# =============================
+def _handle_chart_click(event):
+    """If a bar was clicked, decode scenario_key and sync sidebar state."""
+    try:
+        clicked_key = event["selection"]["bar_select"][0]["scenario_key"]
+    except (KeyError, IndexError, TypeError):
+        return
+
+    pred_str, freq_str = clicked_key.split("_", 1)
+    pred_num = int(pred_str)
+    freq_num = float(freq_str)
+
+    reverse_pred = {v: k for k, v in pred_map.items()}
+    st.session_state["pred_choice"] = reverse_pred[pred_num]
+
+    low, mid, high = get_freq_options(pred_num)
+    if abs(freq_num - low) < 1e-6:
+        st.session_state["freq_position"] = "−25%"
+    elif abs(freq_num - mid) < 1e-6:
+        st.session_state["freq_position"] = "Current"
+    else:
+        st.session_state["freq_position"] = "+25%"
+
+    st.session_state["freq_choice"] = None
+
+# =============================
+# Chart function
+# =============================
 def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected_key):
+    selection = alt.selection_point(name="bar_select", fields=["scenario_key"], empty=False)
+
     base = alt.Chart(df_all).encode(
         x=alt.X(
             "scenario_label:N",
@@ -158,26 +207,26 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
 
     bars = base.mark_bar(size=40, cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
         color=alt.condition(
-            alt.datum.scenario_key == selected_key,
+            selection | (alt.datum.scenario_key == selected_key),
             alt.value("#800000"),
             alt.value("#c9c9c9"),
         ),
         stroke=alt.condition(
-            alt.datum.scenario_key == selected_key,
+            selection | (alt.datum.scenario_key == selected_key),
             alt.value("#EAAA00"),
             alt.value(None),
         ),
         strokeWidth=alt.condition(
-            alt.datum.scenario_key == selected_key,
+            selection | (alt.datum.scenario_key == selected_key),
             alt.value(10),
             alt.value(0),
         ),
         opacity=alt.condition(
-            alt.datum.scenario_key == selected_key,
+            selection | (alt.datum.scenario_key == selected_key),
             alt.value(1.0),
             alt.value(0.55),
         ),
-    )
+    ).add_params(selection)
 
     return (
         bars.properties(
@@ -207,23 +256,13 @@ def multi_bar_chart(df_all, metric_col, y_domain, y_label, chart_title, selected
         )
     )
 
-def get_freq_options(predictability_numeric):
-    opts = (
-        df.loc[df["predictability_numeric"] == predictability_numeric, "frequency"]
-        .sort_values()
-        .tolist()
-    )
-    low, mid, high = sorted(opts)
-    return low, mid, high
-
 # =============================
 # Session defaults
 # =============================
 if "pred_choice" not in st.session_state:
     st.session_state["pred_choice"] = "Current regime (status quo)"
 if "freq_position" not in st.session_state:
-    st.session_state["freq_position"] = "Current"  # "−25%", "Current", "+25%"
-# we will store the actual radio string in freq_choice; initialize lazily after we know options
+    st.session_state["freq_position"] = "Current"
 if "freq_choice" not in st.session_state:
     st.session_state["freq_choice"] = None
 
@@ -241,23 +280,11 @@ st.markdown(
 )
 
 # =============================
-# Sidebar controls (FIXED: no jumping)
+# Sidebar controls
 # =============================
-pred_options = [
-    "Unpredictable (random)",
-    "Current regime (status quo)",
-    "Perfectly predictable (scheduled)",
-]
-pred_map = {
-    "Unpredictable (random)": 100,
-    "Current regime (status quo)": 50,
-    "Perfectly predictable (scheduled)": 0,
-}
-
 with st.sidebar:
     st.markdown("## Policy Controls")
 
-    # Use key-based widget state; do not force index every rerun
     pred_choice = st.radio(
         "Inspection timing predictability",
         pred_options,
@@ -273,7 +300,6 @@ with st.sidebar:
         f"+25% ({high:.2f})",
     ]
 
-    # Ensure the stored freq_choice is valid for the current regime; otherwise set from freq_position
     pos_to_string = {
         "−25%": freq_options[0],
         "Current": freq_options[1],
@@ -288,7 +314,6 @@ with st.sidebar:
         key="freq_choice",
     )
 
-    # Update stored position + set numeric frequency
     if freq_choice.startswith("−25%"):
         st.session_state["freq_position"] = "−25%"
         frequency = float(low)
@@ -300,7 +325,7 @@ with st.sidebar:
         frequency = float(high)
 
 # =============================
-# Selected scenario (main page)
+# Selected scenario
 # =============================
 scenario = scenario_label(predictability, frequency)
 
@@ -328,7 +353,7 @@ st.markdown(
 )
 
 # =============================
-# Selected row (no interpolation)
+# Selected row
 # =============================
 row = df[
     (df["predictability_numeric"] == predictability) & (df["frequency"] == frequency)
@@ -344,7 +369,7 @@ st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_al
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
-    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+    ""Lives saved" reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
     unsafe_allow_html=True,
 )
@@ -371,7 +396,7 @@ with col3:
     st.metric(
         "Regulatory information",
         f"{float(row['info_percent']):.1f}%",
-        help="How much information inspections give regulators about a facility’s underlying quality, relative to no inspections.",
+        help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
     )
     st.caption("about facility quality")
 
@@ -383,7 +408,6 @@ with col4:
     )
     st.caption("inspections per year")
 
-# Divider (tight spacing)
 st.markdown(
     "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
     unsafe_allow_html=True,
@@ -393,64 +417,48 @@ st.markdown(
 # Policy comparisons
 # =============================
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
-
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
-    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
+    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above. "
+    "Click any bar to select that policy."
     "</p>",
     unsafe_allow_html=True,
 )
 
 p1, p2 = st.columns(2)
 with p1:
-    st.altair_chart(
-        multi_bar_chart(
-            df,
-            "lives_saved_annually",
-            Y_LIMS["lives_saved_annually"],
-            "Lives saved",
-            "Annual lives saved",
-            selected_key,
-        ),
+    event1 = st.altair_chart(
+        multi_bar_chart(df, "lives_saved_annually", Y_LIMS["lives_saved_annually"], "Lives saved", "Annual lives saved", selected_key),
         use_container_width=True,
+        on_select="rerun",
+        key="chart_lives",
     )
+    _handle_chart_click(event1)
 
 with p2:
-    st.altair_chart(
-        multi_bar_chart(
-            df,
-            "lives_saved_per_1000",
-            Y_LIMS["lives_saved_per_1000"],
-            "Lives per 1,000 inspections",
-            "Efficiency (lives saved per 1,000 inspections)",
-            selected_key,
-        ),
+    event2 = st.altair_chart(
+        multi_bar_chart(df, "lives_saved_per_1000", Y_LIMS["lives_saved_per_1000"], "Lives per 1,000 inspections", "Efficiency (lives saved per 1,000 inspections)", selected_key),
         use_container_width=True,
+        on_select="rerun",
+        key="chart_efficiency",
     )
+    _handle_chart_click(event2)
 
 p3, p4 = st.columns(2)
 with p3:
-    st.altair_chart(
-        multi_bar_chart(
-            df,
-            "info_percent",
-            Y_LIMS["info_percent"],
-            "Percent (%)",
-            "Regulatory information revealed",
-            selected_key,
-        ),
+    event3 = st.altair_chart(
+        multi_bar_chart(df, "info_percent", Y_LIMS["info_percent"], "Percent (%)", "Regulatory information revealed", selected_key),
         use_container_width=True,
+        on_select="rerun",
+        key="chart_info",
     )
+    _handle_chart_click(event3)
 
 with p4:
-    st.altair_chart(
-        multi_bar_chart(
-            df,
-            "total_inspections",
-            Y_LIMS["total_inspections"],
-            "Inspections",
-            "Total inspections conducted",
-            selected_key,
-        ),
+    event4 = st.altair_chart(
+        multi_bar_chart(df, "total_inspections", Y_LIMS["total_inspections"], "Inspections", "Total inspections conducted", selected_key),
         use_container_width=True,
+        on_select="rerun",
+        key="chart_inspections",
     )
+    _handle_chart_click(event4)
