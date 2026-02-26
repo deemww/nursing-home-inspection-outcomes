@@ -350,17 +350,9 @@ with st.sidebar:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
 
-
-    st.markdown(
-        "<p style='font-size:0.9rem; font-weight:600; margin-bottom:0.25rem;'>"
-        "Inspection frequency <span style='font-weight:400; color:rgba(0,0,0,0.6);'>(per facility-year)</span>"
-        "</p>",
-        unsafe_allow_html=True,
-    )
-
     st.radio(
-        label="",
-        options=freq_options,
+        "Inspection frequency (inspections per facility year)",
+        freq_options,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
     )
@@ -607,3 +599,11 @@ with p4:
         ),
         key="vega_total_inspections",
     )
+
+# Optional debugging
+# with st.expander("Debug"):
+#     st.write("selected_key:", st.session_state["selected_key"])
+#     st.write("last_action:", st.session_state.get("last_action"))
+#     st.write("last_seen_by_chart:", st.session_state.get("last_seen_by_chart"))
+#     for k in CHART_KEYS:
+#         st.write(k, st.session_state.get(k))
