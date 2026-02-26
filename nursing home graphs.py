@@ -350,26 +350,11 @@ with st.sidebar:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
 
-    st.markdown(
-        """
-        <div style="margin-bottom:-0.6rem;">
-            <div style="font-size:1.15rem; font-weight:700;">
-                Inspection frequency
-            </div>
-            <div style="font-size:0.9rem; font-weight:500; color:rgba(0,0,0,0.6); margin-top:-0.2rem;">
-                (per facility-year)
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     st.radio(
-        "Inspection frequency",            # keep a real label for accessibility
+        "Inspection frequency (inspections per facility year)",
         freq_options,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
-        label_visibility="collapsed",      # removes the label’s vertical space
     )
 
 # =============================
