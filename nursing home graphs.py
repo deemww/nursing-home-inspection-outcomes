@@ -329,13 +329,6 @@ st.markdown(
 with st.sidebar:
     st.markdown("## Policy Controls")
 
-    sort_by_magnitude = st.checkbox(
-        "Sort bars by magnitude",
-        value=False,
-        help="If enabled, bars in each chart are ordered from largest to smallest value for that chart’s metric.",
-        key="sort_by_magnitude",
-    )
-
     st.radio(
         "Inspection timing predictability",
         pred_options,
@@ -533,6 +526,12 @@ def render_chart(df_in, spec, key):
 # =============================
 # Policy comparisons
 # =============================
+sort_by_magnitude = st.toggle(
+    "Sort bars by magnitude",
+    value=st.session_state.get("sort_by_magnitude", False),
+    help="Orders bars from largest to smallest value within each chart.",
+    key="sort_by_magnitude",
+)
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
