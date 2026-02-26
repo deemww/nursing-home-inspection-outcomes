@@ -218,9 +218,9 @@ def set_radios_from_selected_key(selected_key: str) -> None:
     low, mid, high = get_freq_options(pred)
 
     freq_options = [
-        f"−25% ({low:.2f} per facility year)",
-        f"Current ({mid:.2f} per facility year)",
-        f"+25% ({high:.2f} per facility year)",
+        f"−25% ({low:.2f})",
+        f"Current ({mid:.2f})",
+        f"+25% ({high:.2f})",
     ]
 
     if freq == float(low):
@@ -341,9 +341,9 @@ with st.sidebar:
     low, mid, high = get_freq_options(pred_numeric)
 
     freq_options = [
-        f"−25% ({low:.2f} per facility year)",
-        f"Current ({mid:.2f} per facility year)",
-        f"+25% ({high:.2f} per facility year)",
+        f"−25% ({low:.2f})",
+        f"Current ({mid:.2f})",
+        f"+25% ({high:.2f})",
     ]
 
     if st.session_state["freq_choice"] not in freq_options:
@@ -351,10 +351,11 @@ with st.sidebar:
         update_selected_key_from_sidebar()
 
     st.radio(
-        "Inspection frequency (inspections per facility year)",
+        "Inspection frequency",
         freq_options,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
+        help="Units: inspections per facility year.",
     )
 
 # =============================
