@@ -386,7 +386,7 @@ st.markdown(
             {scenario}
         </span>
         <div style='margin-top:0.5rem; font-size:0.9rem; color:rgba(0,0,0,0.6);'>
-            Tip: Click a bar in any chart below to select that scenario.
+            Tip: Click any bar in a chart below to select that scenario.
         </div>
     </div>
     """,
