@@ -526,12 +526,6 @@ def render_chart(df_in, spec, key):
 # =============================
 # Policy comparisons
 # =============================
-sort_by_magnitude = st.toggle(
-    "Sort bars by magnitude",
-    value=st.session_state.get("sort_by_magnitude", False),
-    help="Orders bars from largest to smallest value within each chart.",
-    key="sort_by_magnitude",
-)
 st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
@@ -539,7 +533,12 @@ st.markdown(
     "</p>",
     unsafe_allow_html=True,
 )
-
+sort_by_magnitude = st.toggle(
+    "Sort bars by magnitude",
+    value=st.session_state.get("sort_by_magnitude", False),
+    help="Orders bars from largest to smallest value within each chart.",
+    key="sort_by_magnitude",
+)
 sort_flag = st.session_state.get("sort_by_magnitude", False)
 
 p1, p2 = st.columns(2)
