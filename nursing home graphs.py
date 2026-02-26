@@ -223,7 +223,7 @@ def set_radios_from_selected_key(selected_key: str) -> None:
     low, mid, high = get_freq_options(pred)
 
     freq_options = [
-        f"−25%\n({low:.2f} inspections per facility per year)",
+        f"**−25%**\n({low:.2f} inspections per facility per year)",
         f"Current\n({mid:.2f} inspections per facility per year)",
         f"+25%\n({high:.2f} inspections per facility per year)",
     ]
