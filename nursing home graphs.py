@@ -56,6 +56,11 @@ st.markdown(
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
+
+    [data-testid="stSidebar"] div[role="radiogroup"] label p {
+        white-space: pre-wrap !important;
+    }
+    
     </style>
     """,
     unsafe_allow_html=True,
@@ -218,9 +223,9 @@ def set_radios_from_selected_key(selected_key: str) -> None:
     low, mid, high = get_freq_options(pred)
 
     freq_options = [
-        f"−25% ({low:.2f} inspections per facility per year)",
-        f"Current ({mid:.2f} inspections per facility per year)",
-        f"+25% ({high:.2f} inspections per facility per year)",
+        f"−25%\n({low:.2f} inspections per facility per year)",
+        f"Current\n({mid:.2f} inspections per facility per year)",
+        f"+25%\n({high:.2f} inspections per facility per year)",
     ]
 
     if freq == float(low):
@@ -341,10 +346,10 @@ with st.sidebar:
     low, mid, high = get_freq_options(pred_numeric)
 
     freq_options = [
-        f"−25% ({low:.2f} inspections per facility per year)",
-        f"Current ({mid:.2f} inspections per facility per year)",
-        f"+25% ({high:.2f} inspections per facility per year)",
-    ]
+        f"−25%\n({low:.2f} inspections per facility per year)",
+        f"Current\n({mid:.2f} inspections per facility per year)",
+        f"+25%\n({high:.2f} inspections per facility per year)",
+    ]    
 
     if st.session_state["freq_choice"] not in freq_options:
         st.session_state["freq_choice"] = freq_options[1]
