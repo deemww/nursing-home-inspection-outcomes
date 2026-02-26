@@ -218,9 +218,9 @@ def set_radios_from_selected_key(selected_key: str) -> None:
     low, mid, high = get_freq_options(pred)
 
     freq_options = [
-        f"−25% ({low:.2f})",
-        f"Current ({mid:.2f})",
-        f"+25% ({high:.2f})",
+        f"−25% ({low:.2f} per facility year)",
+        f"Current ({mid:.2f} per facility year)",
+        f"+25% ({high:.2f} per facility year)",
     ]
 
     if freq == float(low):
@@ -341,21 +341,28 @@ with st.sidebar:
     low, mid, high = get_freq_options(pred_numeric)
 
     freq_options = [
-        f"−25% ({low:.2f})",
-        f"Current ({mid:.2f})",
-        f"+25% ({high:.2f})",
+        f"−25% ({low:.2f} per facility year)",
+        f"Current ({mid:.2f} per facility year)",
+        f"+25% ({high:.2f} per facility year)",
     ]
 
     if st.session_state["freq_choice"] not in freq_options:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
 
+
+    st.markdown(
+        "<p style='font-size:0.9rem; font-weight:600; margin-bottom:0.25rem;'>"
+        "Inspection frequency <span style='font-weight:400; color:rgba(0,0,0,0.6);'>(per facility-year)</span>"
+        "</p>",
+        unsafe_allow_html=True,
+    )
+
     st.radio(
-        "Inspection frequency",
-        freq_options,
+        label="",
+        options=freq_options,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
-        help="Units: inspections per facility year.",
     )
 
 # =============================
@@ -600,11 +607,3 @@ with p4:
         ),
         key="vega_total_inspections",
     )
-
-# Optional debugging
-# with st.expander("Debug"):
-#     st.write("selected_key:", st.session_state["selected_key"])
-#     st.write("last_action:", st.session_state.get("last_action"))
-#     st.write("last_seen_by_chart:", st.session_state.get("last_seen_by_chart"))
-#     for k in CHART_KEYS:
-#         st.write(k, st.session_state.get(k))
