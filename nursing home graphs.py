@@ -350,8 +350,18 @@ with st.sidebar:
         st.session_state["freq_choice"] = freq_options[1]
         update_selected_key_from_sidebar()
 
+    st.markdown(
+        "<span style='font-size:1.15rem; font-weight:700;'>"
+        "Inspection frequency "
+        "<span style='font-size:0.9rem; font-weight:500; color:rgba(0,0,0,0.6);'>"
+        "(per facility-year)"
+        "</span>"
+        "</span>",
+        unsafe_allow_html=True,
+    )
+
     st.radio(
-        "Inspection frequency (inspections per facility year)",
+        "",
         freq_options,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
