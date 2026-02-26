@@ -351,14 +351,16 @@ with st.sidebar:
         update_selected_key_from_sidebar()
 
     st.markdown(
-        "<div style='margin-bottom:-0.6rem;'>"
-        "<span style='font-size:1.15rem; font-weight:700;'>"
-        "Inspection frequency "
-        "<span style='font-size:0.9rem; font-weight:500; color:rgba(0,0,0,0.6);'>"
-        "(per facility-year)"
-        "</span>"
-        "</span>"
-        "</div>",
+        """
+        <div style="margin-bottom:-0.6rem;">
+            <div style="font-size:1.15rem; font-weight:700;">
+                Inspection frequency
+            </div>
+            <div style="font-size:0.9rem; font-weight:500; color:rgba(0,0,0,0.6); margin-top:-0.2rem;">
+                (per facility-year)
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
