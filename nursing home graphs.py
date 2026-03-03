@@ -1,3 +1,4 @@
+
 import pandas as pd
 import streamlit as st
 
@@ -10,6 +11,9 @@ st.markdown(
     """
     <style>
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
+
+/* HIDE Streamlit's built-in multipage sidebar nav header (the "keyboard_double" text) */
+    [data-testid="stSidebarNav"] { display: none !important; }
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
@@ -27,16 +31,9 @@ st.markdown(
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
-    /* Apply Gotham to main app container, excluding icon containers */
-    html, body, [data-testid="stAppViewContainer"] {
+    html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
-    
-    /* Apply to generic text within, but avoid icon elements */
-    [data-testid="stAppViewContainer"] *:not(.material-icons):not([data-testid="stSidebarCollapseButton"]) {
-        font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-    }
-
 
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
