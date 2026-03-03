@@ -27,9 +27,16 @@ st.markdown(
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Black.otf") format("opentype"); font-weight: 900; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BlackItalic.otf") format("opentype"); font-weight: 900; font-style: italic; }
 
-    html, body, [data-testid="stAppViewContainer"] * {
+    /* Apply Gotham to main app container, excluding icon containers */
+    html, body, [data-testid="stAppViewContainer"] {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
+    
+    /* Apply to generic text within, but avoid icon elements */
+    [data-testid="stAppViewContainer"] *:not(.material-icons):not([data-testid="stSidebarCollapseButton"]) {
+        font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
 
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
