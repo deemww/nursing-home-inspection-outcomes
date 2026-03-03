@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(layout="wide")
+st.write("showSidebarNavigation =", st.get_option("client.showSidebarNavigation"))
 
 # =============================
 # Styling
