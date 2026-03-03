@@ -2,7 +2,11 @@
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title="Nursing Home Inspection Policy Outcomes",
+    page_icon="📊",
+)
 
 # =============================
 # Styling
