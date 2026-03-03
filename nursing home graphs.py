@@ -12,10 +12,6 @@ st.markdown(
     <style>
     [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
-/* HIDE Streamlit's built-in multipage sidebar nav header (the "keyboard_double" text) */
-    [data-testid="stSidebarNav"] { display: none !important; }
-    section[data-testid="stSidebar"] nav { display: none !important; }
-
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
