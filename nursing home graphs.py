@@ -65,15 +65,19 @@ st.markdown(
        Use global selectors (no parent prefix) so they match
        regardless of how deeply Streamlit nests these elements. */
 
-    /* Floating value above the thumb (turns red when moved) */
-    [data-testid="stThumbValue"],
-    [class*="ThumbValue"],
-    [class*="thumbValue"] {
+    /* Hide the small selected-value text Streamlit shows above the slider */
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="ThumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="thumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] output,
+    [data-testid="stSidebar"] [data-testid="stSlider"] p {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
-
    
     /* Hide the grey min/max labels under the slider */
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
