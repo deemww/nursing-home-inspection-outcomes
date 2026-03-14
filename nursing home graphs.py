@@ -41,7 +41,7 @@ st.markdown(
     /* ---- Radio: unselected = normal, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        font-size: 1.0rem !important;
+        font-size: 1.15rem !important;
         font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
@@ -403,7 +403,7 @@ with st.sidebar:
         f"<span style='"
         f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
         f"font-weight:{'700' if lbl == selected_fc else '400'};"
-        f"font-size:1.0rem;'>{lbl}</span>"
+        f"font-size:1.15rem;'>{lbl}</span>"
         for lbl in FREQ_LABELS
     ])
     st.markdown(
