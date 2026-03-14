@@ -32,7 +32,7 @@ st.markdown(
         font-weight: 700 !important;
     }
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        font-size: 1.35rem !important;
+        font-size: 1.15rem !important;
         font-weight: 700 !important;
         line-height: 1.2 !important;
         margin-bottom: 0.25rem !important;
@@ -391,7 +391,7 @@ with st.sidebar:
         update_selected_key_from_sidebar()
 
     st.markdown(
-        "<p style='font-size:1.35rem; font-weight:700; line-height:1.2;"
+        "<p style='font-size:1.15rem; font-weight:700; line-height:1.2;"
         " margin-bottom:6px; margin-top:4px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
