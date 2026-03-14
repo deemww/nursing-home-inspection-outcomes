@@ -50,7 +50,6 @@ st.markdown(
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
        ============================================================ */
-    /* Give the slider area vertical breathing room for the dots */
     [data-testid="stSidebar"] [data-testid="stSlider"] {
         padding-bottom: 4px !important;
     }
@@ -67,18 +66,14 @@ st.markdown(
         margin: 0 !important;
         padding: 0 !important;
     }
-    /* Hide ONLY the numeric min/max endpoint labels, not the whole tick container */
+    /* Hide only the numeric min/max endpoint labels, not the whole tick container */
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
         visibility: hidden !important;
     }
-    /* rc-slider mark text (option labels rendered by the slider lib) */
+    /* rc-slider mark text */
     .rc-slider-mark-text,
     .rc-slider-mark-text-active {
-        display: none !important;
-    }
-    /* Catch-all: any output element inside the slider */
-    [data-testid="stSidebar"] [data-testid="stSlider"] output {
         display: none !important;
     }
     /* Rail (full background track) — maroon */
@@ -114,26 +109,6 @@ st.markdown(
             0 3px 12px rgba(0, 0, 0, 0.5),
             0 0 0 4px rgba(220, 80, 80, 0.9),
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
-    }
-    /* Snap-point circle markers on the track */
-    [data-testid="stSidebar"] .rc-slider-dot {
-        display: block !important;
-        visibility: visible !important;
-        background-color: #1c1c1e !important;
-        border: 2.5px solid #bbb !important;
-        width: 13px !important;
-        height: 13px !important;
-        bottom: -4px !important;
-        margin-left: -6px !important;
-        z-index: 10 !important;
-        border-radius: 50% !important;
-        position: absolute !important;
-    }
-    [data-testid="stSidebar"] .rc-slider-dot-active {
-        display: block !important;
-        visibility: visible !important;
-        background-color: #1c1c1e !important;
-        border-color: rgba(220, 80, 80, 0.85) !important;
     }
     </style>
     """,
@@ -208,7 +183,6 @@ pred_map = {
     "Perfectly predictable (scheduled)": 0,
 }
 pred_to_label = {100: pred_options[0], 50: pred_options[1], 0: pred_options[2]}
-# Simple labels used by the select_slider
 FREQ_LABELS = ["−25%", "Current", "+25%"]
 def get_freq_options(predictability_numeric):
     opts = (
@@ -262,7 +236,6 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
 # Sidebar state sync
 # =============================
 def set_radios_from_selected_key(selected_key: str) -> None:
-    """Safe ONLY before widgets are created."""
     r = df.loc[df["scenario_key"] == selected_key].iloc[0]
     pred = int(r["predictability_numeric"])
     freq = float(r["frequency"])
@@ -322,7 +295,6 @@ if "pred_choice" not in st.session_state or "freq_choice" not in st.session_stat
     set_radios_from_selected_key(st.session_state["selected_key"])
 if "last_seen_by_chart" not in st.session_state:
     st.session_state["last_seen_by_chart"] = {k: None for k in CHART_KEYS}
-# Apply any pending chart click BEFORE widgets
 apply_chart_click_if_any()
 # =============================
 # Header
@@ -352,11 +324,13 @@ with st.sidebar:
     if st.session_state.get("freq_choice") not in FREQ_LABELS:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
+    # ── Inspection frequency section label ──
     st.markdown(
         "<p style='font-size:1.35rem; font-weight:700; line-height:1.2;"
         " margin-bottom:6px; margin-top:4px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
+    # Custom option labels row above the slider
     selected_fc = st.session_state["freq_choice"]
     labels_html = "".join([
         f"<span style='"
@@ -370,6 +344,7 @@ with st.sidebar:
         f" padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
         unsafe_allow_html=True,
     )
+    # ── Slider ──
     st.select_slider(
         "Inspection frequency",
         options=FREQ_LABELS,
@@ -377,6 +352,28 @@ with st.sidebar:
         on_change=update_selected_key_from_sidebar,
         label_visibility="collapsed",
     )
+    # ── Fake tick marks overlaid on the track ──
+    st.markdown(
+        """
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            padding: 0 9px;
+            margin-top: -18px;
+            margin-bottom: 10px;
+            pointer-events: none;
+        ">
+            <div style="width:13px; height:13px; border-radius:50%;
+                        background:#1c1c1e; border:2.5px solid #bbb;"></div>
+            <div style="width:13px; height:13px; border-radius:50%;
+                        background:#1c1c1e; border:2.5px solid #bbb;"></div>
+            <div style="width:13px; height:13px; border-radius:50%;
+                        background:#1c1c1e; border:2.5px solid #bbb;"></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    # ── Callout box below slider ──
     rates = {
         "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
