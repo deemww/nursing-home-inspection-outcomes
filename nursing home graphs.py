@@ -85,9 +85,11 @@ st.markdown(
     }
 
     /* rc-slider mark text (option labels rendered by the slider lib) */
+    .rc-slider-mark,
     .rc-slider-mark-text,
     .rc-slider-mark-text-active {
         display: none !important;
+        visibility: hidden !important;
     }
 
     /* Catch-all: any output element inside the slider */
