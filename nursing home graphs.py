@@ -143,6 +143,27 @@ st.markdown(
             0 0 0 4px rgba(220, 80, 80, 0.9),
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
+    /* Thicker track */
+    [data-testid="stSidebar"] .rc-slider-rail,
+    [data-testid="stSidebar"] .rc-slider-track {
+        height: 6px !important;
+        border-radius: 3px !important;
+    }
+    [data-testid="stSidebar"] .rc-slider-rail {
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+    /* Larger handle */
+    [data-testid="stSidebar"] .rc-slider-handle {
+        width: 26px !important;
+        height: 26px !important;
+        margin-top: -11px !important;
+    }
+    /* Subtle background behind slider */
+    [data-testid="stSidebar"] [data-testid="stSlider"] {
+        background: rgba(0,0,0,0.06) !important;
+        border-radius: 10px !important;
+        padding: 10px 12px !important;
+    }
 
     /* Snap-point circle markers on the track */
     [data-testid="stSidebar"] .rc-slider-dot {
