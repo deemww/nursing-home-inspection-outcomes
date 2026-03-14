@@ -74,14 +74,22 @@ st.markdown(
         opacity: 0 !important;
     }
 
-    /* Min / max tick labels below the track */
-    [data-testid="stTickBarMin"],
-    [data-testid="stTickBarMax"],
-    [class*="TickBar"],
-    [class*="tickBar"] {
+   
+    /* Hide the grey min/max labels under the slider */
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
         display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
+        display: none !important;
+    }
+
+    /* Backup selectors in case Streamlit renders them differently */
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid*="TickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="tickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"] {
+        display: none !important;
     }
 
     /* rc-slider mark text (option labels rendered by the slider lib) */
