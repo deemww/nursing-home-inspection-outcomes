@@ -445,7 +445,7 @@ with st.sidebar:
             display:flex;
             justify-content:space-between;
             align-items:center;
-            margin-top:-12px;
+            margin-top:-50px;
             padding:0 6px 0 6px;
         ">
             <div style="width:2px; height:10px; background:#6b6b6b;"></div>
