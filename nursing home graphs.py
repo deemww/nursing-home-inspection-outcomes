@@ -56,19 +56,29 @@ st.markdown(
        INSPECTION FREQUENCY SLIDER STYLING
        ============================================================ */
 
-    /* Give the slider area a bit of vertical breathing room */
+    /* Give the slider area vertical breathing room for the dots */
     [data-testid="stSidebar"] [data-testid="stSlider"] {
         padding-bottom: 4px !important;
     }
 
-    /* Hide Streamlit's built-in min / max value labels */
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
+    /* Hide Streamlit's built-in min / max tick labels (-25% / +25% below track) */
+    [data-testid="stSidebar"] [data-testid="stTickBarMin"],
+    [data-testid="stSidebar"] [data-testid="stTickBarMax"] {
         display: none !important;
     }
 
-    /* Hide rc-slider mark labels — we render our own above */
+    /* Hide the red floating current-value tooltip above the thumb */
+    [data-testid="stSidebar"] [data-testid="stThumbValue"] {
+        display: none !important;
+    }
+
+    /* Hide rc-slider mark text labels — we render our own above */
     [data-testid="stSidebar"] .rc-slider-mark-text {
+        display: none !important;
+    }
+
+    /* Also hide any remaining Streamlit slider value output element */
+    [data-testid="stSidebar"] [data-testid="stSlider"] output {
         display: none !important;
     }
 
@@ -109,17 +119,18 @@ st.markdown(
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
 
-    /* Snap-point dots on the track */
+    /* Snap-point dots on the track — dark fill, light border to contrast maroon */
     [data-testid="stSidebar"] .rc-slider-dot {
-        background-color: #6b0f0f !important;
-        border: 2px solid #8b1a1a !important;
-        width: 9px !important;
-        height: 9px !important;
-        bottom: -3px !important;
+        background-color: #2a2a2e !important;
+        border: 2px solid #888 !important;
+        width: 12px !important;
+        height: 12px !important;
+        bottom: -4px !important;
+        z-index: 3 !important;
     }
     [data-testid="stSidebar"] .rc-slider-dot-active {
-        background-color: #6b0f0f !important;
-        border-color: #8b1a1a !important;
+        background-color: #2a2a2e !important;
+        border-color: #aaa !important;
     }
 
     </style>
