@@ -38,7 +38,7 @@ st.markdown(
         margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Radio: unselected = normal weight, selected = bold maroon ---- */
+    /* ---- Radio: unselected = normal, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
@@ -54,7 +54,7 @@ st.markdown(
         color: #800000 !important;
     }
 
-    /* ---- METRICS: bold label + value + caption text ---- */
+    /* ---- METRICS ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
@@ -395,16 +395,8 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    # ── Slider rendered FIRST so freq_choice is up to date ──
-    st.select_slider(
-        "Inspection frequency",
-        options=FREQ_LABELS,
-        key="freq_choice",
-        on_change=update_selected_key_from_sidebar,
-        label_visibility="collapsed",
-    )
-
-    # ── Labels rendered AFTER slider so selected_fc reflects current value ──
+    # ── Labels above slider ──
+    # selected_fc reads from session state which is already resolved on each rerun
     selected_fc = st.session_state.get("freq_choice", "Current")
     labels_html = "".join([
         f"<span style='"
@@ -415,8 +407,17 @@ with st.sidebar:
     ])
     st.markdown(
         f"<div style='display:flex; justify-content:space-between;"
-        f" padding:0 6px; margin-top:6px;'>{labels_html}</div>",
+        f" padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
         unsafe_allow_html=True,
+    )
+
+    # ── Slider ──
+    st.select_slider(
+        "Inspection frequency",
+        options=FREQ_LABELS,
+        key="freq_choice",
+        on_change=update_selected_key_from_sidebar,
+        label_visibility="collapsed",
     )
 
     # ── Callout box ──
