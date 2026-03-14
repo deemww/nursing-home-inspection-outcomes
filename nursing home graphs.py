@@ -411,7 +411,7 @@ with st.sidebar:
     # ── Inspection frequency section label ──
     st.markdown(
         "<p style='font-size:1.35rem; font-weight:700; line-height:1.2;"
-        " margin-bottom:6px; margin-top:4px;'>Inspection frequency</p>",
+        " margin-bottom:6px; margin-top:4px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
 
