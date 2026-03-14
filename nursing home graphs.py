@@ -37,35 +37,37 @@ st.markdown(
         line-height: 1.2 !important;
         margin-bottom: 0.25rem !important;
     }
+
+    /* ---- Radio: unselected = normal weight, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
+        font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
+        color: #1a1a1a !important;
+        white-space: pre-wrap !important;
     }
+    [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) span,
+    [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
+        font-weight: 700 !important;
+        color: #800000 !important;
+    }
+
     /* ---- METRICS: bold label + value + caption text ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
-    [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        white-space: pre-wrap !important;
-    }
 
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
        ============================================================ */
 
-    /* Give the slider area vertical breathing room for the dots */
     [data-testid="stSidebar"] [data-testid="stSlider"] {
         padding-bottom: 4px !important;
     }
 
-    /* ---- Hide duplicate labels Streamlit injects ----
-       Use global selectors (no parent prefix) so they match
-       regardless of how deeply Streamlit nests these elements. */
-
-    /* Hide the small selected-value text Streamlit shows above the slider */
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [class*="ThumbValue"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [class*="thumbValue"],
@@ -78,49 +80,39 @@ st.markdown(
         margin: 0 !important;
         padding: 0 !important;
     }
-   
-    /* Hide the grey min/max labels under the slider */
+
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
         display: none !important;
     }
-
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
         display: none !important;
     }
-
-    /* Backup selectors in case Streamlit renders them differently */
     [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid*="TickBar"],
     [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="tickBar"],
     [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"] {
         display: none !important;
     }
-
-    /* rc-slider mark text (option labels rendered by the slider lib) */
     .rc-slider-mark-text,
     .rc-slider-mark-text-active {
         display: none !important;
     }
-
-    /* Catch-all: any output element inside the slider */
     [data-testid="stSidebar"] [data-testid="stSlider"] output {
         display: none !important;
     }
 
-    /* Rail (full background track) — maroon */
+    /* Rail */
     [data-testid="stSidebar"] .rc-slider-rail {
         background-color: #6b0f0f !important;
         height: 4px !important;
         border-radius: 2px !important;
     }
-
-    /* Track (filled portion to the left of handle) — also maroon */
+    /* Track */
     [data-testid="stSidebar"] .rc-slider-track {
         background-color: #6b0f0f !important;
         height: 4px !important;
     }
-
-    /* Handle / thumb — dark circle with red glow ring */
+    /* Handle */
     [data-testid="stSidebar"] .rc-slider-handle {
         background: #3a3a3e !important;
         border: none !important;
@@ -143,8 +135,7 @@ st.markdown(
             0 0 0 4px rgba(220, 80, 80, 0.9),
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
-
-    /* Snap-point circle markers on the track */
+    /* Dots */
     [data-testid="stSidebar"] .rc-slider-dot {
         display: block !important;
         background-color: #1c1c1e !important;
@@ -241,7 +232,6 @@ pred_map = {
 }
 pred_to_label = {100: pred_options[0], 50: pred_options[1], 0: pred_options[2]}
 
-# Simple labels used by the select_slider
 FREQ_LABELS = ["−25%", "Current", "+25%"]
 
 def get_freq_options(predictability_numeric):
@@ -299,7 +289,6 @@ def parse_clicked_key_from_chart_state(chart_state) -> str | None:
 # Sidebar state sync
 # =============================
 def set_radios_from_selected_key(selected_key: str) -> None:
-    """Safe ONLY before widgets are created."""
     r = df.loc[df["scenario_key"] == selected_key].iloc[0]
     pred = int(r["predictability_numeric"])
     freq = float(r["frequency"])
@@ -313,11 +302,6 @@ def set_radios_from_selected_key(selected_key: str) -> None:
         st.session_state["freq_choice"] = "+25%"
 
 def update_selected_key_from_sidebar():
-    """
-    Widget callback:
-    - sidebar is source of truth
-    - mark last_action so chart clicks are not re-applied
-    """
     st.session_state["last_action"] = "sidebar"
     pred = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred)
@@ -370,7 +354,6 @@ if "pred_choice" not in st.session_state or "freq_choice" not in st.session_stat
 if "last_seen_by_chart" not in st.session_state:
     st.session_state["last_seen_by_chart"] = {k: None for k in CHART_KEYS}
 
-# Apply any pending chart click BEFORE widgets
 apply_chart_click_if_any()
 
 # =============================
@@ -392,7 +375,6 @@ st.markdown(
 with st.sidebar:
     st.markdown("## Policy Controls")
 
-    # ── Inspection timing (unchanged radio buttons) ──
     st.radio(
         "Inspection Timing Predictability",
         pred_options,
@@ -403,34 +385,17 @@ with st.sidebar:
     pred_numeric = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred_numeric)
 
-    # Ensure freq_choice is a valid FREQ_LABEL (handles first load + predictability change)
     if st.session_state.get("freq_choice") not in FREQ_LABELS:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
-    # ── Inspection frequency section label ──
     st.markdown(
         "<p style='font-size:1.35rem; font-weight:700; line-height:1.2;"
         " margin-bottom:6px; margin-top:4px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
 
-    # Custom option labels row above the slider (active label is maroon + bold)
-    selected_fc = st.session_state["freq_choice"]
-    labels_html = "".join([
-        f"<span style='"
-        f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
-        f"font-weight:{'800' if lbl == selected_fc else '600'};"
-        f"font-size:1.0rem;'>{lbl}</span>"
-        for lbl in FREQ_LABELS
-    ])
-    st.markdown(
-        f"<div style='display:flex; justify-content:space-between;"
-        f" padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
-        unsafe_allow_html=True,
-    )
-
-    # ── Slider (label hidden — shown above via markdown) ──
+    # ── Slider rendered FIRST so freq_choice is up to date ──
     st.select_slider(
         "Inspection frequency",
         options=FREQ_LABELS,
@@ -439,26 +404,42 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    # ── Callout box below slider ──
+    # ── Labels rendered AFTER slider so selected_fc reflects current value ──
+    selected_fc = st.session_state.get("freq_choice", "Current")
+    labels_html = "".join([
+        f"<span style='"
+        f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
+        f"font-weight:{'700' if lbl == selected_fc else '400'};"
+        f"font-size:1.0rem;'>{lbl}</span>"
+        for lbl in FREQ_LABELS
+    ])
+    st.markdown(
+        f"<div style='display:flex; justify-content:space-between;"
+        f" padding:0 6px; margin-top:6px;'>{labels_html}</div>",
+        unsafe_allow_html=True,
+    )
+
+    # ── Callout box ──
     rates = {
         "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
         "+25%":    f"{high:.2f}",
     }
     st.markdown(
-    f"""
-    <div style="
-        background: rgba(0,0,0,0.1);
-        border-radius: 12px;
-        padding: 10px 14px;
-        text-align: center;
-        margin-top: 0.0001px;
-    ">
-        <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+        f"""
+        <div style="
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+            margin-top: 12px;
+        ">
+            <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 # =============================
 # Selected scenario (source of truth)
 # =============================
