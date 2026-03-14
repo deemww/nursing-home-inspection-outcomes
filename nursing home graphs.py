@@ -374,8 +374,10 @@ st.markdown(
 # Sidebar controls
 # =============================
 with st.sidebar:
-    st.markdown("## Policy Controls")
-
+    st.markdown(
+        "<h2 style='text-align:center;'>Policy Controls</h2>",
+        unsafe_allow_html=True,
+    )
     st.radio(
         "Inspection Predictability",
         pred_options,
