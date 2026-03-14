@@ -439,6 +439,23 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    st.markdown(
+        """
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-top:-8px;
+            padding:0 6px 0 6px;
+        ">
+            <div style="width:2px; height:10px; background:#6b6b6b;"></div>
+            <div style="width:2px; height:10px; background:#6b6b6b;"></div>
+            <div style="width:2px; height:10px; background:#6b6b6b;"></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     # ── Callout box below slider ──
     rates = {
         "−25%":    f"{low:.2f}",
