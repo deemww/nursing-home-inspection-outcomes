@@ -144,22 +144,28 @@ st.markdown(
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
 
-    /* Snap-point circle markers on the track */
+    /* Allow tick marks to render outside the clipped track area */
+    [data-testid="stSidebar"] [data-testid="stSlider"] .rc-slider {
+        overflow: visible !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stSlider"] .rc-slider-step {
+        overflow: visible !important;
+    }
+    /* Tick marks as vertical lines at each slider value */
     [data-testid="stSidebar"] .rc-slider-dot {
         display: block !important;
-        background-color: #1c1c1e !important;
-        border: 2.5px solid #bbb !important;
-        width: 13px !important;
-        height: 13px !important;
-        bottom: -5px !important;
-        margin-left: -6px !important;
+        background-color: #6b0f0f !important;
+        border: none !important;
+        width: 2px !important;
+        height: 10px !important;
+        bottom: -4px !important;
+        margin-left: -1px !important;
+        border-radius: 0 !important;
         z-index: 5 !important;
-        border-radius: 50% !important;
     }
     [data-testid="stSidebar"] .rc-slider-dot-active {
         display: block !important;
-        background-color: #1c1c1e !important;
-        border-color: #ddd !important;
+        background-color: #ddd !important;
     }
 
     </style>
