@@ -446,23 +446,19 @@ with st.sidebar:
         "+25%":    f"{high:.2f}",
     }
     st.markdown(
-        f"""
-        <div style="
-            background: rgba(0,0,0,0.1);
-            border-radius: 12px;
-            padding: 10px 14px;
-            text-align: center;
-            margin-top: 0.0001px;
-        ">
-            <strong style="font-size:1.0rem;">Frequency: {selected_fc}</strong><br>
-            <span style="font-size:0.9rem; color:rgba(0,0,0,0.7);">
-                ({rates[selected_fc]} inspections per facility per year)
-            </span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    f"""
+    <div style="
+        background: rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 10px 14px;
+        text-align: center;
+        margin-top: 0.0001px;
+    ">
+        <strong style="font-size:1.0rem;">Frequency: {rates[selected_fc]} inspections per facility per year</strong>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 # =============================
 # Selected scenario (source of truth)
 # =============================
