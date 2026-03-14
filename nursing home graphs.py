@@ -51,93 +51,83 @@ st.markdown(
         white-space: pre-wrap !important;
     }
 
-    /* ---- METRICS ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
-    /* ============================================================
-       INSPECTION FREQUENCY SLIDER STYLING
-       ============================================================ */
-
-    /* Hide built-in min/max / value text */
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] output,
-    [data-testid="stSidebar"] [data-testid="stThumbValue"] {
-        display: none !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stSlider"] {
+    /* ---------- ONLY target the frequency slider ---------- */
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] {
         padding-bottom: 0 !important;
         margin-bottom: 0 !important;
     }
 
-    /* BaseWeb slider track */
-    [data-testid="stSidebar"] div[data-baseweb="slider"] {
-        margin-top: 0.25rem !important;
+    /* Hide all native slider labels / values */
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] label,
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] output,
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stThumbValue"],
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBar"],
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBarMin"],
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBarMax"],
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] p {
+        display: none !important;
+    }
+
+    /* Baseweb slider layout */
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] {
+        margin-top: 0.15rem !important;
         margin-bottom: 0 !important;
     }
 
-    /* Unfilled rail */
-    [data-testid="stSidebar"] div[data-baseweb="slider"] > div > div:nth-child(1) {
-        height: 4px !important;
-        background: #6b0f0f !important;
+    /* Full rail */
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(1) {
+        height: 5px !important;
+        background: #7a1a1a !important;
         border-radius: 999px !important;
     }
 
     /* Filled track */
-    [data-testid="stSidebar"] div[data-baseweb="slider"] > div > div:nth-child(2) {
-        height: 4px !important;
-        background: #6b0f0f !important;
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(2) {
+        height: 5px !important;
+        background: #7a1a1a !important;
         border-radius: 999px !important;
     }
 
     /* Thumb */
-    [data-testid="stSidebar"] div[data-baseweb="slider"] [role="slider"] {
+    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] [role="slider"] {
         background: #3a3a3e !important;
         border: none !important;
         width: 22px !important;
         height: 22px !important;
         box-shadow:
-            0 2px 8px rgba(0, 0, 0, 0.4),
-            0 0 0 3px rgba(220, 80, 80, 0.85),
-            0 0 10px 4px rgba(220, 80, 80, 0.30) !important;
+            0 2px 8px rgba(0,0,0,0.35),
+            0 0 0 4px rgba(220,80,80,0.85),
+            0 0 14px 6px rgba(220,80,80,0.28) !important;
     }
 
-    [data-testid="stSidebar"] div[data-baseweb="slider"] [role="slider"]:hover,
-    [data-testid="stSidebar"] div[data-baseweb="slider"] [role="slider"]:focus,
-    [data-testid="stSidebar"] div[data-baseweb="slider"] [role="slider"]:active {
-        box-shadow:
-            0 3px 12px rgba(0, 0, 0, 0.5),
-            0 0 0 4px rgba(220, 80, 80, 0.9),
-            0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
-    }
-
-    /* Manual ticks rendered under slider */
-    [data-testid="stSidebar"] .freq-ticks-wrap {
+    /* Manual ticks */
+    .freq-ticks-wrap {
         position: relative;
-        height: 12px;
-        margin-top: -4px;
-        margin-bottom: 8px;
-        margin-left: 8px;
-        margin-right: 8px;
+        height: 14px;
+        margin-top: 2px;
+        margin-bottom: 12px;
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
-    [data-testid="stSidebar"] .freq-ticks-wrap span {
+    .freq-ticks-wrap span {
         position: absolute;
         top: 0;
-        width: 2px;
-        height: 10px;
-        background: #666666;
+        width: 3px;
+        height: 18px;
+        background: #7b7b7b;
         transform: translateX(-50%);
+        border-radius: 2px;
     }
 
-    [data-testid="stSidebar"] .freq-ticks-wrap span:nth-child(1) { left: 0%; }
-    [data-testid="stSidebar"] .freq-ticks-wrap span:nth-child(2) { left: 50%; }
-    [data-testid="stSidebar"] .freq-ticks-wrap span:nth-child(3) { left: 100%; }
+    .freq-ticks-wrap span:nth-child(1) { left: 0%; }
+    .freq-ticks-wrap span:nth-child(2) { left: 50%; }
+    .freq-ticks-wrap span:nth-child(3) { left: 100%; }
     </style>
     """,
     unsafe_allow_html=True,
