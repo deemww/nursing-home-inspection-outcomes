@@ -41,7 +41,7 @@ st.markdown(
     /* ---- Radio: unselected = normal, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        font-size: 1.15rem !important;
+        font-size: 1.0rem !important;
         font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
