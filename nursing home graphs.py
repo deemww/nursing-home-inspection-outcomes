@@ -26,108 +26,130 @@ st.markdown(
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
-
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
         font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
-
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
         font-weight: 700 !important;
         line-height: 1.2 !important;
         margin-bottom: 0.25rem !important;
     }
-
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.15rem !important;
         line-height: 1.5 !important;
         margin: 0 !important;
     }
-
-    [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        white-space: pre-wrap !important;
-    }
-
+    /* ---- METRICS: bold label + value + caption text ---- */
     [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
     [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
-
-    /* ---------- ONLY target the frequency slider ---------- */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] {
-        padding-bottom: 0 !important;
-        margin-bottom: 0 !important;
+    [data-testid="stSidebar"] div[role="radiogroup"] label p {
+        white-space: pre-wrap !important;
     }
 
-    /* Hide all native slider labels / values */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] label,
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] output,
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stThumbValue"],
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBar"],
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBarMin"],
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] [data-testid="stTickBarMax"],
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] p {
+    /* ============================================================
+       INSPECTION FREQUENCY SLIDER STYLING
+       ============================================================ */
+
+    /* Give the slider area vertical breathing room for the dots */
+    [data-testid="stSidebar"] [data-testid="stSlider"] {
+        padding-bottom: 4px !important;
+    }
+
+    /* ---- Hide duplicate labels Streamlit injects ----
+       Use global selectors (no parent prefix) so they match
+       regardless of how deeply Streamlit nests these elements. */
+
+    /* Floating value above the thumb (turns red when moved) */
+    [data-testid="stThumbValue"],
+    [class*="ThumbValue"],
+    [class*="thumbValue"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* Min / max tick labels below the track */
+    [data-testid="stTickBarMin"],
+    [data-testid="stTickBarMax"],
+    [class*="TickBar"],
+    [class*="tickBar"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* rc-slider mark text (option labels rendered by the slider lib) */
+    .rc-slider-mark-text,
+    .rc-slider-mark-text-active {
         display: none !important;
     }
 
-    /* Baseweb slider layout */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] {
-        margin-top: 0.15rem !important;
-        margin-bottom: 0 !important;
+    /* Catch-all: any output element inside the slider */
+    [data-testid="stSidebar"] [data-testid="stSlider"] output {
+        display: none !important;
     }
 
-    /* Full rail */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(1) {
-        height: 5px !important;
-        background: #7a1a1a !important;
-        border-radius: 999px !important;
+    /* Rail (full background track) — maroon */
+    [data-testid="stSidebar"] .rc-slider-rail {
+        background-color: #6b0f0f !important;
+        height: 4px !important;
+        border-radius: 2px !important;
     }
 
-    /* Filled track */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(2) {
-        height: 5px !important;
-        background: #7a1a1a !important;
-        border-radius: 999px !important;
+    /* Track (filled portion to the left of handle) — also maroon */
+    [data-testid="stSidebar"] .rc-slider-track {
+        background-color: #6b0f0f !important;
+        height: 4px !important;
     }
 
-    /* Thumb */
-    div[data-testid="stSidebar"] div[data-testid="stSlider"] div[data-baseweb="slider"] [role="slider"] {
+    /* Handle / thumb — dark circle with red glow ring */
+    [data-testid="stSidebar"] .rc-slider-handle {
         background: #3a3a3e !important;
         border: none !important;
         width: 22px !important;
         height: 22px !important;
+        margin-top: -9px !important;
+        opacity: 1 !important;
         box-shadow:
-            0 2px 8px rgba(0,0,0,0.35),
-            0 0 0 4px rgba(220,80,80,0.85),
-            0 0 14px 6px rgba(220,80,80,0.28) !important;
+            0 2px 8px rgba(0, 0, 0, 0.4),
+            0 0 0 3px rgba(220, 80, 80, 0.85),
+            0 0 10px 4px rgba(220, 80, 80, 0.3) !important;
+        transition: box-shadow 0.15s !important;
+    }
+    [data-testid="stSidebar"] .rc-slider-handle:hover,
+    [data-testid="stSidebar"] .rc-slider-handle:focus,
+    [data-testid="stSidebar"] .rc-slider-handle-dragging {
+        border: none !important;
+        box-shadow:
+            0 3px 12px rgba(0, 0, 0, 0.5),
+            0 0 0 4px rgba(220, 80, 80, 0.9),
+            0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
 
-    /* Manual ticks */
-    .freq-ticks-wrap {
-        position: relative;
-        height: 14px;
-        margin-top: 2px;
-        margin-bottom: 12px;
-        margin-left: 10px;
-        margin-right: 10px;
+    /* Snap-point circle markers on the track */
+    [data-testid="stSidebar"] .rc-slider-dot {
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border: 2.5px solid #bbb !important;
+        width: 13px !important;
+        height: 13px !important;
+        bottom: -5px !important;
+        margin-left: -6px !important;
+        z-index: 5 !important;
+        border-radius: 50% !important;
+    }
+    [data-testid="stSidebar"] .rc-slider-dot-active {
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border-color: #ddd !important;
     }
 
-    .freq-ticks-wrap span {
-        position: absolute;
-        top: 0;
-        width: 3px;
-        height: 18px;
-        background: #7b7b7b;
-        transform: translateX(-50%);
-        border-radius: 2px;
-    }
-
-    .freq-ticks-wrap span:nth-child(1) { left: 0%; }
-    .freq-ticks-wrap span:nth-child(2) { left: 50%; }
-    .freq-ticks-wrap span:nth-child(3) { left: 100%; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -207,9 +229,8 @@ pred_map = {
 }
 pred_to_label = {100: pred_options[0], 50: pred_options[1], 0: pred_options[2]}
 
+# Simple labels used by the select_slider
 FREQ_LABELS = ["−25%", "Current", "+25%"]
-FREQ_INDEX_TO_LABEL = {0: "−25%", 1: "Current", 2: "+25%"}
-FREQ_LABEL_TO_INDEX = {"−25%": 0, "Current": 1, "+25%": 2}
 
 def get_freq_options(predictability_numeric):
     opts = (
@@ -231,27 +252,22 @@ CHART_KEYS = [
     "vega_total_inspections",
 ]
 
-def parse_clicked_key_from_chart_state(chart_state):
+def parse_clicked_key_from_chart_state(chart_state) -> str | None:
     if not chart_state:
         return None
-
     sel = getattr(chart_state, "selection", None)
     if sel is None and isinstance(chart_state, dict):
         sel = chart_state.get("selection")
-
     if not sel or not isinstance(sel, dict):
         return None
-
     point = sel.get(POINT_PARAM)
     if point is None:
         return None
-
     if isinstance(point, list):
         if not point:
             return None
         first = point[0]
         return first.get("scenario_key") if isinstance(first, dict) else None
-
     if isinstance(point, dict):
         val = point.get("scenario_key")
         if isinstance(val, dict):
@@ -263,54 +279,49 @@ def parse_clicked_key_from_chart_state(chart_state):
         if isinstance(val, str):
             return val
         return None
-
     if isinstance(point, str):
         return point
-
     return None
 
 # =============================
 # Sidebar state sync
 # =============================
-def set_sidebar_from_selected_key(selected_key: str) -> None:
-    """Set sidebar widget values from selected scenario key. Safe before widgets render."""
+def set_radios_from_selected_key(selected_key: str) -> None:
+    """Safe ONLY before widgets are created."""
     r = df.loc[df["scenario_key"] == selected_key].iloc[0]
     pred = int(r["predictability_numeric"])
     freq = float(r["frequency"])
-
     st.session_state["pred_choice"] = pred_to_label[pred]
-
     low, mid, high = get_freq_options(pred)
     if freq == float(low):
-        st.session_state["freq_index"] = 0
+        st.session_state["freq_choice"] = "−25%"
     elif freq == float(mid):
-        st.session_state["freq_index"] = 1
+        st.session_state["freq_choice"] = "Current"
     else:
-        st.session_state["freq_index"] = 2
+        st.session_state["freq_choice"] = "+25%"
 
 def update_selected_key_from_sidebar():
     """
-    Sidebar widgets are the source of truth when manually changed.
+    Widget callback:
+    - sidebar is source of truth
+    - mark last_action so chart clicks are not re-applied
     """
     st.session_state["last_action"] = "sidebar"
-
     pred = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred)
-    idx = st.session_state["freq_index"]
-
-    if idx == 0:
+    fc = st.session_state["freq_choice"]
+    if fc.startswith("−25%"):
         freq = float(low)
-    elif idx == 1:
+    elif fc.startswith("Current"):
         freq = float(mid)
     else:
         freq = float(high)
-
     st.session_state["selected_key"] = f"{int(pred)}_{round(float(freq), 4)}"
 
 # =============================
 # Chart click detection
 # =============================
-def get_new_chart_click():
+def get_new_chart_click() -> str | None:
     last_seen = st.session_state.get("last_seen_by_chart", {})
     for k in CHART_KEYS:
         clicked = parse_clicked_key_from_chart_state(st.session_state.get(k))
@@ -329,13 +340,11 @@ def apply_chart_click_if_any():
         mark_chart_clicks_as_seen()
         st.session_state["last_action"] = None
         return
-
     clicked = get_new_chart_click()
     if not clicked:
         return
-
     st.session_state["selected_key"] = clicked
-    set_sidebar_from_selected_key(clicked)
+    set_radios_from_selected_key(clicked)
     mark_chart_clicks_as_seen()
 
 # =============================
@@ -344,14 +353,12 @@ def apply_chart_click_if_any():
 if "selected_key" not in st.session_state:
     _, mid0, _ = get_freq_options(50)
     st.session_state["selected_key"] = f"50_{round(float(mid0), 4)}"
-
-if "pred_choice" not in st.session_state or "freq_index" not in st.session_state:
-    set_sidebar_from_selected_key(st.session_state["selected_key"])
-
+if "pred_choice" not in st.session_state or "freq_choice" not in st.session_state:
+    set_radios_from_selected_key(st.session_state["selected_key"])
 if "last_seen_by_chart" not in st.session_state:
     st.session_state["last_seen_by_chart"] = {k: None for k in CHART_KEYS}
 
-# Apply chart click before widgets render
+# Apply any pending chart click BEFORE widgets
 apply_chart_click_if_any()
 
 # =============================
@@ -373,6 +380,7 @@ st.markdown(
 with st.sidebar:
     st.markdown("## Policy Controls")
 
+    # ── Inspection timing (unchanged radio buttons) ──
     st.radio(
         "Inspection timing predictability",
         pred_options,
@@ -383,19 +391,20 @@ with st.sidebar:
     pred_numeric = pred_map[st.session_state["pred_choice"]]
     low, mid, high = get_freq_options(pred_numeric)
 
-    if st.session_state.get("freq_index") not in [0, 1, 2]:
-        st.session_state["freq_index"] = 1
+    # Ensure freq_choice is a valid FREQ_LABEL (handles first load + predictability change)
+    if st.session_state.get("freq_choice") not in FREQ_LABELS:
+        st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
+    # ── Inspection frequency section label ──
     st.markdown(
-        "<p style='font-size:1.35rem; font-weight:700; line-height:1.2; margin-bottom:6px; margin-top:4px;'>"
-        "Inspection frequency"
-        "</p>",
+        "<p style='font-size:1.35rem; font-weight:700; line-height:1.2;"
+        " margin-bottom:6px; margin-top:4px;'>Inspection frequency</p>",
         unsafe_allow_html=True,
     )
 
-    selected_fc = FREQ_INDEX_TO_LABEL[st.session_state["freq_index"]]
-
+    # Custom option labels row above the slider (active label is maroon + bold)
+    selected_fc = st.session_state["freq_choice"]
     labels_html = "".join([
         f"<span style='"
         f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
@@ -404,38 +413,26 @@ with st.sidebar:
         for lbl in FREQ_LABELS
     ])
     st.markdown(
-        f"<div style='display:flex; justify-content:space-between; padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
+        f"<div style='display:flex; justify-content:space-between;"
+        f" padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
         unsafe_allow_html=True,
     )
 
-    st.slider(
+    # ── Slider (label hidden — shown above via markdown) ──
+    st.select_slider(
         "Inspection frequency",
-        min_value=0,
-        max_value=2,
-        step=1,
-        key="freq_index",
+        options=FREQ_LABELS,
+        key="freq_choice",
         on_change=update_selected_key_from_sidebar,
         label_visibility="collapsed",
     )
 
-    st.markdown(
-        """
-        <div class="freq-ticks-wrap">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    selected_fc = FREQ_INDEX_TO_LABEL[st.session_state["freq_index"]]
+    # ── Callout box below slider ──
     rates = {
-        "−25%": f"{low:.2f}",
+        "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
-        "+25%": f"{high:.2f}",
+        "+25%":    f"{high:.2f}",
     }
-
     st.markdown(
         f"""
         <div style="
@@ -498,7 +495,7 @@ st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_al
 st.markdown(
     "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
     "Note: All outcomes are reported relative to a benchmark with no inspections. "
-    "“Lives saved” reflects the annual reduction in patient deaths compared to a regime with zero inspections."
+    "\u201cLives saved\u201d reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
     unsafe_allow_html=True,
 )
@@ -511,7 +508,6 @@ with col1:
         help="Annual reduction in patient deaths relative to no inspections",
     )
     st.caption("per year")
-
 with col2:
     st.metric(
         "Inspection Efficiency",
@@ -519,7 +515,6 @@ with col2:
         help="Lives saved per 1,000 inspections",
     )
     st.caption("per 1,000 inspections")
-
 with col3:
     st.metric(
         "Regulatory information",
@@ -527,7 +522,6 @@ with col3:
         help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
     )
     st.caption("about facility quality")
-
 with col4:
     st.metric(
         "Total inspections",
@@ -542,7 +536,7 @@ st.markdown(
 )
 
 # =============================
-# Vega-Lite bar chart specs
+# Vega-Lite bar chart specs (clickable) + sort toggle
 # =============================
 POINT_PARAM = "point_selection"
 
@@ -551,28 +545,13 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
         sort_spec = {"field": metric_col, "order": "descending"}
     else:
         sort_spec = {"field": "x_order", "order": "ascending"}
-
     return {
-        "title": {
-            "text": chart_title,
-            "anchor": "middle",
-            "fontSize": 20,
-            "fontWeight": "bold",
-            "offset": 10,
-        },
+        "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
         "height": 235,
         "padding": {"top": 8, "left": 10, "right": 10, "bottom": 5},
-        "mark": {
-            "type": "bar",
-            "size": 40,
-            "cornerRadiusTopLeft": 3,
-            "cornerRadiusTopRight": 3,
-        },
+        "mark": {"type": "bar", "size": 40, "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
         "params": [
-            {
-                "name": POINT_PARAM,
-                "select": {"type": "point", "fields": ["scenario_key"], "on": "click"},
-            }
+            {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
         ],
         "encoding": {
             "x": {
@@ -644,7 +623,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.toggle(
+sort_by_magnitude = st.toggle(
     "Sort bars by magnitude",
     value=st.session_state.get("sort_by_magnitude", False),
     help="Orders bars from largest to smallest value within each chart.",
@@ -666,7 +645,6 @@ with p1:
         ),
         key="vega_lives_saved_annually",
     )
-
 with p2:
     render_chart(
         df,
@@ -695,7 +673,6 @@ with p3:
         ),
         key="vega_info_percent",
     )
-
 with p4:
     render_chart(
         df,
