@@ -433,7 +433,7 @@ with st.sidebar:
             border-radius: 12px;
             padding: 10px 14px;
             text-align: center;
-            margin-top: 12px;
+            margin-top: 4px;
         ">
             <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
         </div>
