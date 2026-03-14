@@ -61,23 +61,36 @@ st.markdown(
         padding-bottom: 4px !important;
     }
 
-    /* Hide Streamlit's built-in min / max tick labels (-25% / +25% below track) */
-    [data-testid="stSidebar"] [data-testid="stTickBarMin"],
-    [data-testid="stSidebar"] [data-testid="stTickBarMax"] {
+    /* ---- Hide duplicate labels Streamlit injects ----
+       Use global selectors (no parent prefix) so they match
+       regardless of how deeply Streamlit nests these elements. */
+
+    /* Floating value above the thumb (turns red when moved) */
+    [data-testid="stThumbValue"],
+    [class*="ThumbValue"],
+    [class*="thumbValue"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* Min / max tick labels below the track */
+    [data-testid="stTickBarMin"],
+    [data-testid="stTickBarMax"],
+    [class*="TickBar"],
+    [class*="tickBar"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    /* rc-slider mark text (option labels rendered by the slider lib) */
+    .rc-slider-mark-text,
+    .rc-slider-mark-text-active {
         display: none !important;
     }
 
-    /* Hide the red floating current-value tooltip above the thumb */
-    [data-testid="stSidebar"] [data-testid="stThumbValue"] {
-        display: none !important;
-    }
-
-    /* Hide rc-slider mark text labels — we render our own above */
-    [data-testid="stSidebar"] .rc-slider-mark-text {
-        display: none !important;
-    }
-
-    /* Also hide any remaining Streamlit slider value output element */
+    /* Catch-all: any output element inside the slider */
     [data-testid="stSidebar"] [data-testid="stSlider"] output {
         display: none !important;
     }
@@ -119,18 +132,22 @@ st.markdown(
             0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
 
-    /* Snap-point dots on the track — dark fill, light border to contrast maroon */
+    /* Snap-point circle markers on the track */
     [data-testid="stSidebar"] .rc-slider-dot {
-        background-color: #2a2a2e !important;
-        border: 2px solid #888 !important;
-        width: 12px !important;
-        height: 12px !important;
-        bottom: -4px !important;
-        z-index: 3 !important;
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border: 2.5px solid #bbb !important;
+        width: 13px !important;
+        height: 13px !important;
+        bottom: -5px !important;
+        margin-left: -6px !important;
+        z-index: 5 !important;
+        border-radius: 50% !important;
     }
     [data-testid="stSidebar"] .rc-slider-dot-active {
-        background-color: #2a2a2e !important;
-        border-color: #aaa !important;
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border-color: #ddd !important;
     }
 
     </style>
