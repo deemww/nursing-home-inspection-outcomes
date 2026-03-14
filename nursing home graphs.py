@@ -454,7 +454,7 @@ with st.sidebar:
         text-align: center;
         margin-top: 0.0001px;
     ">
-        <strong style="font-size:1.0rem;">Frequency: {rates[selected_fc]} inspections per facility per year</strong>
+        <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
     </div>
     """,
     unsafe_allow_html=True,
