@@ -454,7 +454,7 @@ with st.sidebar:
             text-align: center;
             margin-top: 0.0001px;
         ">
-            <strong style="font-size:1.0rem;">Selected: {selected_fc}</strong><br>
+            <strong style="font-size:1.0rem;">Frequency: {selected_fc}</strong><br>
             <span style="font-size:0.9rem; color:rgba(0,0,0,0.7);">
                 ({rates[selected_fc]} inspections per facility per year)
             </span>
