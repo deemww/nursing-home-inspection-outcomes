@@ -28,7 +28,7 @@ st.markdown(
     }
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        font-size: 1.6rem !important;
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
     }
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
