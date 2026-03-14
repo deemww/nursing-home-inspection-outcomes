@@ -33,7 +33,7 @@ st.markdown(
     }
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
         font-size: 1.35rem !important;
-        font-weight: 500 !important;
+        font-weight: 700 !important;
         line-height: 1.2 !important;
         margin-bottom: 0.25rem !important;
     }
