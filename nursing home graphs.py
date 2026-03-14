@@ -65,21 +65,16 @@ st.markdown(
        Use global selectors (no parent prefix) so they match
        regardless of how deeply Streamlit nests these elements. */
 
-    /* Hide the floating selected value above the slider thumb */
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid="stThumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="ThumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="thumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] .rc-slider-handle + div,
-    [data-testid="stSidebar"] [data-testid="stSlider"] output {
+    /* Floating value above the thumb (turns red when moved) */
+    [data-testid="stThumbValue"],
+    [class*="ThumbValue"],
+    [class*="thumbValue"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
     }
 
+   
     /* Hide the grey min/max labels under the slider */
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
         display: none !important;
