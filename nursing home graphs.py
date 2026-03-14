@@ -377,7 +377,7 @@ with st.sidebar:
     st.markdown("## Policy Controls")
 
     st.radio(
-        "Inspection Timing Predictability",
+        "Inspection Predictability",
         pred_options,
         key="pred_choice",
         on_change=update_selected_key_from_sidebar,
