@@ -394,7 +394,7 @@ with st.sidebar:
 
     # ── Inspection timing (unchanged radio buttons) ──
     st.radio(
-        "Inspection timing predictability",
+        "Inspection Timing Predictability",
         pred_options,
         key="pred_choice",
         on_change=update_selected_key_from_sidebar,
