@@ -448,7 +448,7 @@ with st.sidebar:
             border-radius: 12px;
             padding: 10px 14px;
             text-align: center;
-            margin-top: 1px;
+            margin-top: 0.0001px;
         ">
             <strong style="font-size:1.0rem;">Selected: {selected_fc}</strong><br>
             <span style="font-size:0.9rem; color:rgba(0,0,0,0.7);">
