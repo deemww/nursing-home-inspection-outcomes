@@ -359,7 +359,7 @@ with st.sidebar:
             display: flex;
             justify-content: space-between;
             padding: 0 9px;
-            margin-top: -18px;
+            margin-top: -45px;
             margin-bottom: 10px;
             pointer-events: none;
         ">
