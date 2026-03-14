@@ -392,7 +392,7 @@ with st.sidebar:
 
     st.markdown(
         "<p style='font-size:1.15rem; font-weight:700; line-height:1.2;"
-        " margin-bottom:6px; margin-top:4px;'>Inspection Frequency</p>",
+        " margin-bottom:6px; margin-top:20px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
 
