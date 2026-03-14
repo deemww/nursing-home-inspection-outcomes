@@ -66,6 +66,7 @@ st.markdown(
 
     [data-testid="stSidebar"] [data-testid="stSlider"] {
         padding-bottom: 4px !important;
+        margin-bottom: -1rem !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
