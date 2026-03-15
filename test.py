@@ -9,20 +9,7 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
-    /* ============================================================
-       SIDEBAR — BFI Data Studio style
-       White background, clean section labels, maroon accents
-       ============================================================ */
-
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e4e4e4 !important;
-    }
-
-    /* Remove default Streamlit top padding so header sits flush */
-    [data-testid="stSidebar"] > div:first-child {
-        padding-top: 0 !important;
-    }
+    [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
@@ -39,57 +26,27 @@ st.markdown(
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
-
-    /* ---- Sidebar section labels (h2/h3 → small uppercase BFI style) ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        font-size: 0.65rem !important;
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.13em !important;
-        text-transform: uppercase !important;
-        color: #7c7c7c !important;
-        border-bottom: 1px solid #e4e4e4 !important;
-        padding-bottom: 8px !important;
-        margin-bottom: 14px !important;
-        margin-top: 4px !important;
     }
-
-    /* ---- Widget labels (radio + slider) → same small uppercase style ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        font-size: 0.65rem !important;
+        font-size: 1.15rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.13em !important;
-        text-transform: uppercase !important;
-        color: #7c7c7c !important;
         line-height: 1.2 !important;
-        margin-bottom: 10px !important;
-        border-bottom: 1px solid #e4e4e4 !important;
-        padding-bottom: 8px !important;
+        margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Radio items: unselected ---- */
-    [data-testid="stSidebar"] div[role="radiogroup"] label {
-        padding: 6px 8px !important;
-        border-radius: 4px !important;
-        transition: background 0.12s !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-        background-color: #fcf8f5 !important;
-    }
+    /* ---- Radio: unselected = normal, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        font-size: 0.875rem !important;
+        font-size: 1.0rem !important;
         font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
-        color: #404040 !important;
+        color: #1a1a1a !important;
         white-space: pre-wrap !important;
-    }
-
-    /* ---- Radio items: selected — maroon text on warm tint bg ---- */
-    [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-        background-color: #f5eded !important;
-        border-radius: 4px !important;
     }
     [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) span,
     [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
@@ -104,7 +61,7 @@ st.markdown(
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
     /* ============================================================
-       INSPECTION FREQUENCY SLIDER — clean maroon on white
+       INSPECTION FREQUENCY SLIDER STYLING
        ============================================================ */
 
     [data-testid="stSidebar"] [data-testid="stSlider"] {
@@ -112,7 +69,6 @@ st.markdown(
         margin-bottom: -1rem !important;
     }
 
-    /* Hide thumb value bubble and tick labels */
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [class*="ThumbValue"],
     [data-testid="stSidebar"] [data-testid="stSlider"] [class*="thumbValue"],
@@ -126,61 +82,76 @@ st.markdown(
         padding: 0 !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
+        display: none !important;
+    }
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
+        display: none !important;
+    }
     [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid*="TickBar"],
     [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="tickBar"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"] {
+        display: none !important;
+    }
     .rc-slider-mark-text,
     .rc-slider-mark-text-active {
         display: none !important;
     }
+    [data-testid="stSidebar"] [data-testid="stSlider"] output {
+        display: none !important;
+    }
 
-    /* Rail — light gray */
+    /* Rail */
     [data-testid="stSidebar"] .rc-slider-rail {
-        background-color: #e4e4e4 !important;
-        height: 3px !important;
+        background-color: #6b0f0f !important;
+        height: 4px !important;
         border-radius: 2px !important;
     }
-    /* Track — maroon */
+    /* Track */
     [data-testid="stSidebar"] .rc-slider-track {
-        background-color: #800000 !important;
-        height: 3px !important;
+        background-color: #6b0f0f !important;
+        height: 4px !important;
     }
-    /* Handle — solid maroon, white border */
+    /* Handle */
     [data-testid="stSidebar"] .rc-slider-handle {
-        background: #800000 !important;
-        border: 2px solid #ffffff !important;
-        width: 18px !important;
-        height: 18px !important;
-        margin-top: -7px !important;
+        background: #3a3a3e !important;
+        border: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin-top: -9px !important;
         opacity: 1 !important;
-        box-shadow: 0 1px 4px rgba(128, 0, 0, 0.35) !important;
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.4),
+            0 0 0 3px rgba(220, 80, 80, 0.85),
+            0 0 10px 4px rgba(220, 80, 80, 0.3) !important;
         transition: box-shadow 0.15s !important;
     }
     [data-testid="stSidebar"] .rc-slider-handle:hover,
     [data-testid="stSidebar"] .rc-slider-handle:focus,
     [data-testid="stSidebar"] .rc-slider-handle-dragging {
-        border: 2px solid #ffffff !important;
-        box-shadow: 0 2px 8px rgba(128, 0, 0, 0.5),
-                    0 0 0 3px rgba(128, 0, 0, 0.15) !important;
+        border: none !important;
+        box-shadow:
+            0 3px 12px rgba(0, 0, 0, 0.5),
+            0 0 0 4px rgba(220, 80, 80, 0.9),
+            0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
     }
-    /* Step dots */
+    /* Dots */
     [data-testid="stSidebar"] .rc-slider-dot {
         display: block !important;
-        background-color: #ffffff !important;
-        border: 2px solid #c8c8c8 !important;
-        width: 11px !important;
-        height: 11px !important;
-        bottom: -4px !important;
-        margin-left: -5px !important;
+        background-color: #1c1c1e !important;
+        border: 2.5px solid #bbb !important;
+        width: 13px !important;
+        height: 13px !important;
+        bottom: -5px !important;
+        margin-left: -6px !important;
         z-index: 5 !important;
         border-radius: 50% !important;
     }
     [data-testid="stSidebar"] .rc-slider-dot-active {
-        background-color: #ffffff !important;
-        border-color: #800000 !important;
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border-color: #ddd !important;
     }
 
     </style>
@@ -403,33 +374,10 @@ st.markdown(
 # Sidebar controls
 # =============================
 with st.sidebar:
-    # ── BFI-style "Policy Controls" header block ──
     st.markdown(
-        """
-        <div style="
-            background-color: #800000;
-            margin: -1rem -1rem 1.25rem -1rem;
-            padding: 14px 20px 12px 20px;
-        ">
-            <div style="
-                font-size: 0.6rem;
-                font-weight: 700;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: rgba(255,255,255,0.65);
-                margin-bottom: 3px;
-            ">BFI Data Studio</div>
-            <div style="
-                font-size: 1.0rem;
-                font-weight: 700;
-                color: #ffffff;
-                letter-spacing: 0.01em;
-            ">Policy Controls</div>
-        </div>
-        """,
+        "<h2 style='text-align:center;'>Policy Controls</h2>",
         unsafe_allow_html=True,
     )
-
     st.radio(
         "Inspection Predictability",
         pred_options,
@@ -444,16 +392,20 @@ with st.sidebar:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
-    # ── Spacer before frequency section ──
-    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+    st.markdown(
+        "<p style='font-size:1.15rem; font-weight:700; line-height:1.2;"
+        " margin-bottom:6px; margin-top:20px;'>Inspection Frequency</p>",
+        unsafe_allow_html=True,
+    )
 
-    # ── Frequency labels above slider ──
+    # ── Labels above slider ──
+    # selected_fc reads from session state which is already resolved on each rerun
     selected_fc = st.session_state.get("freq_choice", "Current")
     labels_html = "".join([
         f"<span style='"
-        f"color:{'#800000' if lbl == selected_fc else '#404040'};"
+        f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
         f"font-weight:{'700' if lbl == selected_fc else '400'};"
-        f"font-size:0.875rem;'>{lbl}</span>"
+        f"font-size:1.0rem;'>{lbl}</span>"
         for lbl in FREQ_LABELS
     ])
     st.markdown(
@@ -464,14 +416,14 @@ with st.sidebar:
 
     # ── Slider ──
     st.select_slider(
-        "Inspection Frequency",
+        "Inspection frequency",
         options=FREQ_LABELS,
         key="freq_choice",
         on_change=update_selected_key_from_sidebar,
         label_visibility="collapsed",
     )
 
-    # ── BFI-style callout: left maroon border, italic ──
+    # ── Callout box ──
     rates = {
         "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
@@ -480,18 +432,13 @@ with st.sidebar:
     st.markdown(
         f"""
         <div style="
-            border-left: 3px solid #800000;
-            background-color: #fcf8f5;
-            border-radius: 0 4px 4px 0;
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
             padding: 10px 14px;
-            margin-top: 14px;
-            font-size: 0.85rem;
-            font-style: italic;
-            color: #404040;
-            line-height: 1.5;
+            text-align: center;
+            margin-top: 4px;
         ">
-            <strong style="font-style:normal; color:#800000;">{rates[selected_fc]}</strong>
-            inspections per facility per year
+            <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
         </div>
         """,
         unsafe_allow_html=True,
