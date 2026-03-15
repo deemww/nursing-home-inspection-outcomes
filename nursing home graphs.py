@@ -55,7 +55,7 @@ st.markdown(
 
     /* ---- Widget labels (radio + slider) ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        font-size: 0.65rem !important;
+        font-size: 0.75rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.13em !important;
         text-transform: uppercase !important;
@@ -437,7 +437,7 @@ with st.sidebar:
 
     # ── Inspection Frequency section label ──
     st.markdown(
-        "<p style='font-size:0.65rem; font-weight:700; letter-spacing:0.13em; "
+        "<p style='font-size:0.75rem; font-weight:700; letter-spacing:0.13em; "
         "text-transform:uppercase; color:#7c7c7c; border-bottom:1px solid #e4e4e4; "
         "padding-bottom:8px; margin-top:20px; margin-bottom:10px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
