@@ -481,7 +481,7 @@ with st.sidebar:
             border-radius: 0 4px 4px 0;
             padding: 10px 14px;
             margin-top: 14px;
-            font-size: 0.85rem;
+            font-size: 1.0rem;
             font-style: italic;
             color: #404040;
             line-height: 1.5;
