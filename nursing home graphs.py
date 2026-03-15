@@ -146,33 +146,33 @@ st.markdown(
         background-color: #800000 !important;
         height: 3px !important;
     }
-    /* Handle — solid maroon, white border */
+    /* Handle — white fill, maroon ring (matches radio button language) */
     [data-testid="stSidebar"] .rc-slider-handle {
-        background: #800000 !important;
-        border: 2px solid #ffffff !important;
-        width: 18px !important;
-        height: 18px !important;
-        margin-top: -7px !important;
+        background: #ffffff !important;
+        border: 2.5px solid #800000 !important;
+        width: 16px !important;
+        height: 16px !important;
+        margin-top: -6px !important;
         opacity: 1 !important;
-        box-shadow: 0 1px 4px rgba(128, 0, 0, 0.35) !important;
+        box-shadow: none !important;
         transition: box-shadow 0.15s !important;
     }
     [data-testid="stSidebar"] .rc-slider-handle:hover,
     [data-testid="stSidebar"] .rc-slider-handle:focus,
     [data-testid="stSidebar"] .rc-slider-handle-dragging {
-        border: 2px solid #ffffff !important;
-        box-shadow: 0 2px 8px rgba(128, 0, 0, 0.5),
-                    0 0 0 3px rgba(128, 0, 0, 0.15) !important;
+        background: #f5eded !important;
+        border: 2.5px solid #800000 !important;
+        box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
     }
-    /* Step dots */
+    /* Step dots — small gray tick marks */
     [data-testid="stSidebar"] .rc-slider-dot {
         display: block !important;
         background-color: #ffffff !important;
-        border: 2px solid #c8c8c8 !important;
-        width: 11px !important;
-        height: 11px !important;
-        bottom: -4px !important;
-        margin-left: -5px !important;
+        border: 2px solid #d0d0d0 !important;
+        width: 9px !important;
+        height: 9px !important;
+        bottom: -3px !important;
+        margin-left: -4px !important;
         z-index: 5 !important;
         border-radius: 50% !important;
     }
