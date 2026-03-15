@@ -55,7 +55,7 @@ st.markdown(
 
     /* ---- Widget labels (radio + slider) ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        font-size: 0.75rem !important;
+        font-size: 0.85rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.13em !important;
         text-transform: uppercase !important;
@@ -77,7 +77,7 @@ st.markdown(
     }
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
-        font-size: 0.875rem !important;
+        font-size: 1.0rem !important;
         font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
@@ -437,7 +437,7 @@ with st.sidebar:
 
     # ── Inspection Frequency section label ──
     st.markdown(
-        "<p style='font-size:0.75rem; font-weight:700; letter-spacing:0.13em; "
+        "<p style='font-size:0.85rem; font-weight:700; letter-spacing:0.13em; "
         "text-transform:uppercase; color:#333333; border-bottom:1px solid #e4e4e4; "
         "padding-bottom:8px; margin-top:20px; margin-bottom:10px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
@@ -449,7 +449,7 @@ with st.sidebar:
         f"<span style='"
         f"color:{'#800000' if lbl == selected_fc else '#404040'};"
         f"font-weight:{'700' if lbl == selected_fc else '400'};"
-        f"font-size:0.875rem;'>{lbl}</span>"
+        f"font-size:1.0rem;'>{lbl}</span>"
         for lbl in FREQ_LABELS
     ])
     st.markdown(
