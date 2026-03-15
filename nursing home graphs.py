@@ -59,7 +59,7 @@ st.markdown(
         font-weight: 700 !important;
         letter-spacing: 0.13em !important;
         text-transform: uppercase !important;
-        color: #7c7c7c !important;
+        color: #333333 !important;
         line-height: 1.2 !important;
         margin-bottom: 10px !important;
         border-bottom: 1px solid #e4e4e4 !important;
@@ -438,7 +438,7 @@ with st.sidebar:
     # ── Inspection Frequency section label ──
     st.markdown(
         "<p style='font-size:0.75rem; font-weight:700; letter-spacing:0.13em; "
-        "text-transform:uppercase; color:#7c7c7c; border-bottom:1px solid #e4e4e4; "
+        "text-transform:uppercase; color:#333333; border-bottom:1px solid #e4e4e4; "
         "padding-bottom:8px; margin-top:20px; margin-bottom:10px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
