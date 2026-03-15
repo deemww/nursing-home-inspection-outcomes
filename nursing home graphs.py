@@ -104,6 +104,7 @@ st.markdown(
 
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
+       Modern Streamlit uses role="slider" + utility classes (not rc-slider)
        ============================================================ */
 
     [data-testid="stSidebar"] [data-testid="stSlider"] {
@@ -111,74 +112,42 @@ st.markdown(
         margin-bottom: -1rem !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="ThumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="thumbValue"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] output,
-    [data-testid="stSidebar"] [data-testid="stSlider"] p {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid*="TickBar"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="tickBar"],
-    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"],
-    .rc-slider-mark-text,
-    .rc-slider-mark-text-active {
+    /* Hide default thumb value bubble */
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderThumbValue"] {
         display: none !important;
     }
 
-    /* Rail — light gray */
-    [data-testid="stSidebar"] .rc-slider-rail {
-        background-color: #e4e4e4 !important;
-        height: 3px !important;
-        border-radius: 2px !important;
+    /* Hide default tick bar */
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTickBar"] {
+        display: none !important;
     }
-    /* Track — maroon */
-    [data-testid="stSidebar"] .rc-slider-track {
-        background-color: #800000 !important;
-        height: 3px !important;
-    }
-    /* Handle — white fill, maroon ring (matches radio button language) */
-    [data-testid="stSidebar"] .rc-slider-handle {
+
+    /* Handle — white fill, maroon ring (echoes radio button visual language) */
+    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
         background: #ffffff !important;
         border: 2.5px solid #800000 !important;
         width: 16px !important;
         height: 16px !important;
-        margin-top: -6px !important;
-        opacity: 1 !important;
         box-shadow: none !important;
-        transition: box-shadow 0.15s !important;
+        border-radius: 50% !important;
+        outline: none !important;
     }
-    [data-testid="stSidebar"] .rc-slider-handle:hover,
-    [data-testid="stSidebar"] .rc-slider-handle:focus,
-    [data-testid="stSidebar"] .rc-slider-handle-dragging {
+    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"]:hover,
+    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"]:focus {
         background: #f5eded !important;
         border: 2.5px solid #800000 !important;
         box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
     }
-    /* Step dots — small gray tick marks */
-    [data-testid="stSidebar"] .rc-slider-dot {
-        display: block !important;
-        background-color: #ffffff !important;
-        border: 2px solid #d0d0d0 !important;
-        width: 9px !important;
-        height: 9px !important;
-        bottom: -3px !important;
-        margin-left: -4px !important;
-        z-index: 5 !important;
-        border-radius: 50% !important;
+
+    /* Rail gradient — all 3 positions: −25% (.st-d1), Current (.st-cw), +25% (.st-d2) */
+    [data-testid="stSidebar"] .st-d1 {
+        background: linear-gradient(to right, #800000 0%, #800000 0%, #e4e4e4 0%, #e4e4e4 100%) !important;
     }
-    [data-testid="stSidebar"] .rc-slider-dot-active {
-        background-color: #ffffff !important;
-        border-color: #800000 !important;
+    [data-testid="stSidebar"] .st-cw {
+        background: linear-gradient(to right, #800000 0%, #800000 50%, #e4e4e4 50%, #e4e4e4 100%) !important;
+    }
+    [data-testid="stSidebar"] .st-d2 {
+        background: linear-gradient(to right, #800000 0%, #800000 100%, #e4e4e4 100%, #e4e4e4 100%) !important;
     }
 
     </style>
