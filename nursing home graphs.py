@@ -408,15 +408,8 @@ with st.sidebar:
             background-color: #800000;
             margin: -1rem -1rem 1.25rem -1rem;
             padding: 14px 20px 12px 20px;
+            text-align: center;
         ">
-            <div style="
-                font-size: 0.6rem;
-                font-weight: 700;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: rgba(255,255,255,0.65);
-                margin-bottom: 3px;
-            ">BFI Data Studio</div>
             <div style="
                 font-size: 1.0rem;
                 font-weight: 700;
@@ -442,7 +435,13 @@ with st.sidebar:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
-    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+    # ── Inspection Frequency section label ──
+    st.markdown(
+        "<p style='font-size:0.65rem; font-weight:700; letter-spacing:0.13em; "
+        "text-transform:uppercase; color:#7c7c7c; border-bottom:1px solid #e4e4e4; "
+        "padding-bottom:8px; margin-top:20px; margin-bottom:10px;'>Inspection Frequency</p>",
+        unsafe_allow_html=True,
+    )
 
     # ── Labels above slider ──
     selected_fc = st.session_state.get("freq_choice", "Current")
