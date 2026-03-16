@@ -887,24 +887,24 @@ with p4:
 st.markdown(
     """
     <div style='display:flex; justify-content:center; align-items:center; gap:6px; margin-top:0.4rem; flex-wrap:wrap;'>
-        <span style='font-size:0.72rem; color:#888888; font-style:italic; margin-right:6px;'>
+        <span style='font-size:0.72rem; color:#555555; font-style:italic; margin-right:6px;'>
             Inspection frequency shown below each bar:
         </span>
-        <span style='font-size:0.72rem; color:#555555; display:flex; align-items:center; gap:5px;'>
-            <span style='font-family:monospace; font-size:0.8rem; background:#ebebeb;
-                         padding:1px 7px; border-radius:3px; color:#444; font-weight:600;'>−</span>
+        <span style='font-size:0.72rem; color:#333333; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
+                         padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>−</span>
             −25%
         </span>
-        <span style='color:#cccccc; font-size:0.7rem;'>·</span>
-        <span style='font-size:0.72rem; color:#555555; display:flex; align-items:center; gap:5px;'>
-            <span style='font-family:monospace; font-size:0.8rem; background:#ebebeb;
-                         padding:1px 7px; border-radius:3px; color:#444; font-weight:600;'>=</span>
+        <span style='color:#999999; font-size:0.7rem;'>·</span>
+        <span style='font-size:0.72rem; color:#333333; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
+                         padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>=</span>
             Current
         </span>
-        <span style='color:#cccccc; font-size:0.7rem;'>·</span>
-        <span style='font-size:0.72rem; color:#555555; display:flex; align-items:center; gap:5px;'>
-            <span style='font-family:monospace; font-size:0.8rem; background:#ebebeb;
-                         padding:1px 7px; border-radius:3px; color:#444; font-weight:600;'>+</span>
+        <span style='color:#999999; font-size:0.7rem;'>·</span>
+        <span style='font-size:0.72rem; color:#333333; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
+                         padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>+</span>
             +25%
         </span>
     </div>
