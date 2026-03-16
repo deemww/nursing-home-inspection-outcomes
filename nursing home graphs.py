@@ -493,7 +493,7 @@ st.markdown(
             padding: 6px 18px;
             background-color: #800000;
             color: #ffffff;
-            font-size: 1.5rem;
+            font-size: 1.0rem;
             font-weight: 700;
             border-radius: 3px;
             letter-spacing: 0.01em;
@@ -501,7 +501,7 @@ st.markdown(
             {scenario}
         </div>
         <div style='font-size:0.78rem; color:#7c7c7c; margin-top:7px;'>
-            Click any bar in a chart below to change scenario selection
+            ← Click any bar in a chart to change selection
         </div>
     </div>
     """,
@@ -634,10 +634,15 @@ def render_chart(df_in, spec, key):
 # =============================
 # Policy comparisons
 # =============================
-st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 st.markdown(
-    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
-    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
+    "<div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
+    "color:#800000; border-bottom:2px solid #800000; padding-bottom:3px; display:inline-block; "
+    "margin-bottom:6px;'>Policy Comparisons</div>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<p style='font-size:0.8rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
+    "Each bar shows a different inspection policy. The highlighted bar corresponds to the selected scenario above."
     "</p>",
     unsafe_allow_html=True,
 )
