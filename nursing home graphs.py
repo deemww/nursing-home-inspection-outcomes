@@ -881,8 +881,24 @@ with p4:
     )
 
 st.markdown(
-    "<p style='font-size:0.75rem; color:#aaaaaa; text-align:center; margin-top:0.25rem;'>"
-    "− = −25% frequency &nbsp;·&nbsp; = = Current frequency &nbsp;·&nbsp; + = +25% frequency"
-    "</p>",
+    """
+    <div style='display:flex; justify-content:center; gap:20px; margin-top:0.3rem;'>
+        <span style='font-size:0.73rem; color:#aaaaaa; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#f2f2f2;
+                         padding:1px 6px; border-radius:3px; color:#555;'>−</span>
+            −25% frequency
+        </span>
+        <span style='font-size:0.73rem; color:#aaaaaa; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#f2f2f2;
+                         padding:1px 6px; border-radius:3px; color:#555;'>=</span>
+            Current frequency
+        </span>
+        <span style='font-size:0.73rem; color:#aaaaaa; display:flex; align-items:center; gap:5px;'>
+            <span style='font-family:monospace; font-size:0.8rem; background:#f2f2f2;
+                         padding:1px 6px; border-radius:3px; color:#555;'>+</span>
+            +25% frequency
+        </span>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
