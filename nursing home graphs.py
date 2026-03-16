@@ -813,13 +813,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-sort_by_magnitude = st.toggle(
+if "sort_by_magnitude" not in st.session_state:
+    st.session_state["sort_by_magnitude"] = False
+
+sort_flag = st.toggle(
     "Sort bars by magnitude",
-    value=st.session_state.get("sort_by_magnitude", False),
-    help="Orders bars from largest to smallest value within each chart.",
     key="sort_by_magnitude",
+    help="Orders bars from largest to smallest value within each chart.",
 )
-sort_flag = st.session_state.get("sort_by_magnitude", False)
 
 p1, p2 = st.columns(2)
 with p1:
