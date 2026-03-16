@@ -528,11 +528,10 @@ st.markdown(
 )
 
 def metric_card(label, value, unit, help_text=""):
-    tooltip = (
-        f' <span title="{help_text}" style="cursor:help; display:inline-flex; align-items:center;'
-        f' justify-content:center; width:16px; height:16px; border-radius:50%;'
-        f' border:1.5px solid #aaaaaa; color:#aaaaaa; font-size:0.65rem;'
-        f' font-weight:700; letter-spacing:0; text-transform:none; vertical-align:middle;">?</span>'
+    note = (
+        f'<div style="font-size:0.72rem; color:#9a9a9a; margin-top:10px; '
+        f'padding-top:10px; border-top:1px solid #f0f0f0; line-height:1.4;">'
+        f'{help_text}</div>'
         if help_text else ""
     )
     return f"""
@@ -544,15 +543,16 @@ def metric_card(label, value, unit, help_text=""):
         border-radius: 2px;
     ">
         <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
-            {label}{tooltip}
+            {label}
         </div>
         <div style="font-size:2.2rem; font-weight:800; color:#111111;
-                    line-height:1; margin-bottom:10px; letter-spacing:-0.01em;">
+                    line-height:1; margin-bottom:6px; letter-spacing:-0.01em;">
             {value}
         </div>
         <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
             {unit}
         </div>
+        {note}
     </div>
     """
 
