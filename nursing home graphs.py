@@ -425,7 +425,7 @@ st.markdown(
                       transition: background 0.15s;'
                onmouseover="this.style.background='#f5eded'"
                onmouseout="this.style.background='transparent'">
-                &#128196; Read the working paper
+                Read the working paper →
             </a>
         </div>
     </div>
