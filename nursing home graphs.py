@@ -466,18 +466,15 @@ scenario = scenario_label(predictability, frequency)
 st.markdown(
     f"""
     <div style='
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-        padding: 12px 24px;
+        text-align: center;
+        padding: 14px 24px;
         background-color: #fcf8f5;
         border-top: 1px solid #e4e4e4;
         border-bottom: 1px solid #e4e4e4;
         margin-bottom: 1.2rem;
     '>
         <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em;
-                    text-transform:uppercase; color:#7c7c7c; white-space:nowrap;'>
+                    text-transform:uppercase; color:#7c7c7c; margin-bottom:8px;'>
             Selected Scenario
         </div>
         <div style='
@@ -492,7 +489,7 @@ st.markdown(
         '>
             {scenario}
         </div>
-        <div style='font-size:0.78rem; color:#7c7c7c;'>
+        <div style='font-size:0.78rem; color:#7c7c7c; margin-top:7px;'>
             ← Click any bar in a chart to change selection
         </div>
     </div>
