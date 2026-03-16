@@ -752,7 +752,7 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                 },
                 "encoding": {
                     "x": {"field": "scenario_key", "type": "nominal", "sort": sort_spec},
-                    "y": {"value": 260},
+                    "y": {"datum": 0, "type": "quantitative"},
                     "text": {"field": "_group_label", "type": "nominal"},
                 },
             },
