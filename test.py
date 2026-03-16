@@ -103,8 +103,13 @@ st.markdown(
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
     /* ---- CSS hover tooltip for metric cards ---- */
-    .bfi-tooltip {
+    .bfi-help-wrap {
         position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+    .bfi-help-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -116,14 +121,12 @@ st.markdown(
         font-size: 0.6rem;
         font-weight: 700;
         cursor: help;
-        vertical-align: middle;
-        margin-left: 5px;
         line-height: 1;
         text-transform: none;
         letter-spacing: 0;
     }
-    .bfi-tooltip::after {
-        content: attr(data-tip);
+    .bfi-help-popup {
+        display: none;
         position: absolute;
         bottom: calc(100% + 7px);
         left: 50%;
@@ -138,13 +141,10 @@ st.markdown(
         width: 200px;
         white-space: normal;
         text-align: left;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.15s ease;
         z-index: 9999;
     }
-    .bfi-tooltip:hover::after {
-        opacity: 1;
+    .bfi-help-wrap:hover .bfi-help-popup {
+        display: block;
     }
 
     /* ============================================================
@@ -574,7 +574,10 @@ st.markdown(
 
 def metric_card(label, value, unit, help_text=""):
     tooltip = (
-        f'<span class="bfi-tooltip" data-tip="{help_text}">?</span>'
+        f'<span class="bfi-help-wrap">'
+        f'<span class="bfi-help-icon">?</span>'
+        f'<span class="bfi-help-popup">{help_text}</span>'
+        f'</span>'
         if help_text else ""
     )
     return f"""
