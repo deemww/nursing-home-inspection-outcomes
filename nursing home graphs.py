@@ -649,37 +649,11 @@ st.markdown(
 # =============================
 POINT_PARAM = "point_selection"
 
-def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style, sort_by_magnitude_flag, label_expr=None):
+def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style, sort_by_magnitude_flag):
     if sort_by_magnitude_flag:
         sort_spec = {"field": metric_col, "order": "descending"}
     else:
         sort_spec = {"field": "x_order", "order": "ascending"}
-    if label_expr is None:
-        label_expr = f"format(datum['{metric_col}'], ',.1f')"
-    y_encoding = {
-        "field": metric_col,
-        "type": "quantitative",
-        "scale": {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False},
-        "axis": {
-            "title": y_label,
-            "titleFontWeight": 600,
-            "titleFontSize": 12,
-            "titleColor": "#404040",
-            "titlePadding": 10,
-            "labelFontSize": 12,
-            "labelColor": "#404040",
-            "gridColor": "#e8e8e8",
-            "gridDash": [],
-            "domainColor": "#e8e8e8",
-            "tickColor": "#e8e8e8",
-        },
-    }
-    x_encoding = {
-        "field": "scenario_key",
-        "type": "nominal",
-        "sort": sort_spec,
-        "axis": {"labels": False, "ticks": False, "domain": False, "title": None, "grid": False},
-    }
     return {
         "title": {
             "text": chart_title,
@@ -692,53 +666,48 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
         },
         "height": 260,
         "padding": {"top": 6, "left": 4, "right": 12, "bottom": 4},
+        "mark": {"type": "bar", "size": 28, "cornerRadiusTopLeft": 2, "cornerRadiusTopRight": 2},
         "params": [
             {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
         ],
-        "layer": [
-            {
-                "mark": {"type": "bar", "size": 28, "cornerRadiusTopLeft": 2, "cornerRadiusTopRight": 2},
-                "encoding": {
-                    "x": x_encoding,
-                    "y": y_encoding,
-                    "tooltip": [
-                        {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
-                        {"field": metric_col, "type": "quantitative", "title": y_label, "format": ",.2f"},
-                    ],
-                    "color": {
-                        "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
-                        "value": "#d6d2ce",
-                    },
-                    "opacity": {
-                        "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
-                        "value": 0.75,
-                    },
+        "encoding": {
+            "x": {
+                "field": "scenario_key",
+                "type": "nominal",
+                "sort": sort_spec,
+                "axis": {"labels": False, "ticks": False, "domain": False, "title": None, "grid": False},
+            },
+            "y": {
+                "field": metric_col,
+                "type": "quantitative",
+                "scale": {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False},
+                "axis": {
+                    "title": y_label,
+                    "titleFontWeight": 600,
+                    "titleFontSize": 12,
+                    "titleColor": "#404040",
+                    "titlePadding": 10,
+                    "labelFontSize": 12,
+                    "labelColor": "#404040",
+                    "gridColor": "#e8e8e8",
+                    "gridDash": [],
+                    "domainColor": "#e8e8e8",
+                    "tickColor": "#e8e8e8",
                 },
             },
-            {
-                "transform": [
-                    {"calculate": label_expr, "as": "_label"},
-                    {
-                        "calculate": f"datum.scenario_key === '{selected_key_for_style}' ? datum._label : ''",
-                        "as": "_visible_label",
-                    },
-                ],
-                "mark": {
-                    "type": "text",
-                    "align": "center",
-                    "baseline": "bottom",
-                    "dy": -5,
-                    "fontSize": 12,
-                    "fontWeight": 700,
-                    "color": "#800000",
-                },
-                "encoding": {
-                    "x": x_encoding,
-                    "y": y_encoding,
-                    "text": {"field": "_visible_label", "type": "nominal"},
-                },
+            "tooltip": [
+                {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
+                {"field": metric_col, "type": "quantitative", "title": y_label, "format": ",.2f"},
+            ],
+            "color": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
+                "value": "#d6d2ce",
             },
-        ],
+            "opacity": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
+                "value": 0.75,
+            },
+        },
         "config": {
             "font": "Gotham",
             "view": {"stroke": None},
@@ -809,7 +778,6 @@ with p2:
             "Efficiency (lives saved per 1,000 inspections)",
             selected_key,
             sort_flag,
-            label_expr="format(datum.lives_saved_per_1000, ',.1f')",
         ),
         key="vega_lives_saved_per_1000",
     )
@@ -825,7 +793,6 @@ with p3:
             "Regulatory information revealed",
             selected_key,
             sort_flag,
-            label_expr="format(datum.info_percent, '.1f') + '%'",
         ),
         key="vega_info_percent",
     )
@@ -839,7 +806,6 @@ with p4:
             "Total inspections conducted",
             selected_key,
             sort_flag,
-            label_expr="format(datum.total_inspections, ',.0f')",
         ),
         key="vega_total_inspections",
     )
