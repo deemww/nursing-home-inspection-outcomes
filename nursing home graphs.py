@@ -527,35 +527,55 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def metric_card(label, value, unit):
+    return f"""
+    <div style="
+        padding: 18px 20px 16px;
+        background: #ffffff;
+        border: 1px solid #e4e4e4;
+        border-top: 3px solid #800000;
+        border-radius: 2px;
+        height: 100%;
+    ">
+        <div style="font-size:0.68rem; font-weight:700; letter-spacing:0.12em;
+                    text-transform:uppercase; color:#7c7c7c; margin-bottom:10px;">
+            {label}
+        </div>
+        <div style="font-size:2.1rem; font-weight:800; color:#111111;
+                    line-height:1; margin-bottom:8px; letter-spacing:-0.01em;">
+            {value}
+        </div>
+        <div style="font-size:0.78rem; color:#9a9a9a; font-style:italic;">
+            {unit}
+        </div>
+    </div>
+    """
+
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric(
-        "Lives saved",
+    st.markdown(metric_card(
+        "Lives Saved",
         f"{float(row['lives_saved_annually']):.1f}",
-        help="Annual reduction in patient deaths relative to no inspections",
-    )
-    st.caption("per year")
+        "per year",
+    ), unsafe_allow_html=True)
 with col2:
-    st.metric(
+    st.markdown(metric_card(
         "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
-        help="Lives saved per 1,000 inspections",
-    )
-    st.caption("per 1,000 inspections")
+        "per 1,000 inspections",
+    ), unsafe_allow_html=True)
 with col3:
-    st.metric(
-        "Regulatory information",
+    st.markdown(metric_card(
+        "Regulatory Information",
         f"{float(row['info_percent']):.1f}%",
-        help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
-    )
-    st.caption("about facility quality")
+        "about facility quality",
+    ), unsafe_allow_html=True)
 with col4:
-    st.metric(
-        "Total inspections",
+    st.markdown(metric_card(
+        "Total Inspections",
         f"{total_inspections:,}",
-        help="Annual inspections nationwide (frequency × 15,615 facilities)",
-    )
-    st.caption("inspections per year")
+        "inspections per year",
+    ), unsafe_allow_html=True)
 
 st.markdown(
     "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
