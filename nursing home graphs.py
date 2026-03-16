@@ -484,23 +484,23 @@ st.markdown(
         border-bottom: 1px solid #e4e4e4;
         margin-bottom: 1.2rem;
     '>
-        <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em;
-                    text-transform:uppercase; color:#7c7c7c; margin-bottom:8px;'>
+        <div style='font-size:0.78rem; font-weight:700; letter-spacing:0.13em;
+                    text-transform:uppercase; color:#7c7c7c; margin-bottom:10px;'>
             Selected Scenario
         </div>
         <div style='
             display: inline-block;
-            padding: 6px 18px;
+            padding: 9px 26px;
             background-color: #800000;
             color: #ffffff;
-            font-size: 1.0rem;
+            font-size: 1.15rem;
             font-weight: 700;
             border-radius: 3px;
             letter-spacing: 0.01em;
         '>
             {scenario}
         </div>
-        <div style='font-size:0.78rem; color:#7c7c7c; margin-top:7px;'>
+        <div style='font-size:0.82rem; color:#7c7c7c; margin-top:9px;'>
             Click any bar in a chart below to change scenario selection
         </div>
     </div>
