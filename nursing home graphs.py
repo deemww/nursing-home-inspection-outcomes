@@ -732,7 +732,7 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             {
                 "transform": [
                     {
-                        "calculate": "datum.freq_rank === 1 ? '▼' : datum.freq_rank === 2 ? '●' : '▲'",
+                        "calculate": "datum.freq_rank === 1 ? '−' : datum.freq_rank === 2 ? '=' : '+'",
                         "as": "_freq_sym",
                     }
                 ],
@@ -882,7 +882,7 @@ with p4:
 
 st.markdown(
     "<p style='font-size:0.75rem; color:#aaaaaa; text-align:center; margin-top:0.25rem;'>"
-    "▼ = −25% frequency &nbsp;·&nbsp; ● = Current frequency &nbsp;·&nbsp; ▲ = +25% frequency"
+    "− = −25% frequency &nbsp;·&nbsp; = = Current frequency &nbsp;·&nbsp; + = +25% frequency"
     "</p>",
     unsafe_allow_html=True,
 )
