@@ -128,9 +128,9 @@ st.markdown(
     .bfi-help-popup {
         display: none;
         position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
+        top: calc(100% + 4px);
+        left: 0;
+        transform: none;
         background: #222222;
         color: #ffffff;
         font-size: 0.72rem;
