@@ -514,9 +514,9 @@ st.markdown(
 total_inspections = int(float(frequency) * 15615)
 
 st.markdown(
-    "<div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
-    "color:#800000; border-bottom:2px solid #800000; padding-bottom:3px; display:inline-block; "
-    "margin-bottom:6px;'>Policy Outcomes</div>",
+    "<div style='font-size:0.82rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
+    "color:#800000; border-bottom:2px solid #800000; padding-bottom:4px; display:inline-block; "
+    "margin-bottom:8px;'>Policy Outcomes</div>",
     unsafe_allow_html=True,
 )
 st.markdown(
@@ -635,9 +635,9 @@ def render_chart(df_in, spec, key):
 # Policy comparisons
 # =============================
 st.markdown(
-    "<div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
-    "color:#800000; border-bottom:2px solid #800000; padding-bottom:3px; display:inline-block; "
-    "margin-bottom:6px;'>Policy Comparisons</div>",
+    "<div style='font-size:0.82rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
+    "color:#800000; border-bottom:2px solid #800000; padding-bottom:4px; display:inline-block; "
+    "margin-bottom:8px;'>Policy Comparisons</div>",
     unsafe_allow_html=True,
 )
 st.markdown(
