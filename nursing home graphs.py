@@ -465,24 +465,35 @@ scenario = scenario_label(predictability, frequency)
 
 st.markdown(
     f"""
-    <div style='text-align:center; margin-top:0.4rem; margin-bottom:1.2rem;'>
-        <div style='color:#000000; font-size:1.5rem; font-weight:700; margin-bottom:0.6rem;'>Selected Policy Scenario</div>
-        <span style='
+    <div style='
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 12px 24px;
+        background-color: #fcf8f5;
+        border-top: 1px solid #e4e4e4;
+        border-bottom: 1px solid #e4e4e4;
+        margin-bottom: 1.2rem;
+    '>
+        <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em;
+                    text-transform:uppercase; color:#7c7c7c; white-space:nowrap;'>
+            Selected Scenario
+        </div>
+        <div style='
             display: inline-block;
-            padding: 12px 24px;
+            padding: 6px 18px;
             background-color: #800000;
             color: #ffffff;
-            font-size: 2rem;
-            font-weight: 800;
-            border: 4px solid #EAAA00;
-            border-radius: 12px;
-            line-height: 1.1;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 1.0rem;
+            font-weight: 700;
+            border-radius: 3px;
+            letter-spacing: 0.01em;
         '>
             {scenario}
-        </span>
-        <div style='margin-top:0.5rem; font-size:0.9rem; color:rgba(0,0,0,0.6);'>
-            Tip: Click any bar in a chart below to select that scenario.
+        </div>
+        <div style='font-size:0.78rem; color:#7c7c7c;'>
+            ← Click any bar in a chart to change selection
         </div>
     </div>
     """,
@@ -494,10 +505,15 @@ st.markdown(
 # =============================
 total_inspections = int(float(frequency) * 15615)
 
-st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
 st.markdown(
-    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
-    "Note: All outcomes are reported relative to a benchmark with no inspections. "
+    "<div style='font-size:0.68rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
+    "color:#800000; border-bottom:2px solid #800000; padding-bottom:3px; display:inline-block; "
+    "margin-bottom:6px;'>Policy Outcomes</div>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<p style='font-size:0.8rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
+    "All outcomes are reported relative to a benchmark with no inspections. "
     "\u201cLives saved\u201d reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
     unsafe_allow_html=True,
@@ -575,19 +591,11 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             ],
             "color": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
-                "value": "#c9c9c9",
+                "value": "#ccc8c4",
             },
             "opacity": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
-                "value": 0.55,
-            },
-            "stroke": {
-                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#EAAA00"},
-                "value": None,
-            },
-            "strokeWidth": {
-                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 10},
-                "value": 0,
+                "value": 0.65,
             },
         },
         "config": {
