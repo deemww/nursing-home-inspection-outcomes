@@ -651,7 +651,10 @@ POINT_PARAM = "point_selection"
 
 def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_style, sort_by_magnitude_flag, label_expr=None):
     if sort_by_magnitude_flag:
-        sort_spec = {"field": metric_col, "order": "descending"}
+        # Explicit sorted array — avoids Vega-Lite nominal sort ambiguity in layered specs
+        sort_spec = (
+            df.sort_values(metric_col, ascending=False)["scenario_key"].tolist()
+        )
     else:
         sort_spec = {"field": "x_order", "order": "ascending"}
     if label_expr is None:
