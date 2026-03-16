@@ -929,51 +929,60 @@ with p4:
         key="vega_total_inspections",
     )
 
-def chip(symbol):
-    return (
-        f"<span style='font-family:monospace; font-size:0.8rem; background:#dedede;"
-        f"padding:1px 7px; border-radius:3px; color:#222; font-weight:600;"
-        f"display:inline-block; margin-right:3px;'>{symbol}</span>"
+CHIP_STYLE = (
+    "font-family:monospace; font-size:0.8rem; background:#dedede; "
+    "padding:1px 7px; border-radius:3px; color:#222; font-weight:600; "
+    "display:inline-block; margin-right:3px;"
+)
+FREQ_ITEMS = (
+    f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Frequency:</span>"
+    f"<span style='{CHIP_STYLE}'>&#8722;</span>"
+    f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&#8722;25%</span>"
+    f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+    f"<span style='{CHIP_STYLE}'>=</span>"
+    f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>Current</span>"
+    f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+    f"<span style='{CHIP_STYLE}'>+</span>"
+    f"<span style='font-size:0.72rem; color:#333;'>+25%</span>"
+)
+LEGEND_HEADER = (
+    "<span style='font-size:0.72rem; color:#555; font-weight:700; "
+    "letter-spacing:0.08em; text-transform:uppercase; margin-right:8px;'>Legend</span>"
+    "<span style='color:#dedede; font-size:0.8rem; margin-right:8px;'>|</span>"
+)
+BOX_STYLE = (
+    "margin-top:0.6rem; border:1px solid #dedede; border-radius:4px; "
+    "padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;"
+)
+
+if sort_flag:
+    GROUP_ITEMS = (
+        f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Group:</span>"
+        f"<strong style='font-size:0.72rem; color:#333;'>Unp.</strong>"
+        f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Unpredictable</span>"
+        f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+        f"<strong style='font-size:0.72rem; color:#333;'>Curr.</strong>"
+        f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Current Regime</span>"
+        f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+        f"<strong style='font-size:0.72rem; color:#333;'>Pred.</strong>"
+        f"<span style='font-size:0.72rem; color:#333;'>&nbsp;= Perfectly Predictable</span>"
     )
-
-freq_row = (
-    f"<div style='display:flex; align-items:center; gap:6px; flex-wrap:wrap;'>"
-    f"<span style='font-size:0.72rem; color:#555555; font-style:italic; min-width:72px;'>Frequency:</span>"
-    f"{chip('−')}<span style='font-size:0.72rem; color:#333;'>−25%</span>"
-    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
-    f"{chip('=')}<span style='font-size:0.72rem; color:#333;'>Current</span>"
-    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
-    f"{chip('+')}<span style='font-size:0.72rem; color:#333;'>+25%</span>"
-    f"</div>"
-)
-
-group_row = (
-    f"<div style='display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px;"
-    f"padding-top:5px; border-top:1px solid #ebebeb; justify-content:center;'>"
-    f"<span style='font-size:0.72rem; color:#555555; font-style:italic; min-width:72px;'>Group:</span>"
-    f"<span style='font-size:0.72rem; color:#333;'><strong>Unp.</strong> = Unpredictable</span>"
-    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
-    f"<span style='font-size:0.72rem; color:#333;'><strong>Curr.</strong> = Current Regime</span>"
-    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
-    f"<span style='font-size:0.72rem; color:#333;'><strong>Pred.</strong> = Perfectly Predictable</span>"
-    f"</div>"
-) if sort_flag else ""
-
-st.markdown(
-    f"""
-    <div style='margin-top:0.6rem; border:1px solid #dedede; border-radius:4px;
-                padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;
-                display:flex; align-items:flex-start; gap:10px;'>
-        <div style='display:flex; align-items:center; gap:10px; padding-top:2px; white-space:nowrap;'>
-            <span style='font-size:0.72rem; color:#555555; font-weight:700;
-                         letter-spacing:0.08em; text-transform:uppercase;'>Legend</span>
-            <span style='color:#dedede; font-size:0.8rem;'>|</span>
-        </div>
-        <div style='display:flex; flex-direction:column; gap:0;'>
-            {freq_row}
-            {group_row}
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    st.markdown(
+        f"<div style='{BOX_STYLE}'>"
+        f"<div style='display:flex; align-items:center; flex-wrap:wrap; margin-bottom:6px;'>"
+        f"{LEGEND_HEADER}{FREQ_ITEMS}"
+        f"</div>"
+        f"<div style='display:flex; align-items:center; flex-wrap:wrap; "
+        f"padding-top:6px; border-top:1px solid #ebebeb;'>"
+        f"{GROUP_ITEMS}"
+        f"</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+else:
+    st.markdown(
+        f"<div style='{BOX_STYLE} display:flex; align-items:center; flex-wrap:wrap;'>"
+        f"{LEGEND_HEADER}{FREQ_ITEMS}"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
