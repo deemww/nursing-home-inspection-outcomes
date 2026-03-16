@@ -139,16 +139,7 @@ st.markdown(
         box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
     }
 
-    /* Rail gradient — all 3 positions: −25% (.st-d1), Current (.st-cw), +25% (.st-d2) */
-    [data-testid="stSidebar"] .st-d1 {
-        background: linear-gradient(to right, #800000 0%, #800000 0%, #e4e4e4 0%, #e4e4e4 100%) !important;
-    }
-    [data-testid="stSidebar"] .st-cw {
-        background: linear-gradient(to right, #800000 0%, #800000 50%, #e4e4e4 50%, #e4e4e4 100%) !important;
-    }
-    [data-testid="stSidebar"] .st-d2 {
-        background: linear-gradient(to right, #800000 0%, #800000 100%, #e4e4e4 100%, #e4e4e4 100%) !important;
-    }
+    /* Track fill color is set via primaryColor in .streamlit/config.toml */
 
     </style>
     """,
