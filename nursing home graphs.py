@@ -573,10 +573,18 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
     else:
         sort_spec = {"field": "x_order", "order": "ascending"}
     return {
-        "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
-        "height": 235,
-        "padding": {"top": 8, "left": 10, "right": 10, "bottom": 5},
-        "mark": {"type": "bar", "size": 40, "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
+        "title": {
+            "text": chart_title,
+            "anchor": "start",
+            "fontSize": 13,
+            "fontWeight": 600,
+            "color": "#111111",
+            "offset": 8,
+            "subtitleFontSize": 0,
+        },
+        "height": 260,
+        "padding": {"top": 6, "left": 4, "right": 12, "bottom": 4},
+        "mark": {"type": "bar", "size": 28, "cornerRadiusTopLeft": 2, "cornerRadiusTopRight": 2},
         "params": [
             {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
         ],
@@ -585,13 +593,25 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                 "field": "scenario_key",
                 "type": "nominal",
                 "sort": sort_spec,
-                "axis": {"labels": False, "ticks": False, "domain": False, "title": None},
+                "axis": {"labels": False, "ticks": False, "domain": False, "title": None, "grid": False},
             },
             "y": {
                 "field": metric_col,
                 "type": "quantitative",
                 "scale": {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False},
-                "axis": {"title": y_label, "titleFontWeight": "bold"},
+                "axis": {
+                    "title": y_label,
+                    "titleFontWeight": 500,
+                    "titleFontSize": 11,
+                    "titleColor": "#7c7c7c",
+                    "titlePadding": 10,
+                    "labelFontSize": 11,
+                    "labelColor": "#7c7c7c",
+                    "gridColor": "#e8e8e8",
+                    "gridDash": [],
+                    "domainColor": "#e8e8e8",
+                    "tickColor": "#e8e8e8",
+                },
             },
             "tooltip": [
                 {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
@@ -599,24 +619,21 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             ],
             "color": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
-                "value": "#ccc8c4",
+                "value": "#d6d2ce",
             },
             "opacity": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
-                "value": 0.65,
+                "value": 0.75,
             },
         },
         "config": {
             "font": "Gotham",
+            "view": {"stroke": None},
             "axis": {
                 "labelFont": "Gotham",
                 "titleFont": "Gotham",
-                "labelFontSize": 14,
-                "titleFontSize": 15.2,
-                "labelColor": "#000000",
-                "titleColor": "#000000",
             },
-            "title": {"font": "Gotham", "fontSize": 20},
+            "title": {"font": "Gotham", "fontSize": 13, "fontWeight": 600},
             "legend": {"labelFont": "Gotham", "titleFont": "Gotham"},
         },
     }
