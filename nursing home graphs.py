@@ -963,14 +963,16 @@ st.markdown(
     f"""
     <div style='margin-top:0.6rem; border:1px solid #dedede; border-radius:4px;
                 padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;
-                display:flex; flex-direction:column; align-items:center;'>
-        <div style='display:flex; align-items:center; gap:10px; justify-content:center;'>
+                display:flex; align-items:flex-start; gap:10px;'>
+        <div style='display:flex; align-items:center; gap:10px; padding-top:2px; white-space:nowrap;'>
             <span style='font-size:0.72rem; color:#555555; font-weight:700;
                          letter-spacing:0.08em; text-transform:uppercase;'>Legend</span>
             <span style='color:#dedede; font-size:0.8rem;'>|</span>
-            {freq_row}
         </div>
-        {group_row}
+        <div style='display:flex; flex-direction:column; gap:0;'>
+            {freq_row}
+            {group_row}
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
