@@ -493,7 +493,7 @@ st.markdown(
             padding: 6px 18px;
             background-color: #800000;
             color: #ffffff;
-            font-size: 1.0rem;
+            font-size: 1.5rem;
             font-weight: 700;
             border-radius: 3px;
             letter-spacing: 0.01em;
