@@ -728,7 +728,35 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                     "text": {"field": "_visible_label", "type": "nominal"},
                 },
             },
-        ],
+        ] + ([] if sort_by_magnitude_flag else [
+            {
+                "transform": [
+                    {"filter": "datum.freq_rank === 2"},
+                    {
+                        "calculate": (
+                            "datum.predictability_numeric === 100 ? 'Unpredictable' : "
+                            "datum.predictability_numeric === 50 ? 'Current Regime' : "
+                            "'Perfectly Predictable'"
+                        ),
+                        "as": "_group_label",
+                    },
+                ],
+                "mark": {
+                    "type": "text",
+                    "align": "center",
+                    "baseline": "top",
+                    "dy": 6,
+                    "fontSize": 10,
+                    "fontWeight": 600,
+                    "color": "#7c7c7c",
+                },
+                "encoding": {
+                    "x": {"field": "scenario_key", "type": "nominal", "sort": sort_spec},
+                    "y": {"value": 260},
+                    "text": {"field": "_group_label", "type": "nominal"},
+                },
+            },
+        ]),
         "config": {
             "font": "Gotham",
             "view": {"stroke": None},
