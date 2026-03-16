@@ -935,7 +935,7 @@ CHIP_STYLE = (
     "display:inline-block; margin-right:3px;"
 )
 FREQ_ITEMS = (
-    f"<span style='font-size:0.8rem; color:#333; font-style:italic; margin-right:6px;'>Inspection frequency:</span>"
+    f"<span style='font-size:0.8rem; color:#111; font-style:italic; margin-right:6px;'>Inspection frequency:</span>"
     f"<span style='{CHIP_STYLE}'>&#8722;</span>"
     f"<span style='font-size:0.8rem; color:#111; margin-right:8px;'>&#8722;25%</span>"
     f"<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
@@ -957,7 +957,7 @@ BOX_STYLE = (
 
 if sort_flag:
     GROUP_ITEMS = (
-        "<span style='font-size:0.8rem; color:#333; font-style:italic; margin-right:6px;'>Group:</span>"
+        "<span style='font-size:0.8rem; color:#111; font-style:italic; margin-right:6px;'>Predictability:</span>"
         "<strong style='font-size:0.8rem; color:#111;'>Unp.</strong>"
         "<span style='font-size:0.8rem; color:#111; margin-right:8px;'>&nbsp;= Unpredictable</span>"
         "<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
