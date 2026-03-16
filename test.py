@@ -9,19 +9,7 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
-    /* ============================================================
-       SIDEBAR — BFI Data Studio style
-       White background, clean section labels, maroon accents
-       ============================================================ */
-
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e4e4e4 !important;
-    }
-
-    [data-testid="stSidebar"] > div:first-child {
-        padding-top: 0 !important;
-    }
+    [data-testid="stSidebar"] { background-color: #D9D9D9 !important; }
 
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
@@ -38,57 +26,27 @@ st.markdown(
     html, body, [data-testid="stAppViewContainer"] * {
         font-family: "Gotham", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
-
-    /* ---- Sidebar section labels (small uppercase BFI style) ---- */
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3 {
-        font-size: 0.65rem !important;
+        font-size: 1.3rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.13em !important;
-        text-transform: uppercase !important;
-        color: #7c7c7c !important;
-        border-bottom: 1px solid #e4e4e4 !important;
-        padding-bottom: 8px !important;
-        margin-bottom: 14px !important;
-        margin-top: 4px !important;
     }
-
-    /* ---- Widget labels (radio + slider) ---- */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        font-size: 0.85rem !important;
+        font-size: 1.15rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.13em !important;
-        text-transform: uppercase !important;
-        color: #333333 !important;
         line-height: 1.2 !important;
-        margin-bottom: 10px !important;
-        border-bottom: 1px solid #e4e4e4 !important;
-        padding-bottom: 8px !important;
+        margin-bottom: 0.25rem !important;
     }
 
-    /* ---- Radio: unselected ---- */
-    [data-testid="stSidebar"] div[role="radiogroup"] label {
-        padding: 6px 8px !important;
-        border-radius: 4px !important;
-        transition: background 0.12s !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-        background-color: #fcf8f5 !important;
-    }
+    /* ---- Radio: unselected = normal, selected = bold maroon ---- */
     [data-testid="stSidebar"] div[role="radiogroup"] label span,
     [data-testid="stSidebar"] div[role="radiogroup"] label p {
         font-size: 1.0rem !important;
         font-weight: 400 !important;
         line-height: 1.5 !important;
         margin: 0 !important;
-        color: #404040 !important;
+        color: #1a1a1a !important;
         white-space: pre-wrap !important;
-    }
-
-    /* ---- Radio: selected — maroon text on warm tint bg ---- */
-    [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-        background-color: #f5eded !important;
-        border-radius: 4px !important;
     }
     [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) span,
     [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
@@ -102,54 +60,8 @@ st.markdown(
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
-    /* ---- CSS hover tooltip for metric cards ---- */
-    .bfi-help-wrap {
-        position: relative;
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 5px;
-    }
-    .bfi-help-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        border: 1.5px solid #aaaaaa;
-        color: #aaaaaa;
-        font-size: 0.6rem;
-        font-weight: 700;
-        cursor: help;
-        line-height: 1;
-        text-transform: none;
-        letter-spacing: 0;
-    }
-    .bfi-help-popup {
-        display: none;
-        position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #222222;
-        color: #ffffff;
-        font-size: 0.72rem;
-        font-weight: 400;
-        line-height: 1.45;
-        padding: 7px 11px;
-        border-radius: 4px;
-        width: 200px;
-        white-space: normal;
-        text-align: left;
-        z-index: 9999;
-    }
-    .bfi-help-wrap:hover .bfi-help-popup {
-        display: block;
-    }
-
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
-       Modern Streamlit uses role="slider" + utility classes (not rc-slider)
        ============================================================ */
 
     [data-testid="stSidebar"] [data-testid="stSlider"] {
@@ -157,34 +69,90 @@ st.markdown(
         margin-bottom: -1rem !important;
     }
 
-    /* Hide default thumb value bubble */
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderThumbValue"] {
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="ThumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [class*="thumbValue"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] output,
+    [data-testid="stSidebar"] [data-testid="stSlider"] p {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
+        display: none !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMin"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBarMax"] {
+        display: none !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[data-testid*="TickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="tickBar"],
+    [data-testid="stSidebar"] [data-testid="stSlider"] div[class*="TickBar"] {
+        display: none !important;
+    }
+    .rc-slider-mark-text,
+    .rc-slider-mark-text-active {
+        display: none !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stSlider"] output {
         display: none !important;
     }
 
-    /* Hide default tick bar */
-    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTickBar"] {
-        display: none !important;
+    /* Rail */
+    [data-testid="stSidebar"] .rc-slider-rail {
+        background-color: #6b0f0f !important;
+        height: 4px !important;
+        border-radius: 2px !important;
     }
-
-    /* Handle — white fill, maroon ring (echoes radio button visual language) */
-    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
-        background: #ffffff !important;
-        border: 2.5px solid #800000 !important;
-        width: 16px !important;
-        height: 16px !important;
-        box-shadow: none !important;
+    /* Track */
+    [data-testid="stSidebar"] .rc-slider-track {
+        background-color: #6b0f0f !important;
+        height: 4px !important;
+    }
+    /* Handle */
+    [data-testid="stSidebar"] .rc-slider-handle {
+        background: #3a3a3e !important;
+        border: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin-top: -9px !important;
+        opacity: 1 !important;
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.4),
+            0 0 0 3px rgba(220, 80, 80, 0.85),
+            0 0 10px 4px rgba(220, 80, 80, 0.3) !important;
+        transition: box-shadow 0.15s !important;
+    }
+    [data-testid="stSidebar"] .rc-slider-handle:hover,
+    [data-testid="stSidebar"] .rc-slider-handle:focus,
+    [data-testid="stSidebar"] .rc-slider-handle-dragging {
+        border: none !important;
+        box-shadow:
+            0 3px 12px rgba(0, 0, 0, 0.5),
+            0 0 0 4px rgba(220, 80, 80, 0.9),
+            0 0 14px 6px rgba(220, 80, 80, 0.35) !important;
+    }
+    /* Dots */
+    [data-testid="stSidebar"] .rc-slider-dot {
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border: 2.5px solid #bbb !important;
+        width: 13px !important;
+        height: 13px !important;
+        bottom: -5px !important;
+        margin-left: -6px !important;
+        z-index: 5 !important;
         border-radius: 50% !important;
-        outline: none !important;
     }
-    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"]:hover,
-    [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"]:focus {
-        background: #f5eded !important;
-        border: 2.5px solid #800000 !important;
-        box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
+    [data-testid="stSidebar"] .rc-slider-dot-active {
+        display: block !important;
+        background-color: #1c1c1e !important;
+        border-color: #ddd !important;
     }
-
-    /* Track fill color is set via primaryColor in .streamlit/config.toml */
 
     </style>
     """,
@@ -393,23 +361,12 @@ apply_chart_click_if_any()
 # Header
 # =============================
 st.markdown(
-    """
-    <div style='text-align:center; padding: 1.5rem 2rem 1.2rem; border-bottom: 1px solid #e4e4e4;'>
-        <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
-                    color:#800000; margin-bottom:10px;'>
-            BFI Data Studio &nbsp;·&nbsp; Policy Research
-        </div>
-        <h1 style='font-size:1.75rem; font-weight:800; color:#111111;
-                   line-height:1.2; margin:0 auto 10px; max-width:640px;'>
-            Nursing Home Inspection Policy Outcomes
-        </h1>
-        <p style='font-size:0.95rem; font-weight:400; color:#555555;
-                  margin:0 auto; max-width:580px; line-height:1.6;'>
-            Explore how inspection frequency and predictability affect lives saved,
-            efficiency, and regulatory information.
-        </p>
-    </div>
-    """,
+    "<div style='text-align:center; margin-top:0.25rem;'>"
+    "<h1 style='margin-bottom:0.25rem; color:#000000;'>Nursing Home Inspection Policy Outcomes</h1>"
+    "<p style='font-size:1.25rem; font-weight:500; color:#000000; margin-top:0;'>"
+    "Explore how inspection frequency and predictability affect lives saved, efficiency, and regulatory information."
+    "</p>"
+    "</div>",
     unsafe_allow_html=True,
 )
 
@@ -417,26 +374,10 @@ st.markdown(
 # Sidebar controls
 # =============================
 with st.sidebar:
-    # ── BFI-style maroon header block ──
     st.markdown(
-        """
-        <div style="
-            background-color: #800000;
-            margin: -1rem -1rem 1.25rem -1rem;
-            padding: 14px 20px 12px 20px;
-            text-align: center;
-        ">
-            <div style="
-                font-size: 1.0rem;
-                font-weight: 700;
-                color: #ffffff;
-                letter-spacing: 0.01em;
-            ">Policy Controls</div>
-        </div>
-        """,
+        "<h2 style='text-align:center;'>Policy Controls</h2>",
         unsafe_allow_html=True,
     )
-
     st.radio(
         "Inspection Predictability",
         pred_options,
@@ -451,20 +392,18 @@ with st.sidebar:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
-    # ── Inspection Frequency section label ──
     st.markdown(
-        "<div style='font-size:0.85rem; font-weight:700; letter-spacing:0.13em; "
-        "text-transform:uppercase; color:#333333; border-bottom:1px solid #e4e4e4; "
-        "padding-bottom:8px; margin-top:20px; margin-bottom:10px; "
-        "display:inline-block;'>Inspection Frequency</div>",
+        "<p style='font-size:1.15rem; font-weight:700; line-height:1.2;"
+        " margin-bottom:6px; margin-top:20px;'>Inspection Frequency</p>",
         unsafe_allow_html=True,
     )
 
     # ── Labels above slider ──
+    # selected_fc reads from session state which is already resolved on each rerun
     selected_fc = st.session_state.get("freq_choice", "Current")
     labels_html = "".join([
         f"<span style='"
-        f"color:{'#800000' if lbl == selected_fc else '#404040'};"
+        f"color:{'#800000' if lbl == selected_fc else '#1a1a1a'};"
         f"font-weight:{'700' if lbl == selected_fc else '400'};"
         f"font-size:1.0rem;'>{lbl}</span>"
         for lbl in FREQ_LABELS
@@ -484,7 +423,7 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    # ── BFI-style callout: left maroon border, italic ──
+    # ── Callout box ──
     rates = {
         "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
@@ -493,18 +432,13 @@ with st.sidebar:
     st.markdown(
         f"""
         <div style="
-            border-left: 3px solid #800000;
-            background-color: #fcf8f5;
-            border-radius: 0 4px 4px 0;
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
             padding: 10px 14px;
-            margin-top: 14px;
-            font-size: 1.0rem;
-            font-style: italic;
-            color: #404040;
-            line-height: 1.5;
+            text-align: center;
+            margin-top: 4px;
         ">
-            <strong style="font-style:normal; color:#800000;">{rates[selected_fc]}</strong>
-            inspections per facility per year
+            <span style="font-size:1.0rem;"><strong>Frequency:</strong> {rates[selected_fc]} inspections per facility per year</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -521,32 +455,24 @@ scenario = scenario_label(predictability, frequency)
 
 st.markdown(
     f"""
-    <div style='
-        text-align: center;
-        padding: 14px 24px;
-        background-color: #fcf8f5;
-        border-top: 1px solid #e4e4e4;
-        border-bottom: 1px solid #e4e4e4;
-        margin-bottom: 1.2rem;
-    '>
-        <div style='font-size:0.78rem; font-weight:700; letter-spacing:0.13em;
-                    text-transform:uppercase; color:#7c7c7c; margin-bottom:10px;'>
-            Selected Scenario
-        </div>
-        <div style='
+    <div style='text-align:center; margin-top:0.4rem; margin-bottom:1.2rem;'>
+        <div style='color:#000000; font-size:1.5rem; font-weight:700; margin-bottom:0.6rem;'>Selected Policy Scenario</div>
+        <span style='
             display: inline-block;
-            padding: 9px 26px;
+            padding: 12px 24px;
             background-color: #800000;
             color: #ffffff;
-            font-size: 1.15rem;
-            font-weight: 700;
-            border-radius: 3px;
-            letter-spacing: 0.01em;
+            font-size: 1.6rem;
+            font-weight: 800;
+            border: 4px solid #EAAA00;
+            border-radius: 12px;
+            line-height: 1.1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         '>
             {scenario}
-        </div>
-        <div style='font-size:0.82rem; color:#7c7c7c; margin-top:9px;'>
-            Click any bar in a chart below to change scenario selection
+        </span>
+        <div style='margin-top:0.5rem; font-size:0.9rem; color:rgba(0,0,0,0.6);'>
+            Tip: Click any bar in a chart below to select that scenario.
         </div>
     </div>
     """,
@@ -558,81 +484,44 @@ st.markdown(
 # =============================
 total_inspections = int(float(frequency) * 15615)
 
+st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Outcomes</h2>", unsafe_allow_html=True)
 st.markdown(
-    "<div style='font-size:0.82rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
-    "color:#800000; border-bottom:2px solid #800000; padding-bottom:4px; display:inline-block; "
-    "margin-bottom:8px;'>Policy Outcomes</div>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    "<p style='font-size:0.8rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
-    "All outcomes are reported relative to a benchmark with no inspections. "
+    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6); margin-top:0.25rem;'>"
+    "Note: All outcomes are reported relative to a benchmark with no inspections. "
     "\u201cLives saved\u201d reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
     unsafe_allow_html=True,
 )
 
-def metric_card(label, value, unit, help_text=""):
-    tooltip = (
-        f'<div style="margin-top:6px; text-align:right;">'
-        f'<span class="bfi-help-wrap">'
-        f'<span class="bfi-help-icon">?</span>'
-        f'<span class="bfi-help-popup">{help_text}</span>'
-        f'</span>'
-        f'</div>'
-        if help_text else ""
-    )
-    return f"""
-    <div style="
-        padding: 18px 20px 16px;
-        background: #ffffff;
-        border: 1px solid #e4e4e4;
-        border-top: 3px solid #800000;
-        border-radius: 2px;
-    ">
-        <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
-            {label}
-        </div>
-        <div style="font-size:2.2rem; font-weight:800; color:#111111;
-                    line-height:1; margin-bottom:6px; letter-spacing:-0.01em;">
-            {value}
-        </div>
-        <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
-            {unit}
-        </div>
-    </div>
-    {tooltip}
-    """
-
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.markdown(metric_card(
+    st.metric(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
-        "per year",
-        "Annual reduction in patient deaths relative to no inspections",
-    ), unsafe_allow_html=True)
+        help="Annual reduction in patient deaths relative to no inspections",
+    )
+    st.caption("per year")
 with col2:
-    st.markdown(metric_card(
+    st.metric(
         "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
-        "per 1,000 inspections",
-        "Lives saved per 1,000 inspections",
-    ), unsafe_allow_html=True)
+        help="Lives saved per 1,000 inspections",
+    )
+    st.caption("per 1,000 inspections")
 with col3:
-    st.markdown(metric_card(
+    st.metric(
         "Regulatory information",
         f"{float(row['info_percent']):.1f}%",
-        "about facility quality",
-        "How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
-    ), unsafe_allow_html=True)
+        help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
+    )
+    st.caption("about facility quality")
 with col4:
-    st.markdown(metric_card(
+    st.metric(
         "Total inspections",
         f"{total_inspections:,}",
-        "inspections per year",
-        "Annual inspections nationwide (frequency × 15,615 facilities)",
-    ), unsafe_allow_html=True)
+        help="Annual inspections nationwide (frequency × 15,615 facilities)",
+    )
+    st.caption("inspections per year")
 
 st.markdown(
     "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
@@ -650,18 +539,10 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
     else:
         sort_spec = {"field": "x_order", "order": "ascending"}
     return {
-        "title": {
-            "text": chart_title,
-            "anchor": "start",
-            "fontSize": 15,
-            "fontWeight": 700,
-            "color": "#111111",
-            "offset": 8,
-            "subtitleFontSize": 0,
-        },
-        "height": 260,
-        "padding": {"top": 6, "left": 4, "right": 12, "bottom": 4},
-        "mark": {"type": "bar", "size": 28, "cornerRadiusTopLeft": 2, "cornerRadiusTopRight": 2},
+        "title": {"text": chart_title, "anchor": "middle", "fontSize": 20, "fontWeight": "bold", "offset": 10},
+        "height": 235,
+        "padding": {"top": 8, "left": 10, "right": 10, "bottom": 5},
+        "mark": {"type": "bar", "size": 40, "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
         "params": [
             {"name": POINT_PARAM, "select": {"type": "point", "fields": ["scenario_key"], "on": "click"}}
         ],
@@ -670,25 +551,13 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                 "field": "scenario_key",
                 "type": "nominal",
                 "sort": sort_spec,
-                "axis": {"labels": False, "ticks": False, "domain": False, "title": None, "grid": False},
+                "axis": {"labels": False, "ticks": False, "domain": False, "title": None},
             },
             "y": {
                 "field": metric_col,
                 "type": "quantitative",
                 "scale": {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False},
-                "axis": {
-                    "title": y_label,
-                    "titleFontWeight": 600,
-                    "titleFontSize": 12,
-                    "titleColor": "#404040",
-                    "titlePadding": 10,
-                    "labelFontSize": 12,
-                    "labelColor": "#404040",
-                    "gridColor": "#e8e8e8",
-                    "gridDash": [],
-                    "domainColor": "#e8e8e8",
-                    "tickColor": "#e8e8e8",
-                },
+                "axis": {"title": y_label, "titleFontWeight": "bold"},
             },
             "tooltip": [
                 {"field": "scenario_label", "type": "nominal", "title": "Scenario"},
@@ -696,21 +565,32 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
             ],
             "color": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#800000"},
-                "value": "#d6d2ce",
+                "value": "#c9c9c9",
             },
             "opacity": {
                 "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 1.0},
-                "value": 0.75,
+                "value": 0.55,
+            },
+            "stroke": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": "#EAAA00"},
+                "value": None,
+            },
+            "strokeWidth": {
+                "condition": {"test": f"datum.scenario_key === '{selected_key_for_style}'", "value": 10},
+                "value": 0,
             },
         },
         "config": {
             "font": "Gotham",
-            "view": {"stroke": None},
             "axis": {
                 "labelFont": "Gotham",
                 "titleFont": "Gotham",
+                "labelFontSize": 14,
+                "titleFontSize": 15.2,
+                "labelColor": "#000000",
+                "titleColor": "#000000",
             },
-            "title": {"font": "Gotham", "fontSize": 15, "fontWeight": 700},
+            "title": {"font": "Gotham", "fontSize": 20},
             "legend": {"labelFont": "Gotham", "titleFont": "Gotham"},
         },
     }
@@ -728,15 +608,10 @@ def render_chart(df_in, spec, key):
 # =============================
 # Policy comparisons
 # =============================
+st.markdown("<h2 style='margin-bottom:0.25rem;'>Policy Comparisons</h2>", unsafe_allow_html=True)
 st.markdown(
-    "<div style='font-size:0.82rem; font-weight:700; letter-spacing:0.13em; text-transform:uppercase; "
-    "color:#800000; border-bottom:2px solid #800000; padding-bottom:4px; display:inline-block; "
-    "margin-bottom:8px;'>Policy Comparisons</div>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    "<p style='font-size:0.8rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
-    "Each bar shows a different inspection policy. The highlighted bar corresponds to the selected scenario above."
+    "<p style='text-align:center; font-size:0.85rem; color:rgba(0,0,0,0.6);'>"
+    "Note: Each bar shows a different inspection policy. The highlighted bar corresponds to the selected policy shown above."
     "</p>",
     unsafe_allow_html=True,
 )
