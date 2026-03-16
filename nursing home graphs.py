@@ -929,43 +929,47 @@ with p4:
         key="vega_total_inspections",
     )
 
-freq_legend = """
-    <span style='font-size:0.72rem; color:#555555; font-style:italic; margin-right:6px;'>Frequency:</span>
-    <span style='font-size:0.72rem; color:#333333; display:inline-flex; align-items:center; gap:5px;'>
-        <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
-                     padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>−</span>−25%
-    </span>
-    <span style='color:#999999; font-size:0.7rem;'>·</span>
-    <span style='font-size:0.72rem; color:#333333; display:inline-flex; align-items:center; gap:5px;'>
-        <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
-                     padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>=</span>Current
-    </span>
-    <span style='color:#999999; font-size:0.7rem;'>·</span>
-    <span style='font-size:0.72rem; color:#333333; display:inline-flex; align-items:center; gap:5px;'>
-        <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
-                     padding:1px 7px; border-radius:3px; color:#222; font-weight:600;'>+</span>+25%
-    </span>
-"""
+def chip(symbol):
+    return (
+        f"<span style='font-family:monospace; font-size:0.8rem; background:#dedede;"
+        f"padding:1px 7px; border-radius:3px; color:#222; font-weight:600;"
+        f"display:inline-block; margin-right:3px;'>{symbol}</span>"
+    )
 
-group_legend = """
-    <span style='color:#cccccc; font-size:0.7rem; margin:0 8px;'>|</span>
-    <span style='font-size:0.72rem; color:#555555; font-style:italic; margin-right:6px;'>Group:</span>
-    <span style='font-size:0.72rem; color:#333333;'>Unp. = Unpredictable</span>
-    <span style='color:#999999; font-size:0.7rem;'>·</span>
-    <span style='font-size:0.72rem; color:#333333;'>Curr. = Current Regime</span>
-    <span style='color:#999999; font-size:0.7rem;'>·</span>
-    <span style='font-size:0.72rem; color:#333333;'>Pred. = Perfectly Predictable</span>
-""" if sort_flag else ""
+freq_row = (
+    f"<div style='display:flex; align-items:center; gap:6px; flex-wrap:wrap;'>"
+    f"<span style='font-size:0.72rem; color:#555555; font-style:italic; min-width:72px;'>Frequency:</span>"
+    f"{chip('−')}<span style='font-size:0.72rem; color:#333;'>−25%</span>"
+    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
+    f"{chip('=')}<span style='font-size:0.72rem; color:#333;'>Current</span>"
+    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
+    f"{chip('+')}<span style='font-size:0.72rem; color:#333;'>+25%</span>"
+    f"</div>"
+)
+
+group_row = (
+    f"<div style='display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px;"
+    f"padding-top:5px; border-top:1px solid #ebebeb;'>"
+    f"<span style='font-size:0.72rem; color:#555555; font-style:italic; min-width:72px;'>Group:</span>"
+    f"<span style='font-size:0.72rem; color:#333;'><strong>Unp.</strong> = Unpredictable</span>"
+    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
+    f"<span style='font-size:0.72rem; color:#333;'><strong>Curr.</strong> = Current Regime</span>"
+    f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
+    f"<span style='font-size:0.72rem; color:#333;'><strong>Pred.</strong> = Perfectly Predictable</span>"
+    f"</div>"
+) if sort_flag else ""
 
 st.markdown(
     f"""
-    <div style='display:flex; justify-content:center; align-items:center; gap:6px; margin-top:0.6rem; flex-wrap:wrap;
-                border:1px solid #dedede; border-radius:4px; padding:6px 14px; width:fit-content; margin-left:auto; margin-right:auto;'>
-        <span style='font-size:0.72rem; color:#555555; font-weight:700; letter-spacing:0.08em;
-                     text-transform:uppercase; margin-right:8px;'>Legend</span>
-        <span style='color:#cccccc; font-size:0.7rem; margin-right:8px;'>|</span>
-        {freq_legend}
-        {group_legend}
+    <div style='margin-top:0.6rem; border:1px solid #dedede; border-radius:4px;
+                padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;'>
+        <div style='display:flex; align-items:center; gap:10px; margin-bottom:6px;'>
+            <span style='font-size:0.72rem; color:#555555; font-weight:700;
+                         letter-spacing:0.08em; text-transform:uppercase;'>Legend</span>
+            <span style='color:#dedede; font-size:0.8rem;'>|</span>
+            {freq_row}
+        </div>
+        {group_row}
     </div>
     """,
     unsafe_allow_html=True,
