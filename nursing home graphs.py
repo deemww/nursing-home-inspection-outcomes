@@ -23,6 +23,12 @@ st.markdown(
         padding-top: 0 !important;
     }
 
+    /* Hide sidebar collapse button (shows broken icon text without Material Icons font) */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+
     /* ---- Gotham font faces ---- */
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-Book.otf") format("opentype"); font-weight: 400; font-style: normal; }
     @font-face { font-family: "Gotham"; src: url("assets/fonts/gotham/Gotham-BookItalic.otf") format("opentype"); font-weight: 400; font-style: italic; }
