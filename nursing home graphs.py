@@ -415,6 +415,19 @@ st.markdown(
             Explore how inspection frequency and predictability affect lives saved,
             efficiency, and regulatory information.
         </p>
+        <div style='margin-top:14px;'>
+            <a href='https://uchicago.box.com/s/zebkzvt89zrclrxxxn4u6sderaprkfk5'
+               target='_blank'
+               style='display:inline-flex; align-items:center; gap:6px;
+                      font-size:0.82rem; font-weight:600; color:#800000;
+                      text-decoration:none; border:1.5px solid #800000;
+                      padding:6px 14px; border-radius:3px;
+                      transition: background 0.15s;'
+               onmouseover="this.style.background='#f5eded'"
+               onmouseout="this.style.background='transparent'">
+                &#128196; Read the working paper
+            </a>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
