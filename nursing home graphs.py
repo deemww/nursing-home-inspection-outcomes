@@ -348,12 +348,23 @@ apply_chart_click_if_any()
 # Header
 # =============================
 st.markdown(
-    "<div style='text-align:center; margin-top:0.25rem;'>"
-    "<h1 style='margin-bottom:0.25rem; color:#000000;'>Nursing Home Inspection Policy Outcomes</h1>"
-    "<p style='font-size:1.25rem; font-weight:500; color:#000000; margin-top:0;'>"
-    "Explore how inspection frequency and predictability affect lives saved, efficiency, and regulatory information."
-    "</p>"
-    "</div>",
+    """
+    <div style='text-align:center; padding: 1.5rem 2rem 1.2rem; border-bottom: 1px solid #e4e4e4;'>
+        <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+                    color:#800000; margin-bottom:10px;'>
+            BFI Data Studio &nbsp;·&nbsp; Policy Research
+        </div>
+        <h1 style='font-size:1.75rem; font-weight:800; color:#111111;
+                   line-height:1.2; margin:0 auto 10px; max-width:640px;'>
+            Nursing Home Inspection Policy Outcomes
+        </h1>
+        <p style='font-size:0.95rem; font-weight:400; color:#555555;
+                  margin:0 auto; max-width:580px; line-height:1.6;'>
+            Explore how inspection frequency and predictability affect lives saved,
+            efficiency, and regulatory information.
+        </p>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
@@ -490,7 +501,7 @@ st.markdown(
             {scenario}
         </div>
         <div style='font-size:0.78rem; color:#7c7c7c; margin-top:7px;'>
-             Click any bar in a chart below to change scenario selection
+            ← Click any bar in a chart to change selection
         </div>
     </div>
     """,
