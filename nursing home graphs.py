@@ -128,9 +128,9 @@ st.markdown(
     .bfi-help-popup {
         display: none;
         position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
+        top: calc(100% + 4px);
+        left: 0;
+        transform: none;
         background: #222222;
         color: #ffffff;
         font-size: 0.72rem;
@@ -574,12 +574,10 @@ st.markdown(
 
 def metric_card(label, value, unit, help_text=""):
     tooltip = (
-        f'<div style="margin-top:6px; text-align:right;">'
         f'<span class="bfi-help-wrap">'
         f'<span class="bfi-help-icon">?</span>'
         f'<span class="bfi-help-popup">{help_text}</span>'
         f'</span>'
-        f'</div>'
         if help_text else ""
     )
     return f"""
@@ -589,9 +587,10 @@ def metric_card(label, value, unit, help_text=""):
         border: 1px solid #e4e4e4;
         border-top: 3px solid #800000;
         border-radius: 2px;
+        overflow: visible;
     ">
         <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
-            {label}
+            {label}{tooltip}
         </div>
         <div style="font-size:2.2rem; font-weight:800; color:#111111;
                     line-height:1; margin-bottom:6px; letter-spacing:-0.01em;">
@@ -601,7 +600,6 @@ def metric_card(label, value, unit, help_text=""):
             {unit}
         </div>
     </div>
-    {tooltip}
     """
 
 col1, col2, col3, col4 = st.columns(4)
