@@ -96,36 +96,11 @@ st.markdown(
         color: #800000 !important;
     }
 
-    /* ---- METRICS — custom BFI card style ---- */
-    [data-testid="stMetric"] {
-        background: #ffffff !important;
-        border: 1px solid #e4e4e4 !important;
-        border-top: 3px solid #800000 !important;
-        border-radius: 2px !important;
-        padding: 18px 20px 14px !important;
-    }
-    [data-testid="stMetricLabel"] p {
-        font-size: 0.68rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.12em !important;
-        text-transform: uppercase !important;
-        color: #7c7c7c !important;
-        margin-bottom: 8px !important;
-    }
-    [data-testid="stMetricValue"] {
-        font-size: 2.1rem !important;
-        font-weight: 800 !important;
-        color: #111111 !important;
-        letter-spacing: -0.01em !important;
-        line-height: 1 !important;
-    }
+    /* ---- METRICS ---- */
+    [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
+    [data-testid="stMetricValue"] { font-weight: 800 !important; }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
-    [data-testid="stCaptionContainer"] p {
-        font-size: 0.78rem !important;
-        color: #9a9a9a !important;
-        font-style: italic !important;
-        font-weight: 400 !important;
-    }
+    [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
@@ -552,35 +527,64 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def metric_card(label, value, unit, help_text=""):
+    tooltip = (
+        f' <span title="{help_text}" style="cursor:help; display:inline-flex; align-items:center;'
+        f' justify-content:center; width:16px; height:16px; border-radius:50%;'
+        f' border:1.5px solid #aaaaaa; color:#aaaaaa; font-size:0.65rem;'
+        f' font-weight:700; letter-spacing:0; text-transform:none; vertical-align:middle;">?</span>'
+        if help_text else ""
+    )
+    return f"""
+    <div style="
+        padding: 18px 20px 16px;
+        background: #ffffff;
+        border: 1px solid #e4e4e4;
+        border-top: 3px solid #800000;
+        border-radius: 2px;
+    ">
+        <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
+            {label}{tooltip}
+        </div>
+        <div style="font-size:2.2rem; font-weight:800; color:#111111;
+                    line-height:1; margin-bottom:10px; letter-spacing:-0.01em;">
+            {value}
+        </div>
+        <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
+            {unit}
+        </div>
+    </div>
+    """
+
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric(
+    st.markdown(metric_card(
         "Lives saved",
         f"{float(row['lives_saved_annually']):.1f}",
-        help="Annual reduction in patient deaths relative to no inspections",
-    )
-    st.caption("per year")
+        "per year",
+        "Annual reduction in patient deaths relative to no inspections",
+    ), unsafe_allow_html=True)
 with col2:
-    st.metric(
+    st.markdown(metric_card(
         "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
-        help="Lives saved per 1,000 inspections",
-    )
-    st.caption("per 1,000 inspections")
+        "per 1,000 inspections",
+        "Lives saved per 1,000 inspections",
+    ), unsafe_allow_html=True)
 with col3:
-    st.metric(
+    st.markdown(metric_card(
         "Regulatory information",
         f"{float(row['info_percent']):.1f}%",
-        help="How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
-    )
-    st.caption("about facility quality")
+        "about facility quality",
+        "How much information inspections give regulators about a facility's underlying quality, relative to no inspections.",
+    ), unsafe_allow_html=True)
 with col4:
-    st.metric(
+    st.markdown(metric_card(
         "Total inspections",
         f"{total_inspections:,}",
-        help="Annual inspections nationwide (frequency × 15,615 facilities)",
-    )
-    st.caption("inspections per year")
+        "inspections per year",
+        "Annual inspections nationwide (frequency × 15,615 facilities)",
+    ), unsafe_allow_html=True)
 
 st.markdown(
     "<hr style='margin:0.5rem 0; border: none; border-top:1px solid rgba(0,0,0,0.15);'>",
