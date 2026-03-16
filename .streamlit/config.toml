@@ -1,7 +1,7 @@
 [client]
 showSidebarNavigation = false
 [theme]
-primaryColor = "#800000"
+primaryColor = "#0000FF"
 backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#fcf8f5"
 textColor = "#404040"
