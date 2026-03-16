@@ -520,7 +520,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='font-size:1.2rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
+    "<p style='font-size:0.8rem; color:#7c7c7c; margin-top:0; margin-bottom:0.75rem; line-height:1.5;'>"
     "All outcomes are reported relative to a benchmark with no inspections. "
     "\u201cLives saved\u201d reflects the annual reduction in patient deaths compared to a regime with zero inspections."
     "</p>",
