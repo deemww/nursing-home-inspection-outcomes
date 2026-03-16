@@ -106,31 +106,32 @@ st.markdown(
     .bfi-help-wrap {
         position: relative;
         display: inline-block;
-        vertical-align: middle;
-        margin-left: 5px;
     }
+
     .bfi-help-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 15px;
-        height: 15px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         border: 1.5px solid #aaaaaa;
         color: #aaaaaa;
-        font-size: 0.6rem;
+        font-size: 0.62rem;
         font-weight: 700;
         cursor: help;
         line-height: 1;
         text-transform: none;
         letter-spacing: 0;
+        background: #ffffff;
     }
+
     .bfi-help-popup {
         display: none;
         position: absolute;
-        bottom: calc(100% + 7px);
-        left: 50%;
-        transform: translateX(-50%);
+        top: calc(100% + 8px);
+        right: 0;
+        transform: none;
         background: #222222;
         color: #ffffff;
         font-size: 0.72rem;
@@ -143,6 +144,7 @@ st.markdown(
         text-align: left;
         z-index: 9999;
     }
+
     .bfi-help-wrap:hover .bfi-help-popup {
         display: block;
     }
@@ -167,7 +169,7 @@ st.markdown(
         display: none !important;
     }
 
-    /* Handle — white fill, maroon ring (echoes radio button visual language) */
+    /* Handle — white fill, maroon ring */
     [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
         background: #ffffff !important;
         border: 2.5px solid #800000 !important;
@@ -183,8 +185,6 @@ st.markdown(
         border: 2.5px solid #800000 !important;
         box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
     }
-
-    /* Track fill color is set via primaryColor in .streamlit/config.toml */
 
     </style>
     """,
@@ -417,7 +417,6 @@ st.markdown(
 # Sidebar controls
 # =============================
 with st.sidebar:
-    # ── BFI-style maroon header block ──
     st.markdown(
         """
         <div style="
@@ -451,7 +450,6 @@ with st.sidebar:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
-    # ── Inspection Frequency section label ──
     st.markdown(
         "<div style='font-size:0.85rem; font-weight:700; letter-spacing:0.13em; "
         "text-transform:uppercase; color:#333333; border-bottom:1px solid #e4e4e4; "
@@ -460,7 +458,6 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    # ── Labels above slider ──
     selected_fc = st.session_state.get("freq_choice", "Current")
     labels_html = "".join([
         f"<span style='"
@@ -475,7 +472,6 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    # ── Slider ──
     st.select_slider(
         "Inspection frequency",
         options=FREQ_LABELS,
@@ -484,7 +480,6 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    # ── BFI-style callout: left maroon border, italic ──
     rates = {
         "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
@@ -511,7 +506,7 @@ with st.sidebar:
     )
 
 # =============================
-# Selected scenario (source of truth)
+# Selected scenario
 # =============================
 selected_key = st.session_state["selected_key"]
 row = df.loc[df["scenario_key"] == selected_key].iloc[0]
@@ -574,34 +569,61 @@ st.markdown(
 
 def metric_card(label, value, unit, help_text=""):
     tooltip = (
-        f'<div style="margin-top:6px; text-align:right;">'
-        f'<span class="bfi-help-wrap">'
-        f'<span class="bfi-help-icon">?</span>'
-        f'<span class="bfi-help-popup">{help_text}</span>'
-        f'</span>'
-        f'</div>'
+        f'''
+        <div style="
+            position:absolute;
+            top:10px;
+            right:12px;
+        ">
+            <span class="bfi-help-wrap">
+                <span class="bfi-help-icon">?</span>
+                <span class="bfi-help-popup">{help_text}</span>
+            </span>
+        </div>
+        '''
         if help_text else ""
     )
+
     return f"""
     <div style="
+        position: relative;
         padding: 18px 20px 16px;
         background: #ffffff;
         border: 1px solid #e4e4e4;
         border-top: 3px solid #800000;
         border-radius: 2px;
     ">
-        <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
+        {tooltip}
+
+        <div style="
+            font-size:0.88rem;
+            font-weight:700;
+            color:#333333;
+            margin-bottom:8px;
+            padding-right:22px;
+        ">
             {label}
         </div>
-        <div style="font-size:2.2rem; font-weight:800; color:#111111;
-                    line-height:1; margin-bottom:6px; letter-spacing:-0.01em;">
+
+        <div style="
+            font-size:2.2rem;
+            font-weight:800;
+            color:#111111;
+            line-height:1;
+            margin-bottom:6px;
+            letter-spacing:-0.01em;
+        ">
             {value}
         </div>
-        <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
+
+        <div style="
+            font-size:0.8rem;
+            color:#7c7c7c;
+            font-style:italic;
+        ">
             {unit}
         </div>
     </div>
-    {tooltip}
     """
 
 col1, col2, col3, col4 = st.columns(4)
@@ -640,7 +662,7 @@ st.markdown(
 )
 
 # =============================
-# Vega-Lite bar chart specs (clickable) + sort toggle
+# Vega-Lite bar chart specs
 # =============================
 POINT_PARAM = "point_selection"
 
