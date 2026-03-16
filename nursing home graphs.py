@@ -501,7 +501,7 @@ st.markdown(
             {scenario}
         </div>
         <div style='font-size:0.78rem; color:#7c7c7c; margin-top:7px;'>
-            ← Click any bar in a chart to change selection
+            Click any bar in a chart below to change scenario selection
         </div>
     </div>
     """,
