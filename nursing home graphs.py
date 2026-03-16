@@ -425,7 +425,7 @@ st.markdown(
                       transition: background 0.15s;'
                onmouseover="this.style.background='#f5eded'"
                onmouseout="this.style.background='transparent'">
-                Read the working paper 
+                Read the working paper →
             </a>
         </div>
     </div>
@@ -744,7 +744,8 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                     "text": {"field": "_visible_label", "type": "nominal"},
                 },
             },
-        ] + ([] if sort_by_magnitude_flag else [
+        ] + [
+            # Frequency symbol (−/=/+) — always shown
             {
                 "transform": [
                     {
@@ -767,6 +768,8 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                     "text": {"field": "_freq_sym", "type": "nominal"},
                 },
             },
+        ] + ([] if sort_by_magnitude_flag else [
+            # Group label centred on middle bar — only when unsorted (groups are contiguous)
             {
                 "transform": [
                     {"filter": "datum.freq_rank === 2"},
@@ -792,6 +795,34 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                     "x": {"field": "scenario_key", "type": "nominal", "sort": sort_spec},
                     "y": {"datum": 0, "type": "quantitative"},
                     "text": {"field": "_group_label", "type": "nominal"},
+                },
+            },
+        ]) + ([] if not sort_by_magnitude_flag else [
+            # Short group abbreviation under every bar — only when sorted (groups are mixed)
+            {
+                "transform": [
+                    {
+                        "calculate": (
+                            "datum.predictability_numeric === 100 ? 'Unp.' : "
+                            "datum.predictability_numeric === 50 ? 'Curr.' : "
+                            "'Pred.'"
+                        ),
+                        "as": "_group_abbr",
+                    }
+                ],
+                "mark": {
+                    "type": "text",
+                    "align": "center",
+                    "baseline": "top",
+                    "dy": 20,
+                    "fontSize": 11,
+                    "fontWeight": 700,
+                    "color": "#333333",
+                },
+                "encoding": {
+                    "x": {"field": "scenario_key", "type": "nominal", "sort": sort_spec},
+                    "y": {"datum": 0, "type": "quantitative"},
+                    "text": {"field": "_group_abbr", "type": "nominal"},
                 },
             },
         ]),
