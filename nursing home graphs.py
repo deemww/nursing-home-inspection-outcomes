@@ -102,6 +102,51 @@ st.markdown(
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
     [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
 
+    /* ---- CSS hover tooltip for metric cards ---- */
+    .bfi-help-wrap {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+    .bfi-help-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        border: 1.5px solid #aaaaaa;
+        color: #aaaaaa;
+        font-size: 0.6rem;
+        font-weight: 700;
+        cursor: help;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    .bfi-help-popup {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 7px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #222222;
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 400;
+        line-height: 1.45;
+        padding: 7px 11px;
+        border-radius: 4px;
+        width: 200px;
+        white-space: normal;
+        text-align: left;
+        z-index: 9999;
+    }
+    .bfi-help-wrap:hover .bfi-help-popup {
+        display: block;
+    }
+
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
        Modern Streamlit uses role="slider" + utility classes (not rc-slider)
@@ -528,10 +573,13 @@ st.markdown(
 )
 
 def metric_card(label, value, unit, help_text=""):
-    note = (
-        f'<div style="font-size:0.72rem; color:#9a9a9a; margin-top:10px; '
-        f'padding-top:10px; border-top:1px solid #f0f0f0; line-height:1.4;">'
-        f'{help_text}</div>'
+    tooltip = (
+        f'<div style="margin-top:6px; text-align:right;">'
+        f'<span class="bfi-help-wrap">'
+        f'<span class="bfi-help-icon">?</span>'
+        f'<span class="bfi-help-popup">{help_text}</span>'
+        f'</span>'
+        f'</div>'
         if help_text else ""
     )
     return f"""
@@ -552,8 +600,8 @@ def metric_card(label, value, unit, help_text=""):
         <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
             {unit}
         </div>
-        {note}
     </div>
+    {tooltip}
     """
 
 col1, col2, col3, col4 = st.columns(4)
