@@ -731,6 +731,27 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
         ] + ([] if sort_by_magnitude_flag else [
             {
                 "transform": [
+                    {
+                        "calculate": "datum.freq_rank === 1 ? '▼' : datum.freq_rank === 2 ? '●' : '▲'",
+                        "as": "_freq_sym",
+                    }
+                ],
+                "mark": {
+                    "type": "text",
+                    "align": "center",
+                    "baseline": "top",
+                    "dy": 4,
+                    "fontSize": 10,
+                    "color": "#aaaaaa",
+                },
+                "encoding": {
+                    "x": {"field": "scenario_key", "type": "nominal", "sort": sort_spec},
+                    "y": {"datum": 0, "type": "quantitative"},
+                    "text": {"field": "_freq_sym", "type": "nominal"},
+                },
+            },
+            {
+                "transform": [
                     {"filter": "datum.freq_rank === 2"},
                     {
                         "calculate": (
@@ -745,7 +766,7 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
                     "type": "text",
                     "align": "center",
                     "baseline": "top",
-                    "dy": 6,
+                    "dy": 20,
                     "fontSize": 10,
                     "fontWeight": 600,
                     "color": "#7c7c7c",
@@ -858,3 +879,10 @@ with p4:
         ),
         key="vega_total_inspections",
     )
+
+st.markdown(
+    "<p style='font-size:0.75rem; color:#aaaaaa; text-align:center; margin-top:0.25rem;'>"
+    "▼ = −25% frequency &nbsp;·&nbsp; ● = Current frequency &nbsp;·&nbsp; ▲ = +25% frequency"
+    "</p>",
+    unsafe_allow_html=True,
+)
