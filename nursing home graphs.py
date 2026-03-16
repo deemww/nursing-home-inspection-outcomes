@@ -425,7 +425,7 @@ st.markdown(
                       transition: background 0.15s;'
                onmouseover="this.style.background='#f5eded'"
                onmouseout="this.style.background='transparent'">
-                Read the working paper 
+                Read the working paper →
             </a>
         </div>
     </div>
@@ -930,25 +930,25 @@ with p4:
     )
 
 CHIP_STYLE = (
-    "font-family:monospace; font-size:0.8rem; background:#dedede; "
-    "padding:1px 7px; border-radius:3px; color:#222; font-weight:600; "
+    "font-family:monospace; font-size:0.85rem; background:#d4d4d4; "
+    "padding:1px 8px; border-radius:3px; color:#111; font-weight:700; "
     "display:inline-block; margin-right:3px;"
 )
 FREQ_ITEMS = (
-    f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Inspection frequency:</span>"
+    f"<span style='font-size:0.8rem; color:#333; font-style:italic; margin-right:6px;'>Inspection frequency:</span>"
     f"<span style='{CHIP_STYLE}'>&#8722;</span>"
-    f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&#8722;25%</span>"
-    f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+    f"<span style='font-size:0.8rem; color:#111; margin-right:8px;'>&#8722;25%</span>"
+    f"<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
     f"<span style='{CHIP_STYLE}'>=</span>"
-    f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>Current</span>"
-    f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+    f"<span style='font-size:0.8rem; color:#111; margin-right:8px;'>Current</span>"
+    f"<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
     f"<span style='{CHIP_STYLE}'>+</span>"
-    f"<span style='font-size:0.72rem; color:#333;'>+25%</span>"
+    f"<span style='font-size:0.8rem; color:#111;'>+25%</span>"
 )
 LEGEND_HEADER = (
-    "<span style='font-size:0.72rem; color:#555; font-weight:700; "
-    "letter-spacing:0.08em; text-transform:uppercase; margin-right:8px;'>Legend</span>"
-    "<span style='color:#dedede; font-size:0.8rem; margin-right:8px;'>|</span>"
+    "<span style='font-size:0.78rem; color:#333; font-weight:700; "
+    "letter-spacing:0.08em; text-transform:uppercase; margin-right:10px;'>Legend</span>"
+    "<span style='color:#dedede; font-size:0.8rem; margin-right:10px;'>|</span>"
 )
 BOX_STYLE = (
     "margin-top:0.6rem; border:1px solid #dedede; border-radius:4px; "
@@ -957,15 +957,15 @@ BOX_STYLE = (
 
 if sort_flag:
     GROUP_ITEMS = (
-        "<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Group:</span>"
-        "<strong style='font-size:0.72rem; color:#333;'>Unp.</strong>"
-        "<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Unpredictable</span>"
-        "<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
-        "<strong style='font-size:0.72rem; color:#333;'>Curr.</strong>"
-        "<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Current Regime</span>"
-        "<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
-        "<strong style='font-size:0.72rem; color:#333;'>Pred.</strong>"
-        "<span style='font-size:0.72rem; color:#333;'>&nbsp;= Perfectly Predictable</span>"
+        "<span style='font-size:0.8rem; color:#333; font-style:italic; margin-right:6px;'>Group:</span>"
+        "<strong style='font-size:0.8rem; color:#111;'>Unp.</strong>"
+        "<span style='font-size:0.8rem; color:#111; margin-right:8px;'>&nbsp;= Unpredictable</span>"
+        "<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
+        "<strong style='font-size:0.8rem; color:#111;'>Curr.</strong>"
+        "<span style='font-size:0.8rem; color:#111; margin-right:8px;'>&nbsp;= Current Regime</span>"
+        "<span style='color:#999; font-size:0.75rem; margin-right:8px;'>&#183;</span>"
+        "<strong style='font-size:0.8rem; color:#111;'>Pred.</strong>"
+        "<span style='font-size:0.8rem; color:#111;'>&nbsp;= Perfectly Predictable</span>"
     )
     st.markdown(
         "<div style='" + BOX_STYLE + " display:flex; align-items:flex-start; gap:10px;'>"
