@@ -949,7 +949,7 @@ freq_row = (
 
 group_row = (
     f"<div style='display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px;"
-    f"padding-top:5px; border-top:1px solid #ebebeb;'>"
+    f"padding-top:5px; border-top:1px solid #ebebeb; justify-content:center;'>"
     f"<span style='font-size:0.72rem; color:#555555; font-style:italic; min-width:72px;'>Group:</span>"
     f"<span style='font-size:0.72rem; color:#333;'><strong>Unp.</strong> = Unpredictable</span>"
     f"<span style='color:#bbb; font-size:0.7rem;'>·</span>"
@@ -962,8 +962,9 @@ group_row = (
 st.markdown(
     f"""
     <div style='margin-top:0.6rem; border:1px solid #dedede; border-radius:4px;
-                padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;'>
-        <div style='display:flex; align-items:center; gap:10px; margin-bottom:6px;'>
+                padding:8px 16px; width:fit-content; margin-left:auto; margin-right:auto;
+                display:flex; flex-direction:column; align-items:center;'>
+        <div style='display:flex; align-items:center; gap:10px; justify-content:center;'>
             <span style='font-size:0.72rem; color:#555555; font-weight:700;
                          letter-spacing:0.08em; text-transform:uppercase;'>Legend</span>
             <span style='color:#dedede; font-size:0.8rem;'>|</span>
