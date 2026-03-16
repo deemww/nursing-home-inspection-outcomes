@@ -935,7 +935,7 @@ CHIP_STYLE = (
     "display:inline-block; margin-right:3px;"
 )
 FREQ_ITEMS = (
-    f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Frequency:</span>"
+    f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Inspection frequency:</span>"
     f"<span style='{CHIP_STYLE}'>&#8722;</span>"
     f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&#8722;25%</span>"
     f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
@@ -973,7 +973,7 @@ if sort_flag:
         + LEGEND_HEADER +
         "</div>"
         "<div>"
-        "<div style='display:flex; align-items:center; flex-wrap:wrap; margin-bottom:6px;'>"
+        "<div style='display:flex; align-items:center; flex-wrap:wrap; justify-content:center; margin-bottom:6px;'>"
         + FREQ_ITEMS +
         "</div>"
         "<div style='display:flex; align-items:center; flex-wrap:wrap; padding-top:6px; border-top:1px solid #ebebeb;'>"
