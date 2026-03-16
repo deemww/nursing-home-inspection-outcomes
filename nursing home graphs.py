@@ -886,9 +886,15 @@ with p4:
 
 st.markdown(
     """
-    <div style='display:flex; justify-content:center; align-items:center; gap:6px; margin-top:0.4rem; flex-wrap:wrap;'>
+    <div style='display:flex; justify-content:center; align-items:center; gap:6px; margin-top:0.6rem; flex-wrap:wrap;
+                border:1px solid #dedede; border-radius:4px; padding:6px 14px; width:fit-content; margin-left:auto; margin-right:auto;'>
+        <span style='font-size:0.72rem; color:#555555; font-weight:700; letter-spacing:0.08em;
+                     text-transform:uppercase; margin-right:8px;'>
+            Legend
+        </span>
+        <span style='color:#cccccc; font-size:0.7rem; margin-right:8px;'>|</span>
         <span style='font-size:0.72rem; color:#555555; font-style:italic; margin-right:6px;'>
-            Inspection frequency shown below each bar:
+            Inspection frequency:
         </span>
         <span style='font-size:0.72rem; color:#333333; display:flex; align-items:center; gap:5px;'>
             <span style='font-family:monospace; font-size:0.8rem; background:#dedede;
