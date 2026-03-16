@@ -108,6 +108,7 @@ st.markdown(
         display: inline-block;
         vertical-align: middle;
         margin-left: 5px;
+        top: -1px;
     }
     .bfi-help-icon {
         display: inline-flex;
