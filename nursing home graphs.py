@@ -662,12 +662,12 @@ def vega_bar_spec(metric_col, y_domain, y_label, chart_title, selected_key_for_s
     y_scale = {"domain": [float(y_domain[0]), float(y_domain[1])], "nice": False}
     y_axis = {
         "title": y_label,
-        "titleFontWeight": 600,
-        "titleFontSize": 12,
-        "titleColor": "#404040",
-        "titlePadding": 10,
-        "labelFontSize": 13,
-        "labelColor": "#333333",
+        "titleFontWeight": 700,
+        "titleFontSize": 13,
+        "titleColor": "#333333",
+        "titlePadding": 12,
+        "labelFontSize": 12,
+        "labelColor": "#555555",
         "gridColor": "#e8e8e8",
         "gridDash": [],
         "domainColor": "#e8e8e8",
