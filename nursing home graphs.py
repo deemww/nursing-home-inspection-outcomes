@@ -96,11 +96,36 @@ st.markdown(
         color: #800000 !important;
     }
 
-    /* ---- METRICS ---- */
-    [data-testid="stMetricLabel"] p { font-weight: 700 !important; }
-    [data-testid="stMetricValue"] { font-weight: 800 !important; }
+    /* ---- METRICS — custom BFI card style ---- */
+    [data-testid="stMetric"] {
+        background: #ffffff !important;
+        border: 1px solid #e4e4e4 !important;
+        border-top: 3px solid #800000 !important;
+        border-radius: 2px !important;
+        padding: 18px 20px 14px !important;
+    }
+    [data-testid="stMetricLabel"] p {
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.12em !important;
+        text-transform: uppercase !important;
+        color: #7c7c7c !important;
+        margin-bottom: 8px !important;
+    }
+    [data-testid="stMetricValue"] {
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
+        color: #111111 !important;
+        letter-spacing: -0.01em !important;
+        line-height: 1 !important;
+    }
     [data-testid="stMetricDelta"] { font-weight: 700 !important; }
-    [data-testid="stCaptionContainer"] p { font-weight: 700 !important; }
+    [data-testid="stCaptionContainer"] p {
+        font-size: 0.78rem !important;
+        color: #9a9a9a !important;
+        font-style: italic !important;
+        font-weight: 400 !important;
+    }
 
     /* ============================================================
        INSPECTION FREQUENCY SLIDER STYLING
