@@ -106,32 +106,31 @@ st.markdown(
     .bfi-help-wrap {
         position: relative;
         display: inline-block;
+        vertical-align: middle;
+        margin-left: 5px;
     }
-
     .bfi-help-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
         border-radius: 50%;
         border: 1.5px solid #aaaaaa;
         color: #aaaaaa;
-        font-size: 0.62rem;
+        font-size: 0.6rem;
         font-weight: 700;
         cursor: help;
         line-height: 1;
         text-transform: none;
         letter-spacing: 0;
-        background: #ffffff;
     }
-
     .bfi-help-popup {
         display: none;
         position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        transform: none;
+        bottom: calc(100% + 7px);
+        left: 50%;
+        transform: translateX(-50%);
         background: #222222;
         color: #ffffff;
         font-size: 0.72rem;
@@ -144,7 +143,6 @@ st.markdown(
         text-align: left;
         z-index: 9999;
     }
-
     .bfi-help-wrap:hover .bfi-help-popup {
         display: block;
     }
@@ -169,7 +167,7 @@ st.markdown(
         display: none !important;
     }
 
-    /* Handle — white fill, maroon ring */
+    /* Handle — white fill, maroon ring (echoes radio button visual language) */
     [data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
         background: #ffffff !important;
         border: 2.5px solid #800000 !important;
@@ -185,6 +183,8 @@ st.markdown(
         border: 2.5px solid #800000 !important;
         box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12) !important;
     }
+
+    /* Track fill color is set via primaryColor in .streamlit/config.toml */
 
     </style>
     """,
@@ -394,21 +394,21 @@ apply_chart_click_if_any()
 # =============================
 st.markdown(
     """
-<div style='text-align:center; padding: 1.5rem 2rem 1.2rem; border-bottom: 1px solid #e4e4e4;'>
-    <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
-                color:#800000; margin-bottom:10px;'>
-        BFI Data Studio &nbsp;·&nbsp; Policy Research
+    <div style='text-align:center; padding: 1.5rem 2rem 1.2rem; border-bottom: 1px solid #e4e4e4;'>
+        <div style='font-size:0.68rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase;
+                    color:#800000; margin-bottom:10px;'>
+            BFI Data Studio &nbsp;·&nbsp; Policy Research
+        </div>
+        <h1 style='font-size:1.75rem; font-weight:800; color:#111111;
+                   line-height:1.2; margin:0 auto 10px; max-width:640px;'>
+            Nursing Home Inspection Policy Outcomes
+        </h1>
+        <p style='font-size:0.95rem; font-weight:400; color:#555555;
+                  margin:0 auto; max-width:580px; line-height:1.6;'>
+            Explore how inspection frequency and predictability affect lives saved,
+            efficiency, and regulatory information.
+        </p>
     </div>
-    <h1 style='font-size:1.75rem; font-weight:800; color:#111111;
-               line-height:1.2; margin:0 auto 10px; max-width:640px;'>
-        Nursing Home Inspection Policy Outcomes
-    </h1>
-    <p style='font-size:0.95rem; font-weight:400; color:#555555;
-              margin:0 auto; max-width:580px; line-height:1.6;'>
-        Explore how inspection frequency and predictability affect lives saved,
-        efficiency, and regulatory information.
-    </p>
-</div>
     """,
     unsafe_allow_html=True,
 )
@@ -417,21 +417,22 @@ st.markdown(
 # Sidebar controls
 # =============================
 with st.sidebar:
+    # ── BFI-style maroon header block ──
     st.markdown(
         """
-<div style="
-    background-color: #800000;
-    margin: -1rem -1rem 1.25rem -1rem;
-    padding: 14px 20px 12px 20px;
-    text-align: center;
-">
-    <div style="
-        font-size: 1.0rem;
-        font-weight: 700;
-        color: #ffffff;
-        letter-spacing: 0.01em;
-    ">Policy Controls</div>
-</div>
+        <div style="
+            background-color: #800000;
+            margin: -1rem -1rem 1.25rem -1rem;
+            padding: 14px 20px 12px 20px;
+            text-align: center;
+        ">
+            <div style="
+                font-size: 1.0rem;
+                font-weight: 700;
+                color: #ffffff;
+                letter-spacing: 0.01em;
+            ">Policy Controls</div>
+        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -450,6 +451,7 @@ with st.sidebar:
         st.session_state["freq_choice"] = "Current"
         update_selected_key_from_sidebar()
 
+    # ── Inspection Frequency section label ──
     st.markdown(
         "<div style='font-size:0.85rem; font-weight:700; letter-spacing:0.13em; "
         "text-transform:uppercase; color:#333333; border-bottom:1px solid #e4e4e4; "
@@ -458,6 +460,7 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    # ── Labels above slider ──
     selected_fc = st.session_state.get("freq_choice", "Current")
     labels_html = "".join([
         f"<span style='"
@@ -467,10 +470,12 @@ with st.sidebar:
         for lbl in FREQ_LABELS
     ])
     st.markdown(
-        f"<div style='display:flex; justify-content:space-between; padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
+        f"<div style='display:flex; justify-content:space-between;"
+        f" padding:0 6px; margin-bottom:4px;'>{labels_html}</div>",
         unsafe_allow_html=True,
     )
 
+    # ── Slider ──
     st.select_slider(
         "Inspection frequency",
         options=FREQ_LABELS,
@@ -479,33 +484,34 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
+    # ── BFI-style callout: left maroon border, italic ──
     rates = {
-        "−25%": f"{low:.2f}",
+        "−25%":    f"{low:.2f}",
         "Current": f"{mid:.2f}",
-        "+25%": f"{high:.2f}",
+        "+25%":    f"{high:.2f}",
     }
     st.markdown(
         f"""
-<div style="
-    border-left: 3px solid #800000;
-    background-color: #fcf8f5;
-    border-radius: 0 4px 4px 0;
-    padding: 10px 14px;
-    margin-top: 14px;
-    font-size: 1.0rem;
-    font-style: italic;
-    color: #404040;
-    line-height: 1.5;
-">
-    <strong style="font-style:normal; color:#800000;">{rates[selected_fc]}</strong>
-    inspections per facility per year
-</div>
+        <div style="
+            border-left: 3px solid #800000;
+            background-color: #fcf8f5;
+            border-radius: 0 4px 4px 0;
+            padding: 10px 14px;
+            margin-top: 14px;
+            font-size: 1.0rem;
+            font-style: italic;
+            color: #404040;
+            line-height: 1.5;
+        ">
+            <strong style="font-style:normal; color:#800000;">{rates[selected_fc]}</strong>
+            inspections per facility per year
+        </div>
         """,
         unsafe_allow_html=True,
     )
 
 # =============================
-# Selected scenario
+# Selected scenario (source of truth)
 # =============================
 selected_key = st.session_state["selected_key"]
 row = df.loc[df["scenario_key"] == selected_key].iloc[0]
@@ -515,34 +521,34 @@ scenario = scenario_label(predictability, frequency)
 
 st.markdown(
     f"""
-<div style='
-    text-align: center;
-    padding: 14px 24px;
-    background-color: #fcf8f5;
-    border-top: 1px solid #e4e4e4;
-    border-bottom: 1px solid #e4e4e4;
-    margin-bottom: 1.2rem;
-'>
-    <div style='font-size:0.78rem; font-weight:700; letter-spacing:0.13em;
-                text-transform:uppercase; color:#7c7c7c; margin-bottom:10px;'>
-        Selected Scenario
-    </div>
     <div style='
-        display: inline-block;
-        padding: 9px 26px;
-        background-color: #800000;
-        color: #ffffff;
-        font-size: 1.15rem;
-        font-weight: 700;
-        border-radius: 3px;
-        letter-spacing: 0.01em;
+        text-align: center;
+        padding: 14px 24px;
+        background-color: #fcf8f5;
+        border-top: 1px solid #e4e4e4;
+        border-bottom: 1px solid #e4e4e4;
+        margin-bottom: 1.2rem;
     '>
-        {scenario}
+        <div style='font-size:0.78rem; font-weight:700; letter-spacing:0.13em;
+                    text-transform:uppercase; color:#7c7c7c; margin-bottom:10px;'>
+            Selected Scenario
+        </div>
+        <div style='
+            display: inline-block;
+            padding: 9px 26px;
+            background-color: #800000;
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 3px;
+            letter-spacing: 0.01em;
+        '>
+            {scenario}
+        </div>
+        <div style='font-size:0.82rem; color:#7c7c7c; margin-top:9px;'>
+            Click any bar in a chart below to change scenario selection
+        </div>
     </div>
-    <div style='font-size:0.82rem; color:#7c7c7c; margin-top:9px;'>
-        Click any bar in a chart below to change scenario selection
-    </div>
-</div>
     """,
     unsafe_allow_html=True,
 )
@@ -568,57 +574,35 @@ st.markdown(
 
 def metric_card(label, value, unit, help_text=""):
     tooltip = (
-        f"""
-<div style="position:absolute; top:10px; right:12px;">
-    <span class="bfi-help-wrap">
-        <span class="bfi-help-icon">?</span>
-        <span class="bfi-help-popup">{help_text}</span>
-    </span>
-</div>
-"""
+        f'<div style="margin-top:6px; text-align:right;">'
+        f'<span class="bfi-help-wrap">'
+        f'<span class="bfi-help-icon">?</span>'
+        f'<span class="bfi-help-popup">{help_text}</span>'
+        f'</span>'
+        f'</div>'
         if help_text else ""
     )
-
     return f"""
-<div style="
-    position: relative;
-    padding: 18px 20px 16px;
-    background: #ffffff;
-    border: 1px solid #e4e4e4;
-    border-top: 3px solid #800000;
-    border-radius: 2px;
-">
+    <div style="
+        padding: 18px 20px 16px;
+        background: #ffffff;
+        border: 1px solid #e4e4e4;
+        border-top: 3px solid #800000;
+        border-radius: 2px;
+    ">
+        <div style="font-size:0.88rem; font-weight:700; color:#333333; margin-bottom:8px;">
+            {label}
+        </div>
+        <div style="font-size:2.2rem; font-weight:800; color:#111111;
+                    line-height:1; margin-bottom:6px; letter-spacing:-0.01em;">
+            {value}
+        </div>
+        <div style="font-size:0.8rem; color:#7c7c7c; font-style:italic;">
+            {unit}
+        </div>
+    </div>
     {tooltip}
-    <div style="
-        font-size:0.88rem;
-        font-weight:700;
-        color:#333333;
-        margin-bottom:8px;
-        padding-right:22px;
-    ">
-        {label}
-    </div>
-
-    <div style="
-        font-size:2.2rem;
-        font-weight:800;
-        color:#111111;
-        line-height:1;
-        margin-bottom:6px;
-        letter-spacing:-0.01em;
-    ">
-        {value}
-    </div>
-
-    <div style="
-        font-size:0.8rem;
-        color:#7c7c7c;
-        font-style:italic;
-    ">
-        {unit}
-    </div>
-</div>
-"""
+    """
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
@@ -656,7 +640,7 @@ st.markdown(
 )
 
 # =============================
-# Vega-Lite bar chart specs
+# Vega-Lite bar chart specs (clickable) + sort toggle
 # =============================
 POINT_PARAM = "point_selection"
 
@@ -757,7 +741,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.toggle(
+sort_by_magnitude = st.toggle(
     "Sort bars by magnitude",
     value=st.session_state.get("sort_by_magnitude", False),
     help="Orders bars from largest to smallest value within each chart.",
