@@ -957,32 +957,36 @@ BOX_STYLE = (
 
 if sort_flag:
     GROUP_ITEMS = (
-        f"<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Group:</span>"
-        f"<strong style='font-size:0.72rem; color:#333;'>Unp.</strong>"
-        f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Unpredictable</span>"
-        f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
-        f"<strong style='font-size:0.72rem; color:#333;'>Curr.</strong>"
-        f"<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Current Regime</span>"
-        f"<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
-        f"<strong style='font-size:0.72rem; color:#333;'>Pred.</strong>"
-        f"<span style='font-size:0.72rem; color:#333;'>&nbsp;= Perfectly Predictable</span>"
+        "<span style='font-size:0.72rem; color:#555; font-style:italic; margin-right:4px;'>Group:</span>"
+        "<strong style='font-size:0.72rem; color:#333;'>Unp.</strong>"
+        "<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Unpredictable</span>"
+        "<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+        "<strong style='font-size:0.72rem; color:#333;'>Curr.</strong>"
+        "<span style='font-size:0.72rem; color:#333; margin-right:6px;'>&nbsp;= Current Regime</span>"
+        "<span style='color:#bbb; font-size:0.7rem; margin-right:6px;'>&#183;</span>"
+        "<strong style='font-size:0.72rem; color:#333;'>Pred.</strong>"
+        "<span style='font-size:0.72rem; color:#333;'>&nbsp;= Perfectly Predictable</span>"
     )
     st.markdown(
-        f"<div style='{BOX_STYLE}'>"
-        f"<div style='display:flex; align-items:center; flex-wrap:wrap; margin-bottom:6px;'>"
-        f"{LEGEND_HEADER}{FREQ_ITEMS}"
-        f"</div>"
-        f"<div style='display:flex; align-items:center; flex-wrap:wrap; "
-        f"padding-top:6px; border-top:1px solid #ebebeb;'>"
-        f"{GROUP_ITEMS}"
-        f"</div>"
-        f"</div>",
+        "<div style='" + BOX_STYLE + " display:flex; align-items:flex-start; gap:10px;'>"
+        "<div style='display:flex; align-items:center; gap:8px; padding-top:3px; white-space:nowrap;'>"
+        + LEGEND_HEADER +
+        "</div>"
+        "<div>"
+        "<div style='display:flex; align-items:center; flex-wrap:wrap; margin-bottom:6px;'>"
+        + FREQ_ITEMS +
+        "</div>"
+        "<div style='display:flex; align-items:center; flex-wrap:wrap; padding-top:6px; border-top:1px solid #ebebeb;'>"
+        + GROUP_ITEMS +
+        "</div>"
+        "</div>"
+        "</div>",
         unsafe_allow_html=True,
     )
 else:
     st.markdown(
-        f"<div style='{BOX_STYLE} display:flex; align-items:center; flex-wrap:wrap;'>"
-        f"{LEGEND_HEADER}{FREQ_ITEMS}"
-        f"</div>",
+        "<div style='" + BOX_STYLE + " display:flex; align-items:center; flex-wrap:wrap;'>"
+        + LEGEND_HEADER + FREQ_ITEMS +
+        "</div>",
         unsafe_allow_html=True,
     )
