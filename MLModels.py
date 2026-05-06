@@ -1,4 +1,3 @@
-# Gradient Boosting Model: GDPR Fine Prediction and Feature Importance Analysis
 import pandas as pd
 import numpy as np
 import re
@@ -9,15 +8,11 @@ from sklearn.inspection import permutation_importance
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from matplotlib.patches import Patch
 
-# --- Adjusted R² Function ---
+#Adjusted R² Function
 def adjusted_r2(r2, n, p):
     return 1 - (1 - r2) * (n - 1) / (n - p - 1)
 
-# --- Step 1: Data Preparation ---
-print("=" * 60)
-print("STEP 1: DATA PREPARATION")
-print("=" * 60)
-
+# Step 1: Data Preparation
 df = pd.read_csv('data/gdpr_fines.csv')
 gdp = pd.read_csv('data/country_gdp.csv')
 pop = pd.read_csv('data/country_population.csv')
@@ -68,9 +63,6 @@ print(f"  GDP_Per_Capita_EUR: 1")
 print(f"  Population_Thousands: 1")
 
 # --- Step 2: Train/Test Split ---
-print("\n" + "=" * 60)
-print("STEP 2: TRAIN/TEST SPLIT")
-print("=" * 60)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 n_test = len(X_test)
@@ -78,22 +70,16 @@ print(f"Training set: {len(X_train)} samples")
 print(f"Test set: {n_test} samples")
 
 # --- Step 3: Full Gradient Boosting with Tuning ---
-print("\n" + "=" * 60)
-print("STEP 3: FULL GRADIENT BOOSTING WITH TUNING")
-print("=" * 60)
-
 param_grid = {
     'n_estimators': [100, 200, 300],
     'learning_rate': [0.01, 0.05, 0.1],
     'max_depth': [3, 4, 5],
     'min_samples_leaf': [5, 10, 20],
-    'subsample': [0.8, 1.0]
-}
+    'subsample': [0.8, 1.0]}
 
 gb = GradientBoostingRegressor(random_state=42)
 grid_search = GridSearchCV(gb, param_grid, cv=5, scoring='neg_mean_squared_error',
                            n_jobs=-1, verbose=0)
-print("Running GridSearchCV (5-fold CV)... this may take a few minutes.")
 grid_search.fit(X_train, y_train)
 
 best_params = grid_search.best_params_
@@ -114,9 +100,6 @@ print(f"  RMSE:        {rmse_full:.4f}")
 print(f"  MAE:         {mae_full:.4f}")
 
 # --- Step 4: Ablation - Violation + Year (Baseline) ---
-print("\n" + "=" * 60)
-print("STEP 4: ABLATION - VIOLATION + YEAR (BASELINE)")
-print("=" * 60)
 
 violation_year_features = type_features + ['Num_Articles', 'Year']
 print(f"Features: {len(violation_year_features)}")
@@ -136,9 +119,6 @@ print(f"  RMSE:        {rmse_baseline:.4f}")
 print(f"  MAE:         {mae_baseline:.4f}")
 
 # --- Step 5: Ablation - Violation + Year + Location ---
-print("\n" + "=" * 60)
-print("STEP 5: ABLATION - VIOLATION + YEAR + LOCATION")
-print("=" * 60)
 
 location_add = country_features + ['GDP_Per_Capita_EUR', 'Population_Thousands']
 violation_year_location_features = violation_year_features + location_add
@@ -160,9 +140,6 @@ print(f"  MAE:         {mae_location:.4f}")
 print(f"\n  Adjusted R² improvement from adding Location: +{adj_r2_location - adj_r2_baseline:.4f}")
 
 # --- Step 6: Ablation - Violation + Year + Industry ---
-print("\n" + "=" * 60)
-print("STEP 6: ABLATION - VIOLATION + YEAR + INDUSTRY")
-print("=" * 60)
 
 violation_year_industry_features = violation_year_features + sector_features
 print(f"Features: {len(violation_year_industry_features)}")
@@ -183,9 +160,6 @@ print(f"  MAE:         {mae_industry:.4f}")
 print(f"\n  Adjusted R² improvement from adding Industry: +{adj_r2_industry - adj_r2_baseline:.4f}")
 
 # --- Step 7: Random Forest Robustness Check ---
-print("\n" + "=" * 60)
-print("STEP 7: RANDOM FOREST ROBUSTNESS CHECK")
-print("=" * 60)
 
 rf = RandomForestRegressor(n_estimators=300, max_depth=10, min_samples_leaf=5,
                            random_state=42, n_jobs=-1)
@@ -204,9 +178,6 @@ print(f"  RMSE:        {rmse_rf:.4f}")
 print(f"  MAE:         {mae_rf:.4f}")
 
 # --- Step 8: Permutation Importance ---
-print("\n" + "=" * 60)
-print("STEP 8: PERMUTATION IMPORTANCE")
-print("=" * 60)
 
 perm_imp = permutation_importance(best_gb, X_test, y_test, n_repeats=10,
                                   random_state=42, n_jobs=-1)
@@ -250,7 +221,6 @@ ax.legend(handles=legend_elements, loc='lower right')
 ax.grid(True, alpha=0.3, axis='x')
 plt.tight_layout()
 plt.savefig('analysis/feature_importance_top15.png', dpi=150, bbox_inches='tight', facecolor='white')
-print("\nChart saved to analysis/feature_importance_top15.png")
 
 # Chart 2: Grouped Feature Importance
 location_features = country_features + ['GDP_Per_Capita_EUR', 'Population_Thousands']
@@ -284,7 +254,6 @@ ax.set_title('What Drives GDPR Fine Amounts?')
 ax.grid(True, alpha=0.3, axis='y')
 plt.tight_layout()
 plt.savefig('analysis/grouped_importance.png', dpi=150, bbox_inches='tight', facecolor='white')
-print("Chart saved to analysis/grouped_importance.png")
 
 # Chart 3: GB vs RF Side-by-Side
 perm_imp_rf = permutation_importance(rf, X_test, y_test, n_repeats=10,
@@ -319,12 +288,6 @@ axes[1].grid(True, alpha=0.3, axis='y')
 plt.suptitle('Grouped Feature Importance: Model Comparison', fontsize=13, fontweight='bold')
 plt.tight_layout()
 plt.savefig('analysis/model_comparison.png', dpi=150, bbox_inches='tight', facecolor='white')
-print("Chart saved to analysis/model_comparison.png")
-
-# --- Step 9: Actual vs Predicted + Summary ---
-print("\n" + "=" * 60)
-print("STEP 9: ACTUAL VS PREDICTED + SUMMARY")
-print("=" * 60)
 
 # Chart 4: Actual vs Predicted
 fig, ax = plt.subplots(figsize=(7, 7))
@@ -339,38 +302,4 @@ ax.legend()
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig('analysis/actual_vs_predicted.png', dpi=150, bbox_inches='tight', facecolor='white')
-print("Chart saved to analysis/actual_vs_predicted.png")
 
-# Summary Table
-print(f"\n{'Model':<35} {'R²':>8} {'Adj R²':>8} {'RMSE':>8} {'MAE':>8}")
-print("-" * 69)
-print(f"{'Violation + Year (baseline)':<35} {r2_baseline:>8.4f} {adj_r2_baseline:>8.4f} {rmse_baseline:>8.4f} {mae_baseline:>8.4f}")
-print(f"{'+ Location':<35} {r2_location:>8.4f} {adj_r2_location:>8.4f} {rmse_location:>8.4f} {mae_location:>8.4f}")
-print(f"{'+ Industry':<35} {r2_industry:>8.4f} {adj_r2_industry:>8.4f} {rmse_industry:>8.4f} {mae_industry:>8.4f}")
-print(f"{'Full Model (GB, tuned)':<35} {r2_full:>8.4f} {adj_r2_full:>8.4f} {rmse_full:>8.4f} {mae_full:>8.4f}")
-print(f"{'Random Forest (robustness)':<35} {r2_rf:>8.4f} {adj_r2_rf:>8.4f} {rmse_rf:>8.4f} {mae_rf:>8.4f}")
-
-print(f"\nAdjusted R² improvement from adding Location: +{adj_r2_location - adj_r2_baseline:.4f}")
-print(f"Adjusted R² improvement from adding Industry: +{adj_r2_industry - adj_r2_baseline:.4f}")
-
-print(f"\nGrouped Feature Importance (Gradient Boosting):")
-print(f"  Location:         {location_imp/total_imp*100:.1f}%")
-print(f"  Industry:         {industry_imp/total_imp*100:.1f}%")
-print(f"  Violation Nature: {violation_imp/total_imp*100:.1f}%")
-print(f"  Temporal:         {temporal_imp/total_imp*100:.1f}%")
-
-print(f"\nGrouped Feature Importance (Random Forest):")
-print(f"  Location:         {location_imp_rf/total_rf*100:.1f}%")
-print(f"  Industry:         {industry_imp_rf/total_rf*100:.1f}%")
-print(f"  Violation Nature: {violation_imp_rf/total_rf*100:.1f}%")
-print(f"  Temporal:         {temporal_imp_rf/total_rf*100:.1f}%")
-
-print(f"\nReal-world interpretation:")
-print(f"  RMSE of {rmse_full:.2f} on log10 scale = predictions off by ~{10**rmse_full:.1f}x on average")
-print(f"  A €10,000 fine could be predicted as €{10000/10**rmse_full:,.0f} to €{10000*10**rmse_full:,.0f}")
-
-print("\nCharts saved:")
-print("  analysis/feature_importance_top15.png")
-print("  analysis/grouped_importance.png")
-print("  analysis/model_comparison.png")
-print("  analysis/actual_vs_predicted.png")
