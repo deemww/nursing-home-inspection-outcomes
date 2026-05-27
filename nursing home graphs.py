@@ -416,7 +416,7 @@ st.markdown(
             efficiency, and regulatory information.
         </p>
         <div style='margin-top:14px;'>
-            <a href='https://uchicago.box.com/s/zebkzvt89zrclrxxxn4u6sderaprkfk5'
+            <a href='https://uchicago.box.com/s/4ti6q6zeemi1ou7oz5klrnylkp33mpfy'
                target='_blank'
                style='display:inline-flex; align-items:center; gap:6px;
                       font-size:0.82rem; font-weight:600; color:#800000;
@@ -425,7 +425,7 @@ st.markdown(
                       transition: background 0.15s;'
                onmouseover="this.style.background='#f5eded'"
                onmouseout="this.style.background='transparent'">
-                Read the working paper
+                Read the paper
             </a>
         </div>
     </div>
