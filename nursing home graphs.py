@@ -634,7 +634,7 @@ with col2:
     st.markdown(metric_card(
         "Inspection Efficiency",
         f"{float(row['lives_saved_per_1000']):.1f}",
-        "per 1,000 inspections",
+        "lives saved per 1,000 inspections",
         "Lives saved per 1,000 inspections",
     ), unsafe_allow_html=True)
 with col3:
